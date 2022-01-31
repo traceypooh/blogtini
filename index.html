@@ -58,7 +58,7 @@ import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
 
-const img_site = '/img/traceymonet-half.jpg' // xxx params.intro.pic.src
+const img_site = './img/traceymonet-half.jpg' // xxx params.intro.pic.src
 
 const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
 
@@ -85,9 +85,9 @@ for (const md of [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) {
 
   const img = featured === ''
     ? img_site
-    : (featured.match(/\//) ? featured : `/img/${featured}`)
+    : (featured.match(/\//) ? featured : `./img/${featured}`)
 
-  const taglinks = tags.map((e) => `<a href="/?tags/${e}">${e}</a>`).join(' ')
+  const taglinks = tags.map((e) => `<a href="./?tags/${e}">${e}</a>`).join(' ')
 
   posts[date.getTime()] = `
     <div class="card">
