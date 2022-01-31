@@ -64,10 +64,10 @@ const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['
 
 const posts = {}
 
-const dir = await (await fetch(`/posts`)).text()
+const dir = await (await fetch(`./posts`)).text()
 for (const md of [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) {
   if (md === 'README.md' || md.match(/\/README.md$/)) continue
-  const url = md.match(/\//) ? md : `/posts/${md}`
+  const url = md.match(/\//) ? md : `./posts/${md}`
   const yaml = await (await fetch(url)).text()
   const front_matter = yaml.split('\n---').shift()
   const json = yml.load(front_matter)
