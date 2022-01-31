@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Tracey Jaquith - PoohBot Pictures</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <!--
+[layout]
+pages
+posts
+css
+js
+img
+
+python3 -m http.server
+open http://localhost:8000
+
+
+-15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
+
+- parse all posts markdown front matter for dates/tags/categories
+  - put into local storage (cache <= 24h): each post's: title, date, tags, cats, img
+  - ... but we only need to parse most recent 2-10 posts from each subscriber
+- top page: show most recent 10 posts' summaries
+  - page 2: posts 10..20, etc.
+- click on 'subject:biking' => parse front matter for that tag
+- SEO!?
+- open followers' websites /posts dir to parse their 2-10 most recent .md...
+  -->
+  <style>
+body, div {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.card {
+  display: inline-block;
+  vertical-align: top;
+  padding: 5px;
+  margin: 10px;
+  width: 300px;
+}
+.card img {
+  object-fit: cover;
+  width: 300px;
+  height: 170px;
+  margin-left: -5px;
+  margin-right: -5px;
+}
+  </style>
+</head>
+
+
+<body id="spa">
+</body>
+
+
+<script type="module">
+import yml from 'https://esm.archive.org/js-yaml'
+
+const log = console.log.bind(console)
+
+const img_site = '/img/traceymonet-half.jpg' // xxx params.intro.pic.src
+
+const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
+
+const posts = {}
+
+const dir = await (await fetch(`/posts`)).text()
+for (const md of [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) {
+  if (md === 'README.md' || md.match(/\/README.md$/)) continue
+  const url = md.match(/\//) ? md : `/posts/${md}`
+  const yaml = await (await fetch(url)).text()
+  const front_matter = yaml.split('\n---').shift()
+  const json = yml.load(front_matter)
+  log({ json })
+
+  const title    = json?.title?.trim() ?? ''
+  const tags     = (json?.tags ?? []).map((e) => e.trim().replace(/ /g, '-'))
+  const date     = json?.date ?? new Date()
+  const featured = json?.featured?.trim() ?? ''
+  const year = parseInt(date.getUTCFullYear(), 10) // chexxx UTC
+  log({ title, tags, date, featured })
+  // author|categories
+
+  if (tag.length && !(tags.includes(tag))) continue
+
+  const img = featured === ''
+    ? img_site
+    : (featured.match(/\//) ? featured : `/img/${featured}`)
+
+  const taglinks = tags.map((e) => `<a href="/?tags/${e}">${e}</a>`).join(' ')
+
+  posts[date.getTime()] = `
+    <div class="card">
+      <img src="${img}">
+      <h2>${title}</h2>
+      ${`${date}`.split(' ').slice(0, 4).join(' ')}<br>
+      Tags: ${taglinks}
+    </div>`
+}
+
+
+let str = ''
+for (const ymd of Object.keys(posts).sort().reverse())
+  str += posts[ymd]
+document.getElementById('spa').insertAdjacentHTML('afterend', str)
+</script>

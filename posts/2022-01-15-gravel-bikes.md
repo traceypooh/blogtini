@@ -1,0 +1,43 @@
+---
+title: Gravel Bikes
+date: 2022-01-15
+categories:
+  - biking
+tags:
+  - biking
+  - gravel bike
+featured: gravel.jpg
+class: featured-top
+aliases: /gravel
+---
+
+[14 years ago](/2008/03/training-to-bike-first-aids-lifecycle-sf-to-la/), I bought my first carbon bike - a road bike.  I'm catching the "gravel bike" fever after borrowing my boyfriend's for 30 minutes of offroading.  So I'm now stalking bike options and figuring out what might be best for me.
+
+Here's some of my current contenders and key information.
+
+Top pick as of weeks of research and thinking is 2022 Crux Comp (their cheapest in that line) that I'd then upgrade the wheels to carbon, get wider tires, and try to upgrade the SRAM rear casseette (and derailleur) to a more capable off-road 12-speed 10-50 or 10-52 casseette (if I can).
+
+| Bike                  | weight    | weight    | MSRP | 700c | 650b | gears          | misc | site |
+| --------------------- | --------- | --------- | ---- | ---- | ---- | -------------- | ---- | ---- |
+| specialized crux comp | 18.7lb/56 | 8.5kg/56  | $4200 | 47c  | 2.1" | 11: 11-42 x 40 | manual shift; upgrade wheels/tyres, derailleur & crank to 12sp 11-50 ?? | [link](https://www.specialized.com/us/en/crux-comp/p/199962?color=322104-199962) |
+| specialized crux expert | 17.9lb/56 | 8.1kg/56  | $6200 | 47c  | 2.1" | 12: 11-44 x 40 | wireless; 38c tyres; upgrade wheels/tyres, derailleur & crank to 12sp 11-50 ?? | [link](https://www.specialized.com/us/en/crux-expert/p/199961?color=322125-199961) |
+| specialized diverge expert | 20.5lb/52 | 9.3kg     | $6200 | 47c  | 2.1" | 12: 11-50 x 40 | future shock, swat storage, electric shifting | [link](https://www.specialized.com/us/en/crux-comp/p/199962?color=322105-199962) |
+| canyon grizl slx 8    | 18.7lb    | 8.5kg     | $6000 | 50c  |      | 12: 10-44 x 40 | wireless, split carbon seatpost; Maxxis Rambler 45m tyres! | [link](https://www.canyon.com/en-us/gravel-bikes/bike-packing/grizl/cf-slx/grizl-cf-slx-8-etap/2853.html) |
+
+
+## Other related links
+
+- https://www.ethirteen.com/pages/helix-r-cassette
+- https://www.ethirteen.com/products/helix-r-12-speed-cassette
+
+- [thesis OB1](https://thesis.bike/collections/ob1-bikes/products/the-ob1-axs-custom)
+- [carbonda for OB1](https://www.carbonda.com/road/gravel/cfr505.html)
+
+- [compare 4 spec. + 3T](https://99spokes.com/compare?bikes=specialized-diverge-comp-carbon-2022,specialized-diverge-expert-carbon-2022;*z.58cm|w.700,specialized-crux-expert-2022;*z.58cm|w.700,specialized-crux-comp-2022;*z.58cm|w.700,3t-exploro-race-ekar-1x13-2021;*z.58cm|w.700)
+
+- [crux 99spokes](https://99spokes.com/bikes/specialized/2022/crux-comp)
+- [crux comparisons, weights](https://granfondo-cycling.com/specialized-s-works-crux-2022-news/)
+
+- for < 1/2 lb more: [redshift suspesion stem](https://redshiftsports.com/products/shockstop-suspension-stem)
+
+- [gears and gains ratios](https://poohbot.com/gears/)
