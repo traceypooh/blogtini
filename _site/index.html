@@ -6,14 +6,12 @@
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <!--
 [layout]
-pages
 posts
-css
-js
 img
 
-python3 -m http.server
-open http://localhost:8000
+pages
+css
+js
 
 
 -15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
@@ -23,7 +21,6 @@ open http://localhost:8000
   - ... but we only need to parse most recent 2-10 posts from each subscriber
 - top page: show most recent 10 posts' summaries
   - page 2: posts 10..20, etc.
-- click on 'subject:biking' => parse front matter for that tag
 - SEO!?
 - open followers' websites /posts dir to parse their 2-10 most recent .md...
   -->
@@ -58,14 +55,27 @@ import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
 
-const img_site = './img/traceymonet-half.jpg' // xxx params.intro.pic.src
+const config = await (await fetch(`config.json`)).json()
+
+const { img_site, user, repo } = config
 
 const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
 
 const posts = {}
 
-const dir = await (await fetch(`./posts`)).text()
-for (const md of [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) {
+let mds = [] // xxx cache
+const tmp = await fetch(`./posts`)
+if (tmp.ok) {
+  // local dev or something that replies with a directory listing (yay)
+  const dir = await (tmp).text()
+  mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
+} else {
+  // use GitHub API to get a list of the posts
+  const json = await (await fetch(`https://api.github.com/repos/${user}/${repo}/contents/_site/posts`)).json()
+  mds = json.map((e) => e.name)
+}
+
+for (const md of mds) {
   if (md === 'README.md' || md.match(/\/README.md$/)) continue
   const url = md.match(/\//) ? md : `./posts/${md}`
   const yaml = await (await fetch(url)).text()

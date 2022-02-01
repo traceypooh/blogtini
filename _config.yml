@@ -1,1 +1,2 @@
+exclude: [README.md]
 keep_files: [posts, img, index.html]
