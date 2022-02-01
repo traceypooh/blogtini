@@ -1,6 +1,10 @@
 # blogzero
 
-local dev quickstart
+live at:  https://traceypooh.github.io/blogzero/
+
+
+## local dev quickstart
+(any basic static file webserver will do):
 ```bash
 
 cd _site

@@ -14,14 +14,19 @@ css
 js
 
 
--15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
+- 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
+- xxx SEO!?
 
-- parse all posts markdown front matter for dates/tags/categories
-  - put into local storage (cache <= 24h): each post's: title, date, tags, cats, img
+- fill out nav & sidebar
+- parse 10 most recent posts, fill out main page
+- parse front-matter from remaining posts for tag cloud, category list (fills-in later) (cache)
+  - consider range requests for ~just front-matter retrieval & parsing?
+  - GH pages serves over http2 at least
+
+- put into local storage (cache <= 24h): each post's: title, date, tags, cats, img
   - ... but we only need to parse most recent 2-10 posts from each subscriber
 - top page: show most recent 10 posts' summaries
   - page 2: posts 10..20, etc.
-- SEO!?
 - open followers' websites /posts dir to parse their 2-10 most recent .md...
   - eg: https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
   -->
