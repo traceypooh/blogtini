@@ -55,7 +55,7 @@ import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
 
-const config = await (await fetch(`config.json`)).json()
+const config = await (await fetch('config.json')).json()
 
 const { img_site, user, repo } = config
 
