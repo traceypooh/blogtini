@@ -26,12 +26,18 @@ js
   - eg: https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
   -->
   <style>
-body, div {
+body {
   font-family: Arial, Helvetica, sans-serif;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: top;
+  justify-items:center;
+}
+#spa {
+  display: none;
 }
 .card {
-  display: inline-block;
-  vertical-align: top;
   padding: 5px;
   margin: 10px;
   width: 300px;
@@ -47,7 +53,8 @@ body, div {
 </head>
 
 
-<body id="spa">
+<body>
+  <div id="spa"></div>
 </body>
 
 
