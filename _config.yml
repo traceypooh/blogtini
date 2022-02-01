@@ -1,2 +1,2 @@
 exclude: [README.md]
-keep_files: [config.json, posts, img, index.html]
+keep_files: [., .git, config.json, posts, img, index.html]
