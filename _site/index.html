@@ -43,7 +43,7 @@
   font-size: 22px;
   margin-top: 5px;
 }
-.card a {
+a {
   text-decoration: none;
 }
 .card img {
@@ -59,18 +59,36 @@
 }
 #welcome a {
   color: initial;
-  text-decoration: none;
 }
 #welcome img {
   margin: 10px;
   max-width: 40vw;
+}
+#nav-tags, #nav-cats {
+  font-size: 11px;
 }
   </style>
 </head>
 
 
 <body>
-  <div id="spa"></div>
+  <div class="container">
+    <div id="welcome" class="bg-light">
+    </div>
+    <div class="row">
+      <div class="col-md-11 order-md-2">
+        <div id="spa"></div>
+      </div>
+      <div class="nav-left col-md-1 order-md-1">
+        <h5>Categories</h5>
+        <div id="nav-cats">
+        </div>
+        <h5>Tags</h5>
+        <div id="nav-tags">
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 <script type="module" src="js/blogtini.js"></script>

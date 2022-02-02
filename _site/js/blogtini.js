@@ -1,4 +1,55 @@
 /*
+
+github.com cookie: dotcom_user
+
+minimum:
+setup GH account
+visit: https://github.com/traceypooh/blogtini
+press [Y Fork] button in upper right
+(fork to your account)
+hit [⚙️ Settings] in upper right
+[🗂️ Pages] left menu
+enable xxx
+
+xxx need to pipeline??
+
+wait a few minutes, visit your site at:
+https://[YOUR-GITHUB-USERNAME].github.io/blogtini/?setup
+
+
+# parse username from location.host/name ;-)
+
+
+# make a new file, 'Name your file....' like YYYY-MM-DD-first-test-post.md
+https://github.com/xxx/blogtini/new/main/_site/posts
+---
+title: first test post
+date: xxx
+tags: blogging, testing, blogtini
+---
+# scroll down, hit [Commit new file]
+
+https://github.com/xxx/blogtini/edit/main/_site/posts/2022-02-02.md
+[<> Code] upper left tab
+[📁  _site]
+[📁  posts]
+click 2022-02-02.md
+upper-mid right [✏️] (hover shows "Edit this file")
+
+change, to taste:
+title:
+date:
+tags:
+
+(scroll down, find [Commit changes] button and press)
+
+https://github.com/xxx/blogtini/edit/main/_site/config.json
+change, to taste:
+`title`
+`user`
+(scroll down, find [Commit changes] button and press)
+---
+
 [layout]
 posts
 img
@@ -39,7 +90,7 @@ js
 import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
-const blogtini = '/img/blogtini.png' // xxx
+const blogtini = 'img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
@@ -53,11 +104,9 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 */
 
 async function main() {
-  document.getElementById('spa').insertAdjacentHTML('beforebegin', `
-    <div id="welcome" class="bg-light">
-      <img id="blogtini" src="${blogtini}">
-      <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
-    </div>
+  document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
+    <img id="blogtini" src="${blogtini}">
+    <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
   `)
 
   let mds = [] // xxx cache
@@ -96,6 +145,8 @@ async function main() {
     urls = []
     proms = []
   }
+
+  finish()
 }
 
 async function parse_posts(markdowns) {
@@ -143,6 +194,20 @@ async function parse_posts(markdowns) {
   }
 
   document.getElementById('spa').insertAdjacentHTML('beforeend', htm)
+}
+
+function finish() {
+  let htm
+
+  htm = ''
+  for (const tag of Object.keys(state.tags).sort())
+    htm += `<a href="?tags/${tag}">${tag}</a> `
+  document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
+
+  htm = ''
+  for (const cat of Object.keys(state.cats).sort())
+    htm += `<a href="?categories/${cat}">${cat}</a> `
+  document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
 }
 
 await main()
