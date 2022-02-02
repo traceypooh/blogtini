@@ -1,5 +1,6 @@
 {
   "user": "traceypooh",
   "repo": "blogzero",
-  "img_site": "img/traceymonet-half.jpg"
+  "img_site": "img/traceymonet-half.jpg",
+  "posts_per_page": 10
 }
