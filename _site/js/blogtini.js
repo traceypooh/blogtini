@@ -76,9 +76,10 @@ js
   - page 2: posts 10..20, etc.
 - open followers' websites /posts dir to parse their 2-10 most recent .md, eg:
   - https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
-  - http://hunterleebrown.com/blog/feed
+  - https://hunterleebrown.com/blog/feed
+  - https://blog.archive.org/feed/
   - https://hugo-fresh.vercel.app/blog/index.xml
-  - http://feeds.feedburner.com/securitymetrics-org
+  - https://feeds.feedburner.com/securitymetrics-org
 
   xxx posts w/o dates examples
   - eg: https://api.github.com/repos/stefma/hugo-fresh/contents/exampleSite/content/blog
@@ -109,16 +110,27 @@ async function main() {
     <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
   `)
 
+  const { user, repo } = cfg
+  // const user = 'ajaquith', repo = 'securitymetrics'
+  const tries = [
+    './posts',
+    `https://api.github.com/repos/${user}/${repo}/contents/_site/posts`, // blogtini
+    `https://api.github.com/repos/${user}/${repo}/contents/source/_posts`, // ajaquith hugo
+  ]
+
   let mds = [] // xxx cache
-  const tmp = await fetch(`./posts`)
+  let tmp = await fetch(tries[0])
   if (tmp.ok) {
     // local dev or something that replies with a directory listing (yay)
     const dir = await (tmp).text()
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
   } else {
     // use GitHub API to get a list of the posts
-    const json = await (await fetch(`https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/_site/posts`)).json()
-    mds = json.map((e) => e.name)
+    tmp = await fetch(tries[1])
+    if (!tmp.ok)
+      tmp = await fetch(tries[2])
+    const json = await tmp.json()
+    mds = json.map((e) => e.download_url)
   }
   const latest = mds.filter((e) => e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
   log(latest.slice(0, cfg.posts_per_page))
@@ -158,12 +170,11 @@ async function parse_posts(markdowns) {
     const json = yml.load(front_matter)
     log({ json })
 
-    const title      = json?.title?.trim() ?? ''
-    const tags       = (json?.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
-    const categories = (json?.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
-    const date       = json?.date ?? new Date() // xxx reality?
-    const featured   = json?.featured?.trim() ?? '' // xxx reality?
-    const year = parseInt(date.getUTCFullYear(), 10) // chexxx UTC
+    const title      = json.title?.trim() ?? ''
+    const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
+    const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
+    const date       = json.date || json.created_at || new Date() // xxx reality?
+    const featured   = json.featured?.trim() ?? '' // xxx reality?
     log({ title, tags, date, featured })
     // author xxx
 
@@ -182,14 +193,14 @@ async function parse_posts(markdowns) {
       ? cfg.img_site
       : (featured.match(/\//) ? featured : `./img/${featured}`)
 
-    const taglinks = tags.map((e) => `<a href="./?tags/${e}">${e}</a>`).join(' ')
+    const taglinks = tags.map((e) => `<a href="./?tags/${e}">${e}</a>`).join(' ').trim()
 
     htm += `
       <div class="card card-body bg-light">
         <img src="${img}">
         <h2>${title}</h2>
         ${`${date}`.split(' ').slice(0, 4).join(' ')}<br>
-        Tags: ${taglinks}
+        ${taglinks ? 'Tags: ' : ''} ${taglinks}
       </div>`
   }
 
