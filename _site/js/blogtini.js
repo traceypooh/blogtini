@@ -1,3 +1,36 @@
+/*
+[layout]
+posts
+img
+
+pages
+css
+js
+
+
+- 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
+- xxx SEO!?
+- xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
+
+- fill out nav & sidebar
+- parse 10 most recent posts, fill out main page
+- parse front-matter from remaining posts for tag cloud, category list (fills-in later) (cache)
+  - consider range requests for ~just front-matter retrieval & parsing?
+  - GH pages serves over http2 at least
+
+- put into local storage (cache <= 24h): each post's: title, date, tags, cats, img
+  - ... but we only need to parse most recent 2-10 posts from each subscriber
+- top page: show most recent 10 posts' summaries
+  - page 2: posts 10..20, etc.
+- open followers' websites /posts dir to parse their 2-10 most recent .md...
+  - eg: https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
+
+  xxx posts w/o dates examples
+  - eg: https://api.github.com/repos/stefma/hugo-fresh/contents/exampleSite/content/blog
+        https://github.com/StefMa/hugo-fresh/tree/master/exampleSite/content/blog
+
+*/
+
 import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
@@ -9,8 +42,12 @@ const state = {
 const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
 const cfg = await (await fetch('config.json')).json()
 
-async function main() {
+/*
+return JSON.parse(localStorage.getItem('playset'))
+www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(item))
+*/
 
+async function main() {
   document.getElementById('spa').insertAdjacentHTML('beforebegin', `
     <div id="welcome" class="bg-light">
       <img id="blogtini" src="${blogtini}">
