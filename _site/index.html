@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>Tracey Jaquith - PoohBot Pictures</title>
+  <title>Tracey Jaquith - blogtini</title>
   <!--
   <link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -11,12 +11,12 @@
   <meta name='description' content=''>
   <meta name='keywords' content=''>
 
-  <meta name="twitter:title" content="Tracey Jaquith - PoohBot Pictures"/>
+  <meta name="twitter:title" content="Tracey Jaquith - blogtini"/>
   <meta name="twitter:card" content="summary"/>
   <meta name="twitter:description" content=""/>
   <meta name="twitter:site" content="@tracey_pooh"/>
 
-  <meta property="og:title" content="Tracey Jaquith - PoohBot Pictures">
+  <meta property="og:title" content="Tracey Jaquith - blogtini">
   <meta property="og:image" content="img/traceymonet.jpg">
   <meta property="og:description" content="">
   <meta property="og:type" content="website"/>
@@ -87,6 +87,17 @@ js
   margin-left: -5px;
   margin-right: -5px;
 }
+#blogtini {
+  float: right;
+}
+#welcome a {
+  color: initial;
+  text-decoration: none;
+}
+#welcome img {
+  margin: 10px;
+  max-width: 40vw;
+}
   </style>
 </head>
 
@@ -100,15 +111,22 @@ js
 import yml from 'https://esm.archive.org/js-yaml'
 
 const log = console.log.bind(console)
+const blogtini = '/img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
 }
 const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
-const config = await (await fetch('config.json')).json()
-const { img_site, user, repo, posts_per_page } = config
+const cfg = await (await fetch('config.json')).json()
 
 async function main() {
+
+  document.getElementById('spa').insertAdjacentHTML('beforebegin', `
+    <div id="welcome" class="bg-light">
+      <img id="blogtini" src="${blogtini}">
+      <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
+    </div>
+  `)
 
   let mds = [] // xxx cache
   const tmp = await fetch(`./posts`)
@@ -118,11 +136,11 @@ async function main() {
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
   } else {
     // use GitHub API to get a list of the posts
-    const json = await (await fetch(`https://api.github.com/repos/${user}/${repo}/contents/_site/posts`)).json()
+    const json = await (await fetch(`https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/_site/posts`)).json()
     mds = json.map((e) => e.name)
   }
   const latest = mds.filter((e) => e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
-  log(latest.slice(0, posts_per_page))
+  log(latest.slice(0, cfg.posts_per_page))
 
 
   let proms = []
@@ -134,7 +152,7 @@ async function main() {
     urls.push(url)
     proms.push(fetch(url))
 
-    if (((n + 1) % posts_per_page) && n < latest.length - 1)
+    if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
       continue // keep building up requests
 
     // now make the requests in parallel and wait for them all to answer.
@@ -178,7 +196,7 @@ async function parse_posts(markdowns) {
     if (tag.length && !(tags.includes(tag))) continue
 
     const img = featured === ''
-      ? img_site
+      ? cfg.img_site
       : (featured.match(/\//) ? featured : `./img/${featured}`)
 
     const taglinks = tags.map((e) => `<a href="./?tags/${e}">${e}</a>`).join(' ')
