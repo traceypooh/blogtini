@@ -199,15 +199,24 @@ async function parse_posts(markdowns) {
 function finish() {
   let htm
 
-  htm = ''
-  for (const tag of Object.keys(state.tags).sort())
-    htm += `<a href="?tags/${tag}">${tag}</a> `
-  document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
+  htm = '<ul>'
+  for (const cat of Object.keys(state.cats).sort())
+    htm += `<li><a href="?categories/${cat}">${cat}</a> ${state.cats[cat].length}</li>`
+  htm += '</ul>'
+  document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
 
   htm = ''
-  for (const cat of Object.keys(state.cats).sort())
-    htm += `<a href="?categories/${cat}">${cat}</a> `
-  document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
+  const rem_min = 1
+  const rem_max = 2.5
+  const counts = Object.values(state.tags).map((e) => e.length)
+  const cnt_min = Math.min(...counts)
+  const cnt_max = Math.max(...counts)
+
+  for (const tag of Object.keys(state.tags).sort()) {
+    const size = (state.tags[tag].length - cnt_min) / cnt_max * (rem_max - rem_min)
+    htm += `<a href="?tags/${tag}" style="font-size: ${rem_min + size}rem">${tag}</a> `
+  }
+  document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 }
 
 await main()
