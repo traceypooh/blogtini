@@ -201,20 +201,23 @@ function finish() {
 
   htm = '<ul>'
   for (const cat of Object.keys(state.cats).sort())
-    htm += `<li><a href="?categories/${cat}">${cat}</a> ${state.cats[cat].length}</li>`
+    htm += `<li><a href="?categories/${cat}">${cat.toLowerCase()}</a> ${state.cats[cat].length}</li>`
   htm += '</ul>'
   document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
 
   htm = ''
   const rem_min = 1
   const rem_max = 2.5
+
   const counts = Object.values(state.tags).map((e) => e.length)
   const cnt_min = Math.min(...counts)
-  const cnt_max = Math.max(...counts)
+  const cnt_max = 1 + Math.max(...counts)
 
   for (const tag of Object.keys(state.tags).sort()) {
-    const size = (state.tags[tag].length - cnt_min) / cnt_max * (rem_max - rem_min)
-    htm += `<a href="?tags/${tag}" style="font-size: ${rem_min + size}rem">${tag}</a> `
+    const count = state.tags[tag].length
+    const weight = (Math.log(count) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
+    const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
+    htm += `<a href="?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
   }
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 }
