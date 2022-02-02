@@ -11,6 +11,7 @@ js
 - 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
 - xxx SEO!?
 - xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
+- import xxx from 'https://esm.archive.org/blogtini'
 
 - fill out nav & sidebar
 - parse 10 most recent posts, fill out main page
@@ -22,12 +23,16 @@ js
   - ... but we only need to parse most recent 2-10 posts from each subscriber
 - top page: show most recent 10 posts' summaries
   - page 2: posts 10..20, etc.
-- open followers' websites /posts dir to parse their 2-10 most recent .md...
-  - eg: https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
+- open followers' websites /posts dir to parse their 2-10 most recent .md, eg:
+  - https://api.github.com/repos/ajaquith/securitymetrics/contents/source/_posts
+  - http://hunterleebrown.com/blog/feed
+  - https://hugo-fresh.vercel.app/blog/index.xml
+  - http://feeds.feedburner.com/securitymetrics-org
 
   xxx posts w/o dates examples
   - eg: https://api.github.com/repos/stefma/hugo-fresh/contents/exampleSite/content/blog
         https://github.com/StefMa/hugo-fresh/tree/master/exampleSite/content/blog
+        https://hugo-fresh.vercel.app/blog/index.xml   ** BUT! :) **
 
 */
 
@@ -105,8 +110,8 @@ async function parse_posts(markdowns) {
     const title      = json?.title?.trim() ?? ''
     const tags       = (json?.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
     const categories = (json?.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
-    const date       = json?.date ?? new Date()
-    const featured   = json?.featured?.trim() ?? ''
+    const date       = json?.date ?? new Date() // xxx reality?
+    const featured   = json?.featured?.trim() ?? '' // xxx reality?
     const year = parseInt(date.getUTCFullYear(), 10) // chexxx UTC
     log({ title, tags, date, featured })
     // author xxx
@@ -140,9 +145,7 @@ async function parse_posts(markdowns) {
   document.getElementById('spa').insertAdjacentHTML('beforeend', htm)
 }
 
-
 await main()
-log({ state })
 
 // document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
 // document.getElementsByTagName('meta')['description'].content = 'updated description xxx'
