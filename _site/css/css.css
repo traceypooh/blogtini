@@ -49,3 +49,6 @@ a {
 #nav-cats ul {
   padding-left: 1rem;
 }
+#main-row {
+  clear: right;
+}
