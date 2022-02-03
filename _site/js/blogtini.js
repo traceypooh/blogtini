@@ -88,16 +88,18 @@ js
 
 */
 
+/* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
 
+// eslint-disable-next-line no-console
 const log = console.log.bind(console)
 const blogtini = 'img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
 }
-const tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
-const cfg = await (await fetch('config.json')).json()
+const filter_tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
+let cfg
 
 /*
 return JSON.parse(localStorage.getItem('playset'))
@@ -105,6 +107,8 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 */
 
 async function main() {
+  cfg = await (await fetch('config.json')).json()
+
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
     <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
@@ -152,12 +156,14 @@ async function main() {
     const vals = await Promise.all(proms)
     const url2markdown = urls.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
 
+    // eslint-disable-next-line no-use-before-define
     await parse_posts(url2markdown)
 
     urls = []
     proms = []
   }
 
+  // eslint-disable-next-line no-use-before-define
   finish()
 }
 
@@ -174,8 +180,13 @@ async function parse_posts(markdowns) {
     const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
     const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
     const date       = json.date || json.created_at || new Date() // xxx reality?
-    const featured   = json.featured?.trim() ?? '' // xxx reality?
-    log({ title, tags, date, featured })
+
+    // hugo uses 'images' array
+    // eslint-disable-next-line no-nested-ternary
+    const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
+      ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
+      : '')
+    log({ date, featured })
     // author xxx
 
     for (const tag of tags) {
@@ -187,13 +198,14 @@ async function parse_posts(markdowns) {
       state.cats[cat].push(url)
     }
 
-    if (tag.length && !(tags.includes(tag))) continue
+    if (filter_tag.length && !(tags.includes(filter_tag))) continue
 
+    // eslint-disable-next-line no-nested-ternary
     const img = featured === ''
       ? cfg.img_site
       : (featured.match(/\//) ? featured : `./img/${featured}`)
 
-    const taglinks = tags.map((e) => `<a href="./?tags/${e}">${e}</a>`).join(' ').trim()
+    const taglinks = tags.map((e) => `<a href="?tags/${e}">${e}</a>`).join(' ').trim()
 
     htm += `
       <div class="card card-body bg-light">
@@ -233,7 +245,8 @@ function finish() {
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 }
 
-await main()
+// eslint-disable-next-line no-void
+void main()
 
 // document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
 // document.getElementsByTagName('meta')['description'].content = 'updated description xxx'
