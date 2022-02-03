@@ -99,6 +99,7 @@ const state = {
   cats: {},
 }
 const filter_tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
+const filter_cat = (decodeURIComponent(location.search).match(/^\?categories\/([^&]+)/) || ['', ''])[1]
 let cfg
 
 /*
@@ -198,7 +199,8 @@ async function parse_posts(markdowns) {
       state.cats[cat].push(url)
     }
 
-    if (filter_tag.length && !(tags.includes(filter_tag))) continue
+    if (filter_tag.length &&       !(tags.includes(filter_tag))) continue
+    if (filter_cat.length && !(categories.includes(filter_cat))) continue
 
     // eslint-disable-next-line no-nested-ternary
     const img = featured === ''
