@@ -176,7 +176,7 @@ async function main() {
     const json = await tmp.json()
     mds = json.map((e) => e.download_url)
   }
-  const latest = mds.filter((e) => e && e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
+  const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
   log(latest.slice(0, cfg.posts_per_page))
 
 
