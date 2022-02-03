@@ -1,9 +1,12 @@
 /*
 
+xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
+xxx pagination
 xxx body formatting: highlightjs
 xxx body formatting: bold, ital, lists, links...
 
 github.com cookie: dotcom_user
+https://jekyll.github.io/github-metadata/site.github/
 
 minimum:
 setup GH account
@@ -12,9 +15,9 @@ press [Y Fork] button in upper right
 (fork to your account)
 hit [⚙️ Settings] in upper right
 [🗂️ Pages] left menu
-enable xxx
+enable GH actions xxx
 
-xxx need to pipeline??
+[pipeline will start..]
 
 wait a few minutes, visit your site at:
 https://[YOUR-GITHUB-USERNAME].github.io/blogtini/?setup
@@ -66,6 +69,8 @@ js
 - xxx SEO!?
 - xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
 - import xxx from 'https://esm.archive.org/blogtini'
+- xxx can still use site w/o .md copied into webroot via api
+  https://api.github.com/repos/traceypooh/blogzero/contents look for type: dir and dir with 20\d\d...md
 
 - fill out nav & sidebar
 - parse 10 most recent posts, fill out main page
