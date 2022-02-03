@@ -136,6 +136,7 @@ async function main() {
   const tries = [
     './posts',
     `https://api.github.com/repos/${user}/${repo}/contents/_site/posts`, // blogtini
+    `https://api.github.com/repos/${user}/${repo}/contents/posts`, // minimal repo, top dir == web dir
     `https://api.github.com/repos/${user}/${repo}/contents/source/_posts`, // ajaquith hugo
   ]
 
@@ -150,6 +151,8 @@ async function main() {
     tmp = await fetch(tries[1])
     if (!tmp.ok)
       tmp = await fetch(tries[2])
+    if (!tmp.ok)
+      tmp = await fetch(tries[3])
     const json = await tmp.json()
     mds = json.map((e) => e.download_url)
   }
