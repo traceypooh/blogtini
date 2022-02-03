@@ -97,6 +97,7 @@ const blogtini = 'img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
+  prefix: './posts/',
 }
 const filter_tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
 const filter_cat = (decodeURIComponent(location.search).match(/^\?categories\/([^&]+)/) || ['', ''])[1]
@@ -142,12 +143,16 @@ async function main() {
 
 
   let proms = []
-  let urls = []
+  let files = []
   for (let n = 0; n < latest.length; n++) {
     const md = latest[n]
     const url = md.match(/\//) ? md : `./posts/${md}`
+    const mat = url.match(/^(.*)\/([^/]+)$/)
+    // eslint-disable-next-line prefer-destructuring
+    if (!n) state.prefix = mat[1]
+    const file = mat[2]
 
-    urls.push(url)
+    files.push(file)
     proms.push(fetch(url))
 
     if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
@@ -155,14 +160,15 @@ async function main() {
 
     // now make the requests in parallel and wait for them all to answer.
     const vals = await Promise.all(proms)
-    const url2markdown = urls.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
+    const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
 
     // eslint-disable-next-line no-use-before-define
-    await parse_posts(url2markdown)
+    await parse_posts(file2markdown)
 
-    urls = []
+    files = []
     proms = []
   }
+  log({ state })
 
   // eslint-disable-next-line no-use-before-define
   finish()
@@ -170,7 +176,7 @@ async function main() {
 
 async function parse_posts(markdowns) {
   let htm = ''
-  for (const [url, markdown] of Object.entries(markdowns)) {
+  for (const [file, markdown] of Object.entries(markdowns)) {
     const yaml = await markdown.text()
 
     const front_matter = yaml.split('\n---').shift()
@@ -192,11 +198,11 @@ async function parse_posts(markdowns) {
 
     for (const tag of tags) {
       state.tags[tag] = state.tags[tag] || []
-      state.tags[tag].push(url)
+      state.tags[tag].push(file)
     }
     for (const cat of categories) {
       state.cats[cat] = state.cats[cat] || []
-      state.cats[cat].push(url)
+      state.cats[cat].push(file)
     }
 
     if (filter_tag.length &&       !(tags.includes(filter_tag))) continue
@@ -211,8 +217,10 @@ async function parse_posts(markdowns) {
 
     htm += `
       <div class="card card-body bg-light">
-        <img src="${img}">
-        <h2>${title}</h2>
+        <a href="?${file.replace(/\.md$/, '')}">
+          <img src="${img}">
+          <h2>${title}</h2>
+        </a>
         ${`${date}`.split(' ').slice(0, 4).join(' ')}<br>
         ${taglinks ? 'Tags: ' : ''} ${taglinks}
       </div>`
