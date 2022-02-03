@@ -1,5 +1,19 @@
 /*
 
+goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
+
+tech terminal: copy index.html, create single 20xx-...md file, open in safari
+tech terminal: copy index.html, write post into README.md file, open in safari
+
+could host entire thing in codepen, etc.?!
+
+xxx go to blogtini.com -> enter in your username and repo and show them how it looks!
+
+nav search box that prefills google search site:xxx AND ..
+
+soft 404
+
+
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
 xxx pagination
 xxx body formatting: highlightjs
@@ -129,13 +143,45 @@ return JSON.parse(localStorage.getItem('playset'))
 www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(item))
 */
 
-async function main() {
-  let tmp;
-  // default expect github pages hostname - user can override via their own `config.json` file
-  [, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
+async function fetcher(url)  {
+  try {
+    const ret = await fetch(url)
+    const tmp = (url.match(/\.txt$/i) ? await ret.text() : await ret.json())
+    return tmp
 
-  tmp = await fetch('config.json')
-  if (tmp.ok)
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+  return false
+}
+
+async function main() {
+  let tmp
+
+  document.getElementsByTagName('body')[0].innerHTML = `
+  <div class="container">
+    <div id="welcome" class="bg-light">
+    </div>
+    <div id="main-row" class="row">
+      <div class="col-md-10 order-md-2">
+        <div id="posts"></div>
+        <div id="spa"></div>
+      </div>
+      <div class="nav-left col-md-2 order-md-1">
+        <h5>Categories</h5>
+        <div id="nav-cats">
+        </div>
+        <h5>Tags</h5>
+        <div id="nav-tags">
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // default expect github pages hostname - user can override via their own `config.json` file
+  [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
+
+  tmp = await fetcher('config.json')
+  if (tmp)
     cfg = { ...cfg, ...await tmp.json() }
 
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
@@ -155,26 +201,29 @@ async function main() {
   // const user = 'ajaquith', repo = 'securitymetrics'
   const tries = [
     './posts',
+    './list.txt',  // find * -type f >| list.txt
     `https://api.github.com/repos/${user}/${repo}/contents/_site/posts`, // blogtini
     `https://api.github.com/repos/${user}/${repo}/contents/source/_posts`, // ajaquith hugo
     `https://api.github.com/repos/${user}/${repo}/contents`, // minimal repo, top dir == web dir
   ]
 
   let mds = [] // xxx cache
-  tmp = await fetch(tries[0])
-  if (tmp.ok) {
+  tmp = await fetcher(tries[0])
+  if (tmp) {
     // local dev or something that replies with a directory listing (yay)
     const dir = await tmp.text()
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
   } else {
     // use GitHub API to get a list of the posts
-    tmp = await fetch(tries[1])
-    if (!tmp.ok)
-      tmp = await fetch(tries[2])
-    if (!tmp.ok)
-      tmp = await fetch(tries[3])
-    const json = await tmp.json()
-    mds = json.map((e) => e.download_url)
+    tmp = await fetcher(tries[1])
+    if (!tmp)
+      tmp = await fetcher(tries[2])
+    if (!tmp)
+      tmp = await fetcher(tries[3])
+    if (typeof tmp === 'string')
+      mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
+    else
+      mds = tmp.map((e) => e.download_url)
   }
   const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
   log(latest.slice(0, cfg.posts_per_page))
