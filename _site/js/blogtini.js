@@ -18,6 +18,7 @@ xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse a
 xxx pagination
 xxx body formatting: highlightjs
 xxx body formatting: bold, ital, lists, links...
+xxx --- hr, table headers disambiguate for multi-post single file...
 
 github.com cookie: dotcom_user
 https://jekyll.github.io/github-metadata/site.github/
@@ -219,24 +220,14 @@ async function main() {
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
     state.file_prefix = './posts'
   } else {
-    // try local dev alt option, else try GitHub API url(s) to get a list of the posts
-
-    tmp = await fetcher(tries[1], true)
-    if (!tmp) {
-      tmp = await fetcher(tries[2])
-      if (tmp) {
-        // eslint-disable-next-line prefer-destructuring
-        state.file_prefix = tries[2]
-      } else {
-        tmp = await fetcher(tries[3])
-        if (tmp)
-          // eslint-disable-next-line prefer-destructuring
-          state.file_prefix = tries[3]
-        else
-          tmp = await fetcher(tries[4])
-      }
-    }
-    state.file_prefix = state.file_prefix.replace(RegExp(`^${API}/`), '')
+    tmp = (
+      // try local dev alt option
+      await fetcher(tries[1], true) ||
+      // try GitHub API urls to find a dir of posts
+      await fetcher(tries[2]) ||
+      await fetcher(tries[3]) ||
+      await fetcher(tries[4])
+    )
 
     if (typeof tmp === 'string')
       mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
