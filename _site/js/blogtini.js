@@ -146,6 +146,9 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 async function fetcher(url, text = false)  {
   try {
     const ret = await fetch(url)
+    // safari file:// doesnt set .ok properly...
+    if (!location.protocol.startsWith('file') && !ret.ok)
+      return false
     const tmp = (text ? await ret.text() : await ret.json())
     return tmp
 
