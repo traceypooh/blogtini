@@ -121,7 +121,7 @@ const blogtini = 'https://traceypooh.github.io/blogzero/img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
-  prefix: './posts/',
+  file_prefix: '',
 }
 const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)       || ['', ''])[1]
@@ -143,10 +143,10 @@ return JSON.parse(localStorage.getItem('playset'))
 www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(item))
 */
 
-async function fetcher(url)  {
+async function fetcher(url, text = false)  {
   try {
     const ret = await fetch(url)
-    const tmp = (url.match(/\.txt$/i) ? await ret.text() : await ret.json())
+    const tmp = (text ? await ret.text() : await ret.json())
     return tmp
 
     /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
@@ -182,7 +182,7 @@ async function main() {
 
   tmp = await fetcher('config.json')
   if (tmp)
-    cfg = { ...cfg, ...await tmp.json() }
+    cfg = { ...cfg, ...tmp }
 
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
@@ -199,32 +199,49 @@ async function main() {
 
   const { user, repo } = cfg
   // const user = 'ajaquith', repo = 'securitymetrics'
+  const API = `https://api.github.com/repos/${user}/${repo}/contents`
   const tries = [
-    './posts',
-    './list.txt',  // find * -type f >| list.txt
-    `https://api.github.com/repos/${user}/${repo}/contents/_site/posts`, // blogtini
-    `https://api.github.com/repos/${user}/${repo}/contents/source/_posts`, // ajaquith hugo
-    `https://api.github.com/repos/${user}/${repo}/contents`, // minimal repo, top dir == web dir
+    'posts/',    // option A for local dev
+    'list.txt', // option B for local dev:  find * -type f >| list.txt
+    `${API}/_site/posts/`, // blogtini
+    `${API}/source/_posts/`, // ajaquith hugo
+    `${API}/`, // minimal repo, top dir == web dir
   ]
 
   let mds = [] // xxx cache
-  tmp = await fetcher(tries[0])
+  tmp = await fetcher(tries[0], true)
   if (tmp) {
     // local dev or something that replies with a directory listing (yay)
-    const dir = await tmp.text()
+    const dir = tmp
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
+    state.file_prefix = './posts'
   } else {
-    // use GitHub API to get a list of the posts
-    tmp = await fetcher(tries[1])
-    if (!tmp)
+    // try local dev alt option, else try GitHub API url(s) to get a list of the posts
+
+    tmp = await fetcher(tries[1], true)
+    if (!tmp) {
       tmp = await fetcher(tries[2])
-    if (!tmp)
-      tmp = await fetcher(tries[3])
+      if (tmp) {
+        // eslint-disable-next-line prefer-destructuring
+        state.file_prefix = tries[2]
+      } else {
+        tmp = await fetcher(tries[3])
+        if (tmp)
+          // eslint-disable-next-line prefer-destructuring
+          state.file_prefix = tries[3]
+        else
+          tmp = await fetcher(tries[4])
+      }
+    }
+    state.file_prefix = state.file_prefix.replace(RegExp(`^${API}/`), '')
+
     if (typeof tmp === 'string')
       mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
     else
       mds = tmp.map((e) => e.download_url)
   }
+  log({ tmp, cfg, state })
+
   const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
   log(latest.slice(0, cfg.posts_per_page))
 
@@ -233,10 +250,8 @@ async function main() {
   let files = []
   for (let n = 0; n < latest.length; n++) {
     const md = latest[n]
-    const url = md.match(/\//) ? md : `./posts/${md}`
-    const mat = url.match(/^(.*)\/([^/]+)$/)
-    // eslint-disable-next-line prefer-destructuring
-    if (!n) state.prefix = mat[1]
+    const url = `${state.file_prefix}${md}`
+    const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
     const file = mat[2]
 
     files.push(file)
