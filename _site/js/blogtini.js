@@ -99,8 +99,10 @@ const state = {
   cats: {},
   prefix: './posts/',
 }
-const filter_tag = (decodeURIComponent(location.search).match(/^\?tags\/([^&]+)/) || ['', ''])[1]
-const filter_cat = (decodeURIComponent(location.search).match(/^\?categories\/([^&]+)/) || ['', ''])[1]
+const search = decodeURIComponent(location.search)
+const filter_tag  = (search.match(/^\?tags\/([^&]+)/)       || ['', ''])[1]
+const filter_cat  = (search.match(/^\?categories\/([^&]+)/) || ['', ''])[1]
+const filter_post = (search.match(/^\?(20\d\d[^&]+)/)       || ['', ''])[1]
 let cfg
 
 /*
@@ -174,6 +176,7 @@ async function main() {
   finish()
 }
 
+
 async function parse_posts(markdowns) {
   let htm = ''
   for (const [file, markdown] of Object.entries(markdowns)) {
@@ -205,8 +208,9 @@ async function parse_posts(markdowns) {
       state.cats[cat].push(file)
     }
 
-    if (filter_tag.length &&       !(tags.includes(filter_tag))) continue
-    if (filter_cat.length && !(categories.includes(filter_cat))) continue
+    if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
+    if (filter_cat.length  && !(categories.includes(filter_cat))) continue
+    if (filter_post && file.replace(/\.md$/, '') !== filter_post) continue
 
     // eslint-disable-next-line no-nested-ternary
     const img = featured === ''
@@ -215,19 +219,43 @@ async function parse_posts(markdowns) {
 
     const taglinks = tags.map((e) => `<a href="?tags/${e}">${e}</a>`).join(' ').trim()
 
-    htm += `
-      <div class="card card-body bg-light">
-        <a href="?${file.replace(/\.md$/, '')}">
-          <img src="${img}">
-          <h2>${title}</h2>
-        </a>
-        ${`${date}`.split(' ').slice(0, 4).join(' ')}<br>
-        ${taglinks ? 'Tags: ' : ''} ${taglinks}
-      </div>`
+    const date_short = date.toString().split(' ').slice(0, 4).join(' ')
+    htm += filter_post
+      // eslint-disable-next-line no-use-before-define
+      ? post_full(file, title, img, date_short, taglinks)
+      // eslint-disable-next-line no-use-before-define
+      : post_card(file, title, img, date_short, taglinks)
   }
 
-  document.getElementById('spa').insertAdjacentHTML('beforeend', htm)
+  document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
 }
+
+
+function post_full(file, title, img, date, taglinks) {
+  return `
+    <h3 class="d-none d-md-block float-md-end">${date}</h3>
+    <h1>${title}</h1>
+    <h3 class="d-md-none" style="text-align:center">${date}</h3>
+    <div class="float-none" style="clear:both">
+      <img src="${img}" class="img-fluid rounded mx-auto d-block">
+    </div>
+    <center>xxx body coming soon</center>
+  `
+}
+
+
+function post_card(file, title, img, date, taglinks) {
+  return `
+    <div class="card card-body bg-light">
+      <a href="?${file.replace(/\.md$/, '')}">
+        <img src="${img}">
+        <h2>${title}</h2>
+      </a>
+      ${date}<br>
+      ${taglinks ? 'Tags: ' : ''} ${taglinks}
+    </div>`
+}
+
 
 function finish() {
   let htm
