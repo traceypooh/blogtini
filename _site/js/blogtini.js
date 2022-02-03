@@ -1,5 +1,8 @@
 /*
 
+xxx body formatting: highlightjs
+xxx body formatting: bold, ital, lists, links...
+
 github.com cookie: dotcom_user
 
 minimum:
@@ -90,6 +93,8 @@ js
 
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
+import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
+
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
@@ -117,6 +122,9 @@ async function main() {
     <img id="blogtini" src="${blogtini}">
     <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
   `)
+
+  if (!filter_post)
+    document.getElementById('main-row').classList.add('g-0')
 
   const { user, repo } = cfg
   // const user = 'ajaquith', repo = 'securitymetrics'
@@ -182,7 +190,10 @@ async function parse_posts(markdowns) {
   for (const [file, markdown] of Object.entries(markdowns)) {
     const yaml = await markdown.text()
 
-    const front_matter = yaml.split('\n---').shift()
+    const parts = yaml.split('\n---')
+
+    const front_matter = parts.shift()
+    const body = parts.join('\n---').replace(/\n\n/g, '<br><br>').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     const json = yml.load(front_matter)
     log({ json })
 
@@ -222,16 +233,16 @@ async function parse_posts(markdowns) {
     const date_short = date.toString().split(' ').slice(0, 4).join(' ')
     htm += filter_post
       // eslint-disable-next-line no-use-before-define
-      ? post_full(file, title, img, date_short, taglinks)
+      ? post_full(title, img, date_short, taglinks, body)
       // eslint-disable-next-line no-use-before-define
-      : post_card(file, title, img, date_short, taglinks)
+      : post_card(title, img, date_short, taglinks, body, file)
   }
 
   document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
 }
 
 
-function post_full(file, title, img, date, taglinks) {
+function post_full(title, img, date, taglinks, body) {
   return `
     <h3 class="d-none d-md-block float-md-end">${date}</h3>
     <h1>${title}</h1>
@@ -239,20 +250,30 @@ function post_full(file, title, img, date, taglinks) {
     <div class="float-none" style="clear:both">
       <img src="${img}" class="img-fluid rounded mx-auto d-block">
     </div>
-    <center>xxx body coming soon</center>
+    <div>
+      ${body}
+    </div>
+    <div>
+      ${taglinks ? 'Tagged: ' : ''} ${taglinks}
+    </div>
   `
 }
 
 
-function post_card(file, title, img, date, taglinks) {
+function post_card(title, img, date, taglinks, body, file) {
   return `
     <div class="card card-body bg-light">
       <a href="?${file.replace(/\.md$/, '')}">
         <img src="${img}">
         <h2>${title}</h2>
       </a>
-      ${date}<br>
-      ${taglinks ? 'Tags: ' : ''} ${taglinks}
+      ${date}
+      <div>
+        ${friendly_truncate(body, 200)}
+      </div>
+      ${taglinks ? '<div>Tags:' : ''}
+        ${taglinks}
+      ${taglinks ? '</div>' : ''}
     </div>`
 }
 
