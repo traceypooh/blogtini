@@ -103,7 +103,7 @@ import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.j
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
-const blogtini = 'img/blogtini.png' // xxx
+const blogtini = 'https://traceypooh.github.io/blogzero/img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
@@ -113,7 +113,13 @@ const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)       || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/) || ['', ''])[1]
 const filter_post = (search.match(/^\?(20\d\d[^&]+)/)       || ['', ''])[1]
-let cfg
+
+// defaults
+let cfg = {
+  posts_per_page: 10,
+  title: 'welcome to my blog',
+}
+
 
 /*
 return JSON.parse(localStorage.getItem('playset'))
@@ -121,11 +127,22 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 */
 
 async function main() {
-  cfg = await (await fetch('config.json')).json()
+  let tmp;
+  // default expect github pages hostname - user can override via their own `config.json` file
+  [, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
+
+  tmp = await fetch('config.json')
+  if (tmp.ok)
+    cfg = await tmp.json()
 
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
-    <h1><a href="?"><img src="${cfg.img_site}">${cfg.title}</a></h1>
+    <h1>
+      <a href="?">
+        ${cfg.img_site ? `<img src="${cfg.img_site}">` : ''}
+        ${cfg.title}
+      </a>
+    </h1>
   `)
 
   if (!filter_post)
@@ -136,15 +153,15 @@ async function main() {
   const tries = [
     './posts',
     `https://api.github.com/repos/${user}/${repo}/contents/_site/posts`, // blogtini
-    `https://api.github.com/repos/${user}/${repo}/contents/posts`, // minimal repo, top dir == web dir
     `https://api.github.com/repos/${user}/${repo}/contents/source/_posts`, // ajaquith hugo
+    `https://api.github.com/repos/${user}/${repo}/contents`, // minimal repo, top dir == web dir
   ]
 
   let mds = [] // xxx cache
-  let tmp = await fetch(tries[0])
+  tmp = await fetch(tries[0])
   if (tmp.ok) {
     // local dev or something that replies with a directory listing (yay)
-    const dir = await (tmp).text()
+    const dir = await tmp.text()
     mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
   } else {
     // use GitHub API to get a list of the posts
