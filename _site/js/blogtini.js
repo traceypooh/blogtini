@@ -116,8 +116,11 @@ const filter_post = (search.match(/^\?(20\d\d[^&]+)/)       || ['', ''])[1]
 
 // defaults
 let cfg = {
-  posts_per_page: 10,
+  user: '',
+  repo: '',
   title: 'welcome to my blog',
+  img_site: '',
+  posts_per_page: 10,
 }
 
 
@@ -133,7 +136,7 @@ async function main() {
 
   tmp = await fetch('config.json')
   if (tmp.ok)
-    cfg = await tmp.json()
+    cfg = { ...cfg, ...await tmp.json() }
 
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
