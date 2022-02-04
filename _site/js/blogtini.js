@@ -126,11 +126,14 @@ js
 
 
 jekyll (GitHub Pages) plugins:
+  https://pages.github.com/versions/
   https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll#plugins
 
    could be useful vv, but not in accept list ^^ :(
   https://github.com/jekyll/jekyll-sitemap
   https://github.com/jekyll/jekyll-feed
+
+  https://jekyll.github.io/github-metadata/site.github/
 */
 
 /* eslint-disable no-continue */
