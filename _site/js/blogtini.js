@@ -301,7 +301,9 @@ async function parse_posts(markdowns) {
 
     while (parts.length) {
       const front_matter = parts.shift()
-      const body = parts.shift().replace(/\n\n/g, '<br><br>').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      const body_raw = parts.shift()
+      const body = body_raw.replace(/\n\n/g, '<br><br>')
+      const preview = body_raw.replace(/</g, '&lt;')
       const json = yml.load(front_matter)
       log({ json })
 
@@ -352,7 +354,7 @@ async function parse_posts(markdowns) {
         // eslint-disable-next-line no-use-before-define
         ? post_full(title, img, date_short, taglinks, body)
         // eslint-disable-next-line no-use-before-define
-        : post_card(title, img, date_short, taglinks, body, url)
+        : post_card(title, img, date_short, taglinks, preview, url)
     }
   }
 
