@@ -375,14 +375,15 @@ async function parse_posts(markdowns) {
         ? cfg.img_site
         : (featured.match(/\//) ? featured : `./img/${featured}`)
 
-      const taglinks = tags.map((e) => `<a href="?tags/${e}">${e}</a>`).join(' ').trim()
+      const taglinks =       tags.map((e) => `<a href="?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
+      const catlinks = categories.map((e) => `<a href="?categories/${e}">${e}</a>`).join(' · ').trim()
 
       const date_short = date.toString().split(' ').slice(0, 4).join(' ')
       htm += filter_post
         // eslint-disable-next-line no-use-before-define
-        ? post_full(title, img, date_short, taglinks, body)
+        ? post_full(title, img, date_short, taglinks, catlinks, body)
         // eslint-disable-next-line no-use-before-define
-        : post_card(title, img, date_short, taglinks, preview, url)
+        : post_card(title, img, date_short, taglinks, catlinks, preview, url)
     }
   }
 
@@ -390,7 +391,7 @@ async function parse_posts(markdowns) {
 }
 
 
-function post_full(title, img, date, taglinks, body) {
+function post_full(title, img, date, taglinks, catlinks, body) {
   return `
     <h3 class="d-none d-md-block float-md-end">${date}</h3>
     <h1>${title}</h1>
@@ -401,14 +402,16 @@ function post_full(title, img, date, taglinks, body) {
     <div>
       ${body}
     </div>
+    <hr>
     <div>
-      ${taglinks ? 'Tagged: ' : ''} ${taglinks}
+      ${catlinks ? '📁 Categories: ' : ''} ${catlinks} ${catlinks ? '<br>' : ''}
+      ${taglinks ? '🏷️ Tags: ' : ''} ${taglinks}
     </div>
   `
 }
 
 
-function post_card(title, img, date, taglinks, body, url) {
+function post_card(title, img, date, taglinks, catlinks, body, url) {
   return `
     <div class="card card-body bg-light">
       <a href="?${url}">
@@ -419,9 +422,10 @@ function post_card(title, img, date, taglinks, body, url) {
       <div>
         ${friendly_truncate(body, 200)}
       </div>
-      ${taglinks ? '<div>Tags:' : ''}
-        ${taglinks}
-      ${taglinks ? '</div>' : ''}
+      ${catlinks ? '📁 ' : ''}
+      ${catlinks}
+      ${taglinks ? '🏷️ ' : ''}
+      ${taglinks}
     </div>`
 }
 
