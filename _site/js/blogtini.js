@@ -12,6 +12,8 @@ xxx go to blogtini.com -> enter in your username and repo and show them how it l
 nav search box that prefills google search site:xxx AND ..
 
 soft 404
+https://developers.google.com/search/docs/advanced/javascript/javascript-seo-basics#avoid-soft-404s
+Use JS redirect to a URL that server responds w/ 404 HTTP status (for example /not-found).
 
 
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
@@ -303,9 +305,15 @@ async function parse_posts(markdowns) {
 
     const multiples = (file === 'README.md' && !(chunks.length % 2) && // xxx handle \n--- corner cases (hr, tables..)
         !(chunks.filter((_e, idx) => !(idx % 2)).filter((e) => !e.match(/\ntitle:/m)).length))
-    if (multiples)
-      log('looks like single file with', chunks.length / 2, 'posts')
     const parts = multiples ? chunks : [chunks.shift(), chunks.join('\n---')]
+    if (multiples) {
+      if (parts.length > 2 && parts[1].trim() === '' && parts[0].match(/^---\ntitle:[^\n]+$/)) {
+        // prolly doing local dev -- pull dummy front-matter that GH Pages deploy's jekyll removes..
+        parts.shift()
+        parts.shift()
+      }
+      log('looks like single file with', parts.length / 2, 'posts')
+    }
 
     while (parts.length) {
       const front_matter = parts.shift()
