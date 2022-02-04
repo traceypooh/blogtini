@@ -294,7 +294,7 @@ async function parse_posts(markdowns) {
     const chunks = yaml.split('\n---')
 
     const multiples = (file === 'README.md' && !(chunks.length % 2) && // xxx handle \n--- corner cases (hr, tables..)
-        !(chunks.filter((e, idx) => !(idx % 2)).filter((e) => !e.match(/\ntitle:/m)).length))
+        !(chunks.filter((_e, idx) => !(idx % 2)).filter((e) => !e.match(/\ntitle:/m)).length))
     if (multiples)
       log('looks like single file with', chunks.length / 2, 'posts')
     const parts = multiples ? chunks : [chunks.shift(), chunks.join('\n---')]
@@ -327,9 +327,18 @@ async function parse_posts(markdowns) {
         state.cats[cat].push(file)
       }
 
+      const ymd = [
+        date.getUTCFullYear(),
+        `${1 + date.getUTCMonth()}`.padStart(2, '0'),
+        `${date.getUTCDate()}`.padStart(2, '0'),
+      ].join('-')
+
+      // eslint-disable-next-line no-use-before-define
+      const url = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
+
       if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
       if (filter_cat.length  && !(categories.includes(filter_cat))) continue
-      if (filter_post && file.replace(/\.md$/, '') !== filter_post) continue
+      if (filter_post && url !== filter_post) continue
 
       // eslint-disable-next-line no-nested-ternary
       const img = featured === ''
@@ -343,7 +352,7 @@ async function parse_posts(markdowns) {
         // eslint-disable-next-line no-use-before-define
         ? post_full(title, img, date_short, taglinks, body)
         // eslint-disable-next-line no-use-before-define
-        : post_card(title, img, date_short, taglinks, body, file)
+        : post_card(title, img, date_short, taglinks, body, url)
     }
   }
 
@@ -369,10 +378,10 @@ function post_full(title, img, date, taglinks, body) {
 }
 
 
-function post_card(title, img, date, taglinks, body, file) {
+function post_card(title, img, date, taglinks, body, url) {
   return `
     <div class="card card-body bg-light">
-      <a href="?${file.replace(/\.md$/, '')}">
+      <a href="?${url}">
         <img src="${img}">
         <h2>${title}</h2>
       </a>
@@ -384,6 +393,16 @@ function post_card(title, img, date, taglinks, body, file) {
         ${taglinks}
       ${taglinks ? '</div>' : ''}
     </div>`
+}
+
+
+function slugify(str) {
+  return str.toLowerCase()
+    .replace(/'s/g, 's')
+    .replace(/[^a-z0-9-]/g, '-') // xxx i18l
+    .replace(/--+/g, '-')
+    .replace(/^-/, '')
+    .replace(/-$/, '')
 }
 
 
