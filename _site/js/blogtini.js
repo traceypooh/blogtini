@@ -19,6 +19,7 @@ xxx pagination
 xxx body formatting: highlightjs
 xxx body formatting: bold, ital, lists, links...
 xxx --- hr, table headers disambiguate for multi-post single file...
+xxx JS/CSS versioning..
 
 github.com cookie: dotcom_user
 https://jekyll.github.io/github-metadata/site.github/
@@ -144,12 +145,15 @@ return JSON.parse(localStorage.getItem('playset'))
 www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(item))
 */
 
-async function fetcher(url, text = false)  {
+async function fetcher(url)  {
+  const text = url.match(/\.(txt|md)$/)
   try {
     const ret = await fetch(url)
-    // safari file:// doesnt set .ok properly...
-    if (!location.protocol.startsWith('file') && !ret.ok)
-      return false
+    if (!ret.ok) {
+      // safari file:// doesnt set .ok properly...
+      if (!location.protocol.startsWith('file') || url.startsWith('http'))
+        return false
+    }
     const tmp = (text ? await ret.text() : await ret.json())
     return tmp
 
@@ -205,15 +209,17 @@ async function main() {
   // const user = 'ajaquith', repo = 'securitymetrics'
   const API = `https://api.github.com/repos/${user}/${repo}/contents`
   const tries = [
-    'posts/',    // option A for local dev
+    'posts/',   // option A for local dev
     'list.txt', // option B for local dev:  find * -type f >| list.txt
     `${API}/_site/posts/`, // blogtini
     `${API}/source/_posts/`, // ajaquith hugo
     `${API}/`, // minimal repo, top dir == web dir
+    'README.md', // final attempt - 1+ post inside the main README.md
   ]
 
+  let filter_out = 'README.md'
   let mds = [] // xxx cache
-  tmp = await fetcher(tries[0], true)
+  tmp = await fetcher(tries.shift())
   if (tmp) {
     // local dev or something that replies with a directory listing (yay)
     const dir = tmp
@@ -222,21 +228,30 @@ async function main() {
   } else {
     tmp = (
       // try local dev alt option
-      await fetcher(tries[1], true) ||
+      await fetcher(tries.shift()) ||
       // try GitHub API urls to find a dir of posts
-      await fetcher(tries[2]) ||
-      await fetcher(tries[3]) ||
-      await fetcher(tries[4])
+      await fetcher(tries.shift()) ||
+      await fetcher(tries.shift()) ||
+      await fetcher(tries.shift()) ||
+      // final README.md attempt
+      await fetcher(tries.shift())
     )
 
-    if (typeof tmp === 'string')
-      mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
-    else
+    if (typeof tmp === 'string') {
+      if (!tries.length) {
+        mds = ['README.md'] // we'll parse it twice for now...
+        filter_out = 'nothing-should-match-this'
+      } else {
+        mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
+      }
+    } else {
+      // parse GitHub API listing
       mds = tmp.map((e) => e.download_url)
+    }
   }
   log({ tmp, cfg, state })
 
-  const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== 'README.md' && !e.match(/\/README.md$/)).sort().reverse()
+  const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== filter_out && !e.match(RegExp(`/${filter_out}$`))).sort().reverse()
   log(latest.slice(0, cfg.posts_per_page))
 
 
