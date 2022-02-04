@@ -2,8 +2,20 @@
 
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
 
-tech terminal: copy index.html, create single 20xx-...md file, open in safari
-tech terminal: copy index.html, write post into README.md file, open in safari
+tech terminal try-out:
+  wget https://raw.githubusercontent.com/traceypooh/test1/main/index.html
+  wget https://raw.githubusercontent.com/traceypooh/test1/main/README.md
+  [edit 1st real post in README.md]
+  [open in Safari; Developer Menu; [check] Disable Local File Restrictions]
+  open index.html
+  [when you are done]
+  [Developer Menu; [uncheck] Disable Local File Restrictions]
+
+
+existing GH repo try-out: /?preview=github/repo-name    (we'll use GH API to find .md files)
+existing WP try-out: /?preview=URL/feed (atom or RSS)
+
+huge number of posts solve: find . -type f -name '*.md' >| markdowns.txt
 
 could host entire thing in codepen, etc.?!
 
@@ -218,8 +230,8 @@ async function main() {
   // const user = 'ajaquith', repo = 'securitymetrics'
   const API = `https://api.github.com/repos/${user}/${repo}/contents`
   const tries = [
-    'posts/',   // option A for local dev
-    'list.txt', // option B for local dev:  find * -type f >| list.txt
+    'posts/',        // option A for local dev (with mini-webserver that responds w/ dir listings)
+    'markdowns.txt', // option B for local dev or large repos: find . -type f -name '*.md' >| markdowns.txt
     `${API}/_site/posts/`, // blogtini
     `${API}/source/_posts/`, // ajaquith hugo
     'README.md', // try 1+ post inside the main README.md
@@ -400,7 +412,7 @@ function post_card(title, img, date, taglinks, body, url) {
   return `
     <div class="card card-body bg-light">
       <a href="?${url}">
-        <img src="${img}">
+        ${img ? `<img src="${img}">` : ''}
         <h2>${title}</h2>
       </a>
       ${date}
