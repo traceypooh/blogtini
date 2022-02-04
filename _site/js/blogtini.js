@@ -110,6 +110,13 @@ js
         https://github.com/StefMa/hugo-fresh/tree/master/exampleSite/content/blog
         https://hugo-fresh.vercel.app/blog/index.xml   ** BUT! :) **
 
+
+jekyll (GitHub Pages) plugins:
+  https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll#plugins
+
+   could be useful vv, but not in accept list ^^ :(
+  https://github.com/jekyll/jekyll-sitemap
+  https://github.com/jekyll/jekyll-feed
 */
 
 /* eslint-disable no-continue */
@@ -213,8 +220,8 @@ async function main() {
     'list.txt', // option B for local dev:  find * -type f >| list.txt
     `${API}/_site/posts/`, // blogtini
     `${API}/source/_posts/`, // ajaquith hugo
-    `${API}/`, // minimal repo, top dir == web dir
-    'README.md', // final attempt - 1+ post inside the main README.md
+    'README.md', // try 1+ post inside the main README.md
+    `${API}/`, // final attempt, minimal repo, top dir == web dir
   ]
 
   let filter_out = 'README.md'
@@ -232,13 +239,14 @@ async function main() {
       // try GitHub API urls to find a dir of posts
       await fetcher(tries.shift()) ||
       await fetcher(tries.shift()) ||
+      // 2nd-to-last README.md attempt
       await fetcher(tries.shift()) ||
-      // final README.md attempt
+      // final GitHub API last try
       await fetcher(tries.shift())
     )
 
     if (typeof tmp === 'string') {
-      if (!tries.length) {
+      if (tries.length === 1) { // xxx way too fragile traytray...
         mds = ['README.md'] // we'll parse it twice for now...
         filter_out = 'nothing-should-match-this'
       } else {
