@@ -291,52 +291,60 @@ async function parse_posts(markdowns) {
   for (const [file, markdown] of Object.entries(markdowns)) {
     const yaml = await markdown.text()
 
-    const parts = yaml.split('\n---')
+    const chunks = yaml.split('\n---')
 
-    const front_matter = parts.shift()
-    const body = parts.join('\n---').replace(/\n\n/g, '<br><br>').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    const json = yml.load(front_matter)
-    log({ json })
+    const multiples = (file === 'README.md' && !(chunks.length % 2) && // xxx handle \n--- corner cases (hr, tables..)
+        !(chunks.filter((e, idx) => !(idx % 2)).filter((e) => !e.match(/\ntitle:/m)).length))
+    if (multiples)
+      log('looks like single file with', chunks.length / 2, 'posts')
+    const parts = multiples ? chunks : [chunks.shift(), chunks.join('\n---')]
 
-    const title      = json.title?.trim() ?? ''
-    const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
-    const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
-    const date       = json.date || json.created_at || new Date() // xxx reality?
+    while (parts.length) {
+      const front_matter = parts.shift()
+      const body = parts.shift().replace(/\n\n/g, '<br><br>').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      const json = yml.load(front_matter)
+      log({ json })
 
-    // hugo uses 'images' array
-    // eslint-disable-next-line no-nested-ternary
-    const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
-      ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
-      : '')
-    log({ date, featured })
-    // author xxx
+      const title      = json.title?.trim() ?? ''
+      const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
+      const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
+      const date       = json.date || json.created_at || new Date() // xxx reality?
 
-    for (const tag of tags) {
-      state.tags[tag] = state.tags[tag] || []
-      state.tags[tag].push(file)
+      // hugo uses 'images' array
+      // eslint-disable-next-line no-nested-ternary
+      const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
+        ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
+        : '')
+      log({ date, featured })
+      // author xxx
+
+      for (const tag of tags) {
+        state.tags[tag] = state.tags[tag] || []
+        state.tags[tag].push(file)
+      }
+      for (const cat of categories) {
+        state.cats[cat] = state.cats[cat] || []
+        state.cats[cat].push(file)
+      }
+
+      if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
+      if (filter_cat.length  && !(categories.includes(filter_cat))) continue
+      if (filter_post && file.replace(/\.md$/, '') !== filter_post) continue
+
+      // eslint-disable-next-line no-nested-ternary
+      const img = featured === ''
+        ? cfg.img_site
+        : (featured.match(/\//) ? featured : `./img/${featured}`)
+
+      const taglinks = tags.map((e) => `<a href="?tags/${e}">${e}</a>`).join(' ').trim()
+
+      const date_short = date.toString().split(' ').slice(0, 4).join(' ')
+      htm += filter_post
+        // eslint-disable-next-line no-use-before-define
+        ? post_full(title, img, date_short, taglinks, body)
+        // eslint-disable-next-line no-use-before-define
+        : post_card(title, img, date_short, taglinks, body, file)
     }
-    for (const cat of categories) {
-      state.cats[cat] = state.cats[cat] || []
-      state.cats[cat].push(file)
-    }
-
-    if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
-    if (filter_cat.length  && !(categories.includes(filter_cat))) continue
-    if (filter_post && file.replace(/\.md$/, '') !== filter_post) continue
-
-    // eslint-disable-next-line no-nested-ternary
-    const img = featured === ''
-      ? cfg.img_site
-      : (featured.match(/\//) ? featured : `./img/${featured}`)
-
-    const taglinks = tags.map((e) => `<a href="?tags/${e}">${e}</a>`).join(' ').trim()
-
-    const date_short = date.toString().split(' ').slice(0, 4).join(' ')
-    htm += filter_post
-      // eslint-disable-next-line no-use-before-define
-      ? post_full(title, img, date_short, taglinks, body)
-      // eslint-disable-next-line no-use-before-define
-      : post_card(title, img, date_short, taglinks, body, file)
   }
 
   document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
