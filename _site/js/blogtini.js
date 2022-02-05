@@ -436,6 +436,7 @@ async function parse_posts(markdowns) {
         parsed = yml.load(front_matter)
       } catch {
         // no front-matter or not parseable -- skip
+        log('not parseable', { file, front_matter })
         continue
       }
       const json = parsed
@@ -446,8 +447,10 @@ async function parse_posts(markdowns) {
       const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
       const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
-      if (!date)
+      if (!date) {
+        log('no date', { file, front_matter })
         continue
+      }
 
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
