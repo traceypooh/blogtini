@@ -297,7 +297,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
       const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
       const file = mat[2]
 
-      // the very first markdown file fetch -- let's autodetect if we can load markdown files directly
+      // very first markdown file fetch -- let's autodetect if we can load markdown files directly
       // from the website or need to fallback to the github raw url
       let contents
       if (state.use_github_api_for_files === null) {
@@ -398,7 +398,7 @@ async function find_posts_from_github_api_tree() {
   mds = mds.length ? mds : files.filter((e) => e.match(/\.(md|markdown)$/) && !e.endsWith('README.md'))
   mds = mds.length ? mds : files.filter((e) => e === 'README.md')
 
-  return mds
+  return mds.sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
 }
 
 
@@ -431,7 +431,14 @@ async function parse_posts(markdowns) {
       const body_raw = parts.shift()
       const body = body_raw.replace(/\n\n/g, '<br><br>')
       const preview = body_raw.replace(/</g, '&lt;')
-      const json = yml.load(front_matter)
+      let parsed
+      try {
+        parsed = yml.load(front_matter)
+      } catch {
+        // no front-matter or not parseable -- skip
+        continue
+      }
+      const json = parsed
       log({ json })
 
       const title      = json.title?.trim() ?? ''
