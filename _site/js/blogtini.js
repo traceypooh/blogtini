@@ -285,47 +285,50 @@ cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
 
-  // eslint-disable-next-line no-use-before-define
-  const latest = await find_posts()
-
-
-  let proms = []
-  let files = []
-  for (let n = 0; n < latest.length; n++) {
-    const md = latest[n]
-    const url = `${state.file_prefix}${md}`
-    const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
-    const file = mat[2]
-
-    // the very first markdown file fetch -- let's autodetect if we can load markdown files directly
-    // from the website or need to fallback to the github raw url
-    let contents
-    if (state.use_github_api_for_files === null) {
-      contents = await fetcher(file)
-      state.use_github_api_for_files = !contents
-    }
-    files.push(file)
-    proms.push(contents || fetch(
-      (state.use_github_api_for_files
-        ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-        : ''
-      ).concat(url),
-    ))
-
-    if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
-      continue // keep building up requests
-
-    // now make the requests in parallel and wait for them all to answer.
-    const vals = await Promise.all(proms)
-    const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
-
+  for (const pass of [1, 0]) {
     // eslint-disable-next-line no-use-before-define
-    await parse_posts(file2markdown)
+    const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
 
-    files = []
-    proms = []
+    let proms = []
+    let files = []
+    for (let n = 0; n < latest.length; n++) {
+      const md = latest[n]
+      const url = `${state.file_prefix}${md}`
+      const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
+      const file = mat[2]
+
+      // the very first markdown file fetch -- let's autodetect if we can load markdown files directly
+      // from the website or need to fallback to the github raw url
+      let contents
+      if (state.use_github_api_for_files === null) {
+        contents = await fetcher(file)
+        state.use_github_api_for_files = !contents
+      }
+      files.push(file)
+      proms.push(contents || fetch(
+        (state.use_github_api_for_files
+          ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
+          : ''
+        ).concat(url),
+      ))
+
+      if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
+        continue // keep building up requests
+
+      // now make the requests in parallel and wait for them all to answer.
+      const vals = await Promise.all(proms)
+      const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
+
+      // eslint-disable-next-line no-use-before-define
+      await parse_posts(file2markdown)
+
+      files = []
+      proms = []
+    }
+    log({ state })
+    if (state.num_posts)
+      break
   }
-  log({ state })
 
   // eslint-disable-next-line no-use-before-define
   finish()
