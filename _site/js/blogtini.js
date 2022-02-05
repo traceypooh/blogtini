@@ -279,6 +279,12 @@ async function main() {
   if (!filter_post)
     document.getElementById('main-row').classList.add('g-0')
 
+/*
+cfg.repo = 'blogzero'
+cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
+log('xxxx testitos', await find_posts_from_github_api_tree()); return
+*/
+
   // eslint-disable-next-line no-use-before-define
   const latest = await find_posts()
 
@@ -327,9 +333,6 @@ async function main() {
 
 
 async function find_posts() {
-  // https://api.github.com/repos/USER/REPO/git/trees/main?recursive=true     // xxxx
-  // https://api.github.com/repos/USER/REPO/git/trees/master?recursive=true   // xxxx
-
   const FILES = []
   const DIRS = []
 
@@ -364,17 +367,35 @@ async function find_posts() {
     state.try_github_api_tree = true
   }
 
-  // xxxx last try GH recursive find, prioritizing:
-  // - prefer posts/
-  // - 2###.*.md/markdown files
-  // - any .md/markdown files
-
   log({ cfg, state })
 
   const latest = FILES.filter((e) => e && e.match(/\.(md|markdown)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
+}
+
+
+async function find_posts_from_github_api_tree() {
+  const listing = await fetcher(
+    `https://api.github.com/repos/${cfg.user}/${cfg.repo}/git/trees/${cfg.branch}?recursive=true`,
+  )
+  // xxx NOTE: tree listing has sha details on branch and each file and more. useful?
+  const files = listing?.tree?.map((e) => e.path) ?? []
+  log({ files })
+
+  // prefer one of these, in this order:
+  // - prefer posts/  (excluding any README.md)
+  // - 2###.*.md/markdown files
+  // - any .md/markdown files  (excluding any README.md)
+  // - /README.md
+
+  let mds = files.filter((e) => e.startsWith('posts/') && !e.endsWith('README.md'))
+  mds = mds.length ? mds : files.filter((e) => `/${e}`.match(/\/2\d\d\d[^/]+\.(md|markdown)$/))
+  mds = mds.length ? mds : files.filter((e) => e.match(/\.(md|markdown)$/) && !e.endsWith('README.md'))
+  mds = mds.length ? mds : files.filter((e) => e === 'README.md')
+
+  return mds
 }
 
 
