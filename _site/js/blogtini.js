@@ -1,6 +1,46 @@
 /*
 
+Any markdown file can contain multiple posts.
+Set off each post with its own front-matter YAML section.
+
+Your posts or directories of posts, should be *names* that can be sorted in time, examples:
+  2022-11-03-a-birthday.md
+  2020-10-31-halloween-fun.md
+
+  2022/
+  2021/
+  2018/
+
+
+terminal / self-hosted (top-level dir options):
+- /README.md      (contains all your posts)
+- /markdowns.txt
+  - list of .md/.markdown files
+  - dirname(s) of .md/.markdown files  (**)
+- /posts/*.md     (**)
+  - you can also symlink /posts/ to whatever subdirectory that your posts live in ;-)
+(**) required: webserver w/ dir listings
+
+
+GitHub Pages (top-level dir options):
+- /README.md      (contains all your posts)
+- /markdowns.txt
+  - list of .md/.markdown files
+  - dirname(s) of .md/.markdown files  (**)
+- /posts/*.md     (**)
+Uses GH API to retrieve *each* markdown file unless your repo has required:
+  - top-level `/_config.yml` file with our setting: `markdown_ext: "nope"`
+  - each markdown file has a top extra dummy/sacrificial front-matter
+       @see top 3 lines: https://raw.githubusercontent.com/traceypooh/test1/main/README.md
+       (due to limitations w/ `jekyll` in GitHub Pages)
+(**) uses GH trees API single call to list all files in repo
+
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
+
+
+xxx ignore markdown files w/o frontmatter
+
+wgeto 'https://api.github.com/repos/traceypooh/blogzero/git/trees/main?recursive=true'
 
 tech terminal try-out:
   wget https://raw.githubusercontent.com/traceypooh/test1/main/index.html
@@ -86,6 +126,12 @@ change, to taste:
 (scroll down, find [Commit changes] button and press)
 ---
 
+PAT / tokens for ~30/hr => ~5k/hr rate limits
+- https://github.com/settings/tokens
+- https://api.github.com/repos/traceypooh/blogzero/git/trees/main?recursive=true&token=TOKEN
+- https://raw.githubusercontent.com/traceypooh/blogzero/main/README.md?token=TOKEN
+
+
 [layout]
 posts
 img
@@ -148,6 +194,9 @@ const state = {
   tags: {},
   cats: {},
   file_prefix: '',
+  use_github_api_for_files: null,
+  try_github_api_tree: false,
+  num_posts: 0,
 }
 const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)       || ['', ''])[1]
@@ -161,6 +210,7 @@ let cfg = {
   title: 'welcome to my blog',
   img_site: '',
   posts_per_page: 10,
+  branch: 'main', // xxxx autodetect or 'master'
 }
 
 
@@ -170,7 +220,7 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 */
 
 async function fetcher(url)  {
-  const text = url.match(/\.(txt|md)$/)
+  const text = url.match(/\.(txt|md)$/i) || url.endsWith('/')
   try {
     const ret = await fetch(url)
     if (!ret.ok) {
@@ -229,55 +279,8 @@ async function main() {
   if (!filter_post)
     document.getElementById('main-row').classList.add('g-0')
 
-  const { user, repo } = cfg
-  // const user = 'ajaquith', repo = 'securitymetrics'
-  const API = `https://api.github.com/repos/${user}/${repo}/contents`
-  const tries = [
-    'posts/',        // option A for local dev (with mini-webserver that responds w/ dir listings)
-    'markdowns.txt', // option B for local dev or large repos: find . -type f -name '*.md' >| markdowns.txt
-    `${API}/_site/posts/`, // blogtini
-    `${API}/source/_posts/`, // ajaquith hugo
-    'README.md', // try 1+ post inside the main README.md
-    `${API}/`, // final attempt, minimal repo, top dir == web dir
-  ]
-
-  let filter_out = 'README.md'
-  let mds = [] // xxx cache
-  tmp = await fetcher(tries.shift())
-  if (tmp) {
-    // local dev or something that replies with a directory listing (yay)
-    const dir = tmp
-    mds = [...dir.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])
-    state.file_prefix = './posts'
-  } else {
-    tmp = (
-      // try local dev alt option
-      await fetcher(tries.shift()) ||
-      // try GitHub API urls to find a dir of posts
-      await fetcher(tries.shift()) ||
-      await fetcher(tries.shift()) ||
-      // 2nd-to-last README.md attempt
-      await fetcher(tries.shift()) ||
-      // final GitHub API last try
-      await fetcher(tries.shift())
-    )
-
-    if (typeof tmp === 'string') {
-      if (tries.length === 1) { // xxx way too fragile traytray...
-        mds = ['README.md'] // we'll parse it twice for now...
-        filter_out = 'nothing-should-match-this'
-      } else {
-        mds = [...tmp.matchAll(/^(.*\.md)$/gm)].map((e) => e[0])
-      }
-    } else {
-      // parse GitHub API listing
-      mds = tmp.map((e) => e.download_url)
-    }
-  }
-  log({ tmp, cfg, state })
-
-  const latest = mds.filter((e) => e && e.match(/\.(md|markdown)$/i) && e !== filter_out && !e.match(RegExp(`/${filter_out}$`))).sort().reverse()
-  log(latest.slice(0, cfg.posts_per_page))
+  // eslint-disable-next-line no-use-before-define
+  const latest = await find_posts()
 
 
   let proms = []
@@ -288,8 +291,20 @@ async function main() {
     const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
     const file = mat[2]
 
+    // the very first markdown file fetch -- let's autodetect if we can load markdown files directly
+    // from the website or need to fallback to the github raw url
+    let contents
+    if (state.use_github_api_for_files === null) {
+      contents = await fetcher(file)
+      state.use_github_api_for_files = !contents
+    }
     files.push(file)
-    proms.push(fetch(url))
+    proms.push(contents || fetch(
+      (state.use_github_api_for_files
+        ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
+        : ''
+      ).concat(url),
+    ))
 
     if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
       continue // keep building up requests
@@ -311,10 +326,67 @@ async function main() {
 }
 
 
+async function find_posts() {
+  // https://api.github.com/repos/USER/REPO/git/trees/main?recursive=true     // xxxx
+  // https://api.github.com/repos/USER/REPO/git/trees/master?recursive=true   // xxxx
+
+  const FILES = []
+  const DIRS = []
+
+  // Option for local dev or large repos.
+  // Can be list of files *or* list of directory(/ies) with .md/.markdown files, eg:
+  //   find . -type f -name '*.md' >| markdowns.txt
+  if (!FILES.length && !DIRS.length) {
+    const txt = await fetcher('markdowns.txt')
+    if (txt) {
+      const lines = txt.trim().replace(/\r/g, '').split('\n')
+      FILES.push(...lines.filter((e) => e.match(/\.(md|markdown)$/i)))
+      DIRS.push(...lines.filter((e) => !e.match(/\.(md|markdown)$/i)))
+      // find_posts_in_dir(...)  // xxxx
+    }
+  }
+
+  // check for simple dir of .md/.markdown files -- w/ webserver that responds w/ dir listings:
+  if (!FILES.length && !DIRS.length) {
+    const txt = await fetcher('posts/')
+    if (txt) {
+      // local dev or something that replies with a directory listing (yay)
+      FILES.push(...[...txt.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) // xxx .markdown too
+      state.file_prefix = './posts' // chexxxx
+    } else {
+      state.try_github_api_tree = true
+    }
+  }
+
+  // try 1+ post inside the main README.md
+  if (!FILES.length && !DIRS.length) {
+    FILES.push('README.md')
+    state.try_github_api_tree = true
+  }
+
+  // xxxx last try GH recursive find, prioritizing:
+  // - prefer posts/
+  // - 2###.*.md/markdown files
+  // - any .md/markdown files
+
+  log({ cfg, state })
+
+  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
+  log(latest.slice(0, cfg.posts_per_page))
+
+  return latest
+}
+
+
+async function find_posts_in_dir() { return await [] } // xxxx
+
+
 async function parse_posts(markdowns) {
   let htm = ''
   for (const [file, markdown] of Object.entries(markdowns)) {
-    const yaml = await markdown.text()
+    // the very first post might have been loaded into text if the webserver served the markdown
+    // file directly.  the rest are fetch() results.
+    const yaml = typeof markdown === 'string' ? markdown : await markdown.text()
 
     const chunks = yaml.split('\n---')
 
@@ -341,7 +413,10 @@ async function parse_posts(markdowns) {
       const title      = json.title?.trim() ?? ''
       const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
       const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
-      const date       = json.date || json.created_at || new Date() // xxx reality?
+      const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
+
+      if (!date)
+        continue
 
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
@@ -368,6 +443,8 @@ async function parse_posts(markdowns) {
 
       // eslint-disable-next-line no-use-before-define
       const url = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
+
+      state.num_posts += 1
 
       if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
       if (filter_cat.length  && !(categories.includes(filter_cat))) continue
