@@ -1,6 +1,6 @@
-# blogzero
+# blogtini
 
-live at:  https://traceypooh.github.io/blogzero/
+live at:  https://traceypooh.github.io/blogtini/
 
 
 ## local dev quickstart

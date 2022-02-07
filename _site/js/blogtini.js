@@ -40,7 +40,7 @@ goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
 
 xxx ignore markdown files w/o frontmatter
 
-wgeto 'https://api.github.com/repos/traceypooh/blogzero/git/trees/main?recursive=true'
+wgeto 'https://api.github.com/repos/traceypooh/blogtini/git/trees/main?recursive=true'
 
 tech terminal try-out:
   wget https://raw.githubusercontent.com/traceypooh/test1/main/index.html
@@ -128,8 +128,8 @@ change, to taste:
 
 PAT / tokens for ~30/hr => ~5k/hr rate limits
 - https://github.com/settings/tokens
-- https://api.github.com/repos/traceypooh/blogzero/git/trees/main?recursive=true&token=TOKEN
-- https://raw.githubusercontent.com/traceypooh/blogzero/main/README.md?token=TOKEN
+- https://api.github.com/repos/traceypooh/blogtini/git/trees/main?recursive=true&token=TOKEN
+- https://raw.githubusercontent.com/traceypooh/blogtini/main/README.md?token=TOKEN
 
 
 [layout]
@@ -146,7 +146,7 @@ js
 - xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
 - import xxx from 'https://esm.archive.org/blogtini'
 - xxx can still use site w/o .md copied into webroot via api
-  https://api.github.com/repos/traceypooh/blogzero/contents look for type: dir and dir with 20\d\d...md
+  https://api.github.com/repos/traceypooh/blogtini/contents look for type: dir and dir with 20\d\d...md
 
 - fill out nav & sidebar
 - parse 10 most recent posts, fill out main page
@@ -189,7 +189,7 @@ import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.j
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
-const blogtini = 'https://traceypooh.github.io/blogzero/img/blogtini.png' // xxx
+const blogtini = 'https://traceypooh.github.io/blogtini/img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
@@ -280,7 +280,7 @@ async function main() {
     document.getElementById('main-row').classList.add('g-0')
 
 /*
-cfg.repo = 'blogzero'
+cfg.repo = 'blogtini'
 cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
