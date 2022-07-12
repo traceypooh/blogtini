@@ -223,7 +223,7 @@ async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
 
   try {
-    const ret = await fetch(url.concat(url.endsWith('/') ? 'index.htm' : ''))
+    const ret = await fetch(url.concat(url.endsWith('/') ? 'index.html' : ''))
 
     if (!ret.ok) {
       // safari file:// doesnt set .ok properly...
@@ -361,7 +361,7 @@ async function find_posts() {
       .map((e) => state.filedev ? e.replace('https://blogtini.com/', '') : e) // xxxx
       .filter((e) => e !== '')
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => e.endsWith('/') ? e.concat('index.htm') : e)
+      .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => state.filedev ? e.replace(/http:\/\/localhost:4000\//, '') : e) // xxxx
     log({ urls })
@@ -515,7 +515,7 @@ async function parse_posts(markdowns) {
       if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
       if (filter_cat.length  && !(categories.includes(filter_cat))) continue
       if (filter_post && url !== filter_post
-        && !url.endsWith(`${filter_post}index.htm`) // xxxx
+        && !url.endsWith(`${filter_post}index.html`) // xxxx
       )
         continue
 

@@ -10,11 +10,9 @@ OUTFILE=_site/sitemap.xml
 function manually() {
   echo '
   <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  <url>
-    <loc>https://'$NAME'.github.io/'$REPO'/</loc>
-  </url>' >| $OUTFILE
+  ' >| $OUTFILE
 
-  for htm in $(cd _site && find . -name index.htm | cut -f2- -d/); do
+  for htm in $(cd _site && find . -mindepth 2 -name index.html | cut -f2- -d/); do
       echo -- "$htm"
       dir=$(dirname -- "$htm")
       echo "
@@ -40,4 +38,4 @@ function shadow() {
 }
 
 
-shadow
+manually
