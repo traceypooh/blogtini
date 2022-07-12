@@ -1,0 +1,43 @@
+#!/bin/zsh -e
+
+mydir=${0:a:h}
+cd $mydir/..
+
+NAME=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f1)
+REPO=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f2)
+OUTFILE=_site/sitemap.xml
+
+function manually() {
+  echo '
+  <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>https://'$NAME'.github.io/'$REPO'/</loc>
+  </url>' >| $OUTFILE
+
+  for htm in $(cd _site && find . -name index.htm | cut -f2- -d/); do
+      echo -- "$htm"
+      dir=$(dirname -- "$htm")
+      echo "
+  <url>
+    <loc>https://$NAME.github.io/$REPO/$dir/</loc>
+  </url>" >> $OUTFILE
+  done
+
+  echo '</urlset>' >> $OUTFILE
+
+
+  echo "Sitemap: https://$NAME.github.io/$REPO/sitemap.xml" >| _site/robots.txt
+}
+
+
+function shadow() {
+  for htm in $(cd _site && find . -name index.htm); do
+    echo -- "$htm"
+    dir=$(dirname -- "$htm")
+    mkdir -p "$dir"
+    touch "$dir/index.html"
+  done
+}
+
+
+shadow
