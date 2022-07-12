@@ -199,9 +199,9 @@ const state = {
   num_posts: 0,
 }
 const search = decodeURIComponent(location.search)
-const filter_tag  = (search.match(/^\?tags\/([^&]+)/)       || ['', ''])[1]
-const filter_cat  = (search.match(/^\?categories\/([^&]+)/) || ['', ''])[1]
-const filter_post = (search.match(/^\?(20\d\d[^&]+)/)       || ['', ''])[1]
+const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
+const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
+const filter_post = (location.pathname.match(/(20\d\d\/.*)/) || ['', ''])[1] // xxx generalize
 
 // defaults
 let cfg = {
@@ -241,6 +241,18 @@ async function fetcher(url)  {
 async function main() {
   let tmp
 
+  const dirs = location.pathname.split('/').filter((e) => e !== '')
+  state.filedev = location.protocol === 'file:'
+  // eslint-disable-next-line no-nested-ternary
+  state.is_topdir = location.protocol === 'file:'
+    ? dirs.slice(-2, -1)[0] === '_site' // eg: .../_site/index.html
+    : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
+  state.pathrel = state.is_topdir ? './' : '../../../' // xxxx generalize
+  state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
+
+  // eslint-disable-next-line no-use-before-define
+  head_inserts()
+
   document.getElementsByTagName('body')[0].innerHTML = `
   <div class="container">
     <div id="welcome" class="bg-light">
@@ -264,15 +276,15 @@ async function main() {
   // default expect github pages hostname - user can override via their own `config.json` file
   [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
 
-  tmp = await fetcher('config.json')
+  tmp = await fetcher(`${state.pathrel}config.json`)
   if (tmp)
     cfg = { ...cfg, ...tmp }
 
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
     <h1>
-      <a href="?">
-        ${cfg.img_site ? `<img src="${cfg.img_site}">` : ''}
+      <a href="${state.toprel}">
+        ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}
         ${cfg.title}
       </a>
     </h1>
@@ -308,9 +320,10 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
       }
       files.push(file)
       proms.push(contents || fetch(
+        // eslint-disable-next-line no-nested-ternary
         (state.use_github_api_for_files
           ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-          : ''
+          : (state.sitemap_htm ? state.pathrel : '')
         ).concat(url),
       ))
 
@@ -342,26 +355,15 @@ async function find_posts() {
   const DIRS = []
 
   if (!FILES.length && !DIRS.length) {
-    const dirs = location.pathname.split('/').filter((e) => e !== '')
-    // eslint-disable-next-line no-nested-ternary
-    const is_topdir = location.protocol === 'file:'
-      ? dirs.slice(-2, -1)[0] === '_site' // eg: .../_site/index.html
-      : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
-
-    const path = is_topdir ? './' : '../../../'
-    log({ dirs, is_topdir, path })
-
-    const filedev = location.protocol === 'file:'
-
-    const urls = (await fetcher(`${path}sitemap.xml`)).split('<loc>').slice(1)
+    const urls = (await fetcher(`${state.pathrel}sitemap.xml`)).split('<loc>').slice(1)
       .map((e) => e.split('</loc>').slice(0, 1).join(''))
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => filedev ? e.replace('https://traceypooh.github.io/testy/', '') : e) // xxx
+      .map((e) => state.filedev ? e.replace('https://blogtini.com/', '') : e) // xxxx
       .filter((e) => e !== '')
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => e.endsWith('/') ? e.concat('index.htm') : e)
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => filedev ? e.replace(/http:\/\/localhost:4000\//, '') : e) // xxx
+      .map((e) => state.filedev ? e.replace(/http:\/\/localhost:4000\//, '') : e) // xxxx
     log({ urls })
     FILES.push(...urls)
     state.try_github_api_tree = false
@@ -516,11 +518,11 @@ async function parse_posts(markdowns) {
 
       // eslint-disable-next-line no-nested-ternary
       const img = featured === ''
-        ? cfg.img_site
-        : (featured.match(/\//) ? featured : `./img/${featured}`)
+        ? `${state.pathrel}${cfg.img_site}`
+        : (featured.match(/\//) ? featured : `${state.pathrel}img/${featured}`)
 
-      const taglinks =       tags.map((e) => `<a href="?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
-      const catlinks = categories.map((e) => `<a href="?categories/${e}">${e}</a>`).join(' · ').trim()
+      const taglinks =       tags.map((e) => `<a href="${state.toprel}?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
+      const catlinks = categories.map((e) => `<a href="${state.toprel}?categories/${e}">${e}</a>`).join(' · ').trim()
 
       const date_short = date.toString().split(' ').slice(0, 4).join(' ')
       htm += filter_post
@@ -589,7 +591,7 @@ function finish() {
 
   htm = '<ul>'
   for (const cat of Object.keys(state.cats).sort())
-    htm += `<li><a href="?categories/${cat}">${cat.toLowerCase()}</a> ${state.cats[cat].length}</li>`
+    htm += `<li><a href="${state.toprel}?categories/${cat}">${cat.toLowerCase()}</a> ${state.cats[cat].length}</li>`
   htm += '</ul>'
   document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
 
@@ -605,10 +607,29 @@ function finish() {
     const count = state.tags[tag].length
     const weight = (Math.log(count) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
     const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
-    htm += `<a href="?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
+    htm += `<a href="${state.toprel}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
   }
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 }
+
+
+function add_css(file) {
+  const { head } = document
+  const e = document.createElement('link')
+  e.type = 'text/css'
+  e.rel = 'stylesheet'
+  e.href = file
+  head.appendChild(e)
+}
+
+function head_inserts() {
+  add_css(`${state.pathrel}css/blogtini.css`) // xxxx theme.css
+
+  const charsetMetaTag = document.createElement('meta') // xxxx no worky
+  charsetMetaTag.setAttribute('charset', 'utf-8')
+  document.head.appendChild(charsetMetaTag)
+}
+
 
 // eslint-disable-next-line no-void
 void main()
