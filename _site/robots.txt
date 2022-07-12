@@ -1,1 +1,1 @@
-Sitemap: https://traceypooh.github.io/blogtini/sitemap.xml
+Sitemap: https://blogtini.com/sitemap.xml

@@ -7,6 +7,9 @@ NAME=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f1)
 REPO=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f2)
 OUTFILE=_site/sitemap.xml
 
+PREFIX=https://$NAME.github.io/$REPO
+[ -e CNAME ]  &&  PREFIX=https://$(cat CNAME)
+
 function manually() {
   echo '
   <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -17,14 +20,14 @@ function manually() {
       dir=$(dirname -- "$htm")
       echo "
   <url>
-    <loc>https://$NAME.github.io/$REPO/$dir/</loc>
+    <loc>$PREFIX/$dir/</loc>
   </url>" >> $OUTFILE
   done
 
   echo '</urlset>' >> $OUTFILE
 
 
-  echo "Sitemap: https://$NAME.github.io/$REPO/sitemap.xml" >| _site/robots.txt
+  echo "Sitemap: $PREFIX/sitemap.xml" >| _site/robots.txt
 }
 
 
