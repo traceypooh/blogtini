@@ -404,7 +404,7 @@ async function find_posts() {
 
   log({ cfg, state })
 
-  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
+  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown|html|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
