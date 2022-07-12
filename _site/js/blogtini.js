@@ -323,7 +323,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
         // eslint-disable-next-line no-nested-ternary
         (state.use_github_api_for_files
           ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-          : (state.sitemap_htm ? state.pathrel : '')
+          : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
         ).concat(url),
       ))
 
@@ -514,7 +514,10 @@ async function parse_posts(markdowns) {
 
       if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
       if (filter_cat.length  && !(categories.includes(filter_cat))) continue
-      if (filter_post && url !== filter_post) continue
+      if (filter_post && url !== filter_post
+        && !url.endsWith(`${filter_post}index.htm`) // xxxx
+      )
+        continue
 
       // eslint-disable-next-line no-nested-ternary
       const img = featured === ''
