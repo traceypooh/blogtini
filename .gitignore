@@ -1,1 +1,6 @@
+.jekyll-cache
+_site/**/index.html
+_site/CNAME
+_site/robots.txt
+_site/sitemap.xml
 names.txt

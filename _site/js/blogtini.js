@@ -220,9 +220,11 @@ www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(ite
 */
 
 async function fetcher(url)  {
-  const text = url.match(/\.(txt|md)$/i) || url.endsWith('/')
+  const text = !url.match(/\.(json)$/i) || url.endsWith('/')
+
   try {
-    const ret = await fetch(url)
+    const ret = await fetch(url.concat(url.endsWith('/') ? 'index.htm' : ''))
+
     if (!ret.ok) {
       // safari file:// doesnt set .ok properly...
       if (!location.protocol.startsWith('file') || url.startsWith('http'))
@@ -295,7 +297,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
       const md = latest[n]
       const url = `${state.file_prefix}${md}`
       const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
-      const file = mat[2]
+      const file = state.sitemap_htm ? latest[n] : mat[2]
 
       // very first markdown file fetch -- let's autodetect if we can load markdown files directly
       // from the website or need to fallback to the github raw url
@@ -339,6 +341,34 @@ async function find_posts() {
   const FILES = []
   const DIRS = []
 
+  if (!FILES.length && !DIRS.length) {
+    const dirs = location.pathname.split('/').filter((e) => e !== '')
+    // eslint-disable-next-line no-nested-ternary
+    const is_topdir = location.protocol === 'file:'
+      ? dirs.slice(-2, -1)[0] === '_site' // eg: .../_site/index.html
+      : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
+
+    const path = is_topdir ? './' : '../../../'
+    log({ dirs, is_topdir, path })
+
+    const filedev = location.protocol === 'file:'
+
+    const urls = (await fetcher(`${path}sitemap.xml`)).split('<loc>').slice(1)
+      .map((e) => e.split('</loc>').slice(0, 1).join(''))
+      // eslint-disable-next-line no-confusing-arrow
+      .map((e) => filedev ? e.replace('https://traceypooh.github.io/testy/', '') : e) // xxx
+      .filter((e) => e !== '')
+      // eslint-disable-next-line no-confusing-arrow
+      .map((e) => e.endsWith('/') ? e.concat('index.htm') : e)
+      // eslint-disable-next-line no-confusing-arrow
+      .map((e) => filedev ? e.replace(/http:\/\/localhost:4000\//, '') : e) // xxx
+    log({ urls })
+    FILES.push(...urls)
+    state.try_github_api_tree = false
+    state.use_github_api_for_files = false
+    state.sitemap_htm = true
+  }
+
   // Option for local dev or large repos.
   // Can be list of files *or* list of directory(/ies) with .md/.markdown files, eg:
   //   find . -type f -name '*.md' >| markdowns.txt
@@ -372,7 +402,7 @@ async function find_posts() {
 
   log({ cfg, state })
 
-  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
+  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
@@ -528,7 +558,7 @@ function post_full(title, img, date, taglinks, catlinks, body) {
 function post_card(title, img, date, taglinks, catlinks, body, url) {
   return `
     <div class="card card-body bg-light">
-      <a href="?${url}">
+      <a href="${location.protocol === 'file:' ? url : url.replace(/\/index.html*$/, '')}">
         ${img ? `<img src="${img}">` : ''}
         <h2>${title}</h2>
       </a>
