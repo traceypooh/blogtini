@@ -1,33 +1,17 @@
 /*
 
-Any markdown file can contain multiple posts.
 Set off each post with its own front-matter YAML section.
 
-Your posts or directories of posts, should be *names* that can be sorted in time, examples:
+Your posts or directories of posts, should ideally natural sort in time order, examples:
   2022-11-03-a-birthday.md
   2020-10-31-halloween-fun.md
 
-  2022/
-  2021/
-  2018/
-
-
-terminal / self-hosted (top-level dir options):
-- /README.md      (contains all your posts)
-- /markdowns.txt
-  - list of .md/.markdown files
-  - dirname(s) of .md/.markdown files  (**)
-- /posts/*.md     (**)
-  - you can also symlink /posts/ to whatever subdirectory that your posts live in ;-)
-(**) required: webserver w/ dir listings
+  2022/11/03/a-birthday.md
+  2020/10/31/halloween-fun.md
 
 
 GitHub Pages (top-level dir options):
 - /README.md      (contains all your posts)
-- /markdowns.txt
-  - list of .md/.markdown files
-  - dirname(s) of .md/.markdown files  (**)
-- /posts/*.md     (**)
 Uses GH API to retrieve *each* markdown file unless your repo has required:
   - top-level `/_config.yml` file with our setting: `markdown_ext: "nope"`
   - each markdown file has a top extra dummy/sacrificial front-matter
@@ -54,8 +38,6 @@ tech terminal try-out:
 
 existing GH repo try-out: /?preview=github/repo-name    (we'll use GH API to find .md files)
 existing WP try-out: /?preview=URL/feed (atom or RSS)
-
-huge number of posts solve: find . -type f -name '*.md' >| markdowns.txt
 
 could host entire thing in codepen, etc.?!
 
@@ -352,9 +334,8 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
 async function find_posts() {
   const FILES = []
-  const DIRS = []
 
-  if (!FILES.length && !DIRS.length) {
+  if (!FILES.length) {
     const urls = (await fetcher(`${state.pathrel}sitemap.xml`)).split('<loc>').slice(1)
       .map((e) => e.split('</loc>').slice(0, 1).join(''))
       // eslint-disable-next-line no-confusing-arrow
@@ -371,21 +352,8 @@ async function find_posts() {
     state.sitemap_htm = true
   }
 
-  // Option for local dev or large repos.
-  // Can be list of files *or* list of directory(/ies) with .md/.markdown files, eg:
-  //   find . -type f -name '*.md' >| markdowns.txt
-  if (!FILES.length && !DIRS.length) {
-    const txt = await fetcher('markdowns.txt')
-    if (txt) {
-      const lines = txt.trim().replace(/\r/g, '').split('\n')
-      FILES.push(...lines.filter((e) => e.match(/\.(md|markdown)$/i)))
-      DIRS.push(...lines.filter((e) => !e.match(/\.(md|markdown)$/i)))
-      // find_posts_in_dir(...)  // xxxx
-    }
-  }
-
   // check for simple dir of .md/.markdown files -- w/ webserver that responds w/ dir listings:
-  if (!FILES.length && !DIRS.length) {
+  if (!FILES.length) {
     const txt = await fetcher('posts/')
     if (txt) {
       // local dev or something that replies with a directory listing (yay)
@@ -397,7 +365,7 @@ async function find_posts() {
   }
 
   // try 1+ post inside the main README.md
-  if (!FILES.length && !DIRS.length) {
+  if (!FILES.length) {
     FILES.push('README.md')
     state.try_github_api_tree = true
   }
@@ -432,9 +400,6 @@ async function find_posts_from_github_api_tree() {
 
   return mds.sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
 }
-
-
-async function find_posts_in_dir() { return await [] } // xxxx
 
 
 async function parse_posts(markdowns) {
