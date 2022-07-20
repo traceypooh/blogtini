@@ -10,7 +10,7 @@ OUTFILE=_site/sitemap.xml
 PREFIX=https://$NAME.github.io/$REPO
 [ -e CNAME ]  &&  PREFIX=https://$(cat CNAME)
 
-function manually() {
+function sitemap() {
   echo '
   <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   ' >| $OUTFILE
@@ -30,15 +30,19 @@ function manually() {
   echo "Sitemap: $PREFIX/sitemap.xml" >| _site/robots.txt
 }
 
-
-function shadow() {
-  for htm in $(cd _site && find . -name index.htm); do
-    echo -- "$htm"
-    dir=$(dirname -- "$htm")
-    mkdir -p "$dir"
-    touch "$dir/index.html"
-  done
+function keeps() { # xxx only modify keep_files
+  (
+    echo '
+exclude:
+  - bin
+  - README.md
+keep_files:'
+    for i in $(/bin/ls _site); do
+      echo "  - '$i'"
+    done
+  ) >| _config.yml
 }
 
 
-manually
+sitemap
+keeps
