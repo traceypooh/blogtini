@@ -183,7 +183,7 @@ const state = {
 const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = (location.pathname.match(/\/(20\d\d\-.*)/) || ['', ''])[1] // xxx generalize
+const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
 
 // defaults
 let cfg = {
@@ -339,12 +339,12 @@ async function find_posts() {
     const urls = (await fetcher(`${state.pathrel}sitemap.xml`)).split('<loc>').slice(1)
       .map((e) => e.split('</loc>').slice(0, 1).join(''))
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => state.filedev ? e.replace('https://blogtini.com/', '') : e) // xxxx
+      .map((e) => e.replace('https://blogtini.com/', '')) // xxxx
       .filter((e) => e !== '')
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => state.filedev ? e.replace(/http:\/\/localhost:4000\//, '') : e) // xxxx
+      .map((e) => e.replace(/http:\/\/localhost:\d\d\d\d\//, '')) // xxxx
     log({ urls })
     FILES.push(...urls)
     state.try_github_api_tree = false
