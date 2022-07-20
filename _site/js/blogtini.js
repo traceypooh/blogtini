@@ -183,7 +183,7 @@ const state = {
 const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = (location.pathname.match(/(20\d\d\/.*)/) || ['', ''])[1] // xxx generalize
+const filter_post = (location.pathname.match(/\/(20\d\d\-.*)/) || ['', ''])[1] // xxx generalize
 
 // defaults
 let cfg = {
@@ -229,7 +229,7 @@ async function main() {
   state.is_topdir = location.protocol === 'file:'
     ? dirs.slice(-2, -1)[0] === '_site' // eg: .../_site/index.html
     : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
-  state.pathrel = state.is_topdir ? './' : '../../../' // xxxx generalize
+  state.pathrel = state.is_topdir ? './' : '../' // xxxx generalize
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
