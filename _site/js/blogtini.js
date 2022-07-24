@@ -166,8 +166,9 @@ jekyll (GitHub Pages) plugins:
 
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
-import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
+import lunr from 'https://esm.archive.org/lunr'
 
+import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
@@ -184,6 +185,9 @@ const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
+
+let searcher
+const searcher_map = {}
 
 // defaults
 let cfg = {
@@ -449,6 +453,9 @@ async function parse_posts(markdowns) {
         continue
       }
 
+      // eslint-disable-next-line no-use-before-define
+      searcher_map_setup(file, title, date, body_raw, tags, categories)
+
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
       const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
@@ -505,6 +512,32 @@ async function parse_posts(markdowns) {
 }
 
 
+function searcher_map_setup(ref, title, date, body, tags, categories) { // xxx use snippet
+  searcher_map[ref] = {
+    ref, title, date, body, tags, categories,
+  }
+}
+
+function search_setup() {
+  // Build the index so Lunr can search it.  The `ref` field will hold the URL
+  // to the page/post.  title, excerpt, and body will be fields searched.
+  searcher = lunr(function adder() {
+    this.ref('ref')
+    this.field('title')
+    this.field('date') // xxx typo in source!
+    this.field('body')
+    this.field('tags')
+    this.field('categories')
+
+    // Loop through all documents and add them to index so they can be searched
+    for (const doc of Object.values(searcher_map))
+      this.add(doc)
+  })
+
+  for (const query of ['bike', 'geek', 'family'])
+    log({ query }, searcher.search(query))
+}
+
 function post_full(title, img, date, taglinks, catlinks, body) {
   return `
     <h3 class="d-none d-md-block float-md-end">${date}</h3>
@@ -555,6 +588,8 @@ function slugify(str) {
 
 
 function finish() {
+  search_setup()
+
   let htm
 
   htm = '<ul>'
