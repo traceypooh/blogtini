@@ -651,23 +651,23 @@ function head_inserts() {
 }
 
 function head_insert_titles(title) {
-  document.title = title
+  document.title = title // xxx &gt; &lt;
 
   {
     const e = document.createElement('title') // chexxx
-    e.textContent = title // xxx quote escape, etc.
+    e.textContent = title // xxx &gt; &lt;
     document.head.appendChild(e)
   }
   {
     const e = document.createElement('meta') // chexxx
     e.setAttribute('name', 'twitter:title')
-    e.setAttribute('content', title)
+    e.setAttribute('content', title) // xxx quote escape, etc.
     document.head.appendChild(e)
   }
   {
     const e = document.createElement('meta') // chexxx
     e.setAttribute('property', 'og:title')
-    e.setAttribute('content', title)
+    e.setAttribute('content', title) // xxx quote escape, etc.
     document.head.appendChild(e)
   }
 }
