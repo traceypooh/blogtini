@@ -239,6 +239,10 @@ async function main() {
   // eslint-disable-next-line no-use-before-define
   head_inserts()
 
+  if (state.is_topdir)
+    // eslint-disable-next-line no-use-before-define
+    head_insert_titles('Tracey Jaquith - blogtini') // xxx
+
   document.getElementsByTagName('body')[0].innerHTML = `
   <div class="container">
     <div id="welcome" class="bg-light">
@@ -448,6 +452,9 @@ async function parse_posts(markdowns) {
       const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
       const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(title)
+
       if (!date) {
         log('no date', { file, front_matter })
         continue
@@ -627,16 +634,39 @@ function add_css(file) {
 
 function head_inserts() {
   add_css(`${state.pathrel}css/blogtini.css`) // xxxx theme.css
+  {
+    const e = document.createElement('meta') // xxxx no worky
+    e.setAttribute('charset', 'utf-8')
+    document.head.appendChild(e)
+  }
+  {
+    const e = document.createElement('meta')
+    e.setAttribute('name', 'viewport')
+    e.setAttribute('content', 'width=device-width, initial-scale=1')
+    document.head.appendChild(e)
+  }
+}
 
-  let e
-  e = document.createElement('meta') // xxxx no worky
-  e.setAttribute('charset', 'utf-8')
-  document.head.appendChild(e)
+function head_insert_titles(title) {
+  document.title = title
 
-  e = document.createElement('meta')
-  e.setAttribute('name', 'viewport')
-  e.setAttribute('content', 'width=device-width, initial-scale=1')
-  document.head.appendChild(e)
+  {
+    const e = document.createElement('title') // chexxx
+    e.textContent = title // xxx quote escape, etc.
+    document.head.appendChild(e)
+  }
+  {
+    const e = document.createElement('meta') // chexxx
+    e.setAttribute('name', 'twitter:title')
+    e.setAttribute('content', title)
+    document.head.appendChild(e)
+  }
+  {
+    const e = document.createElement('meta') // chexxx
+    e.setAttribute('property', 'og:title')
+    e.setAttribute('content', title)
+    document.head.appendChild(e)
+  }
 }
 
 
