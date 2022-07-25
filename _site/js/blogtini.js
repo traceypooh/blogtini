@@ -452,9 +452,6 @@ async function parse_posts(markdowns) {
       const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
       const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
-      // eslint-disable-next-line no-use-before-define
-      head_insert_titles(title)
-
       if (!date) {
         log('no date', { file, front_matter })
         continue
@@ -497,6 +494,12 @@ async function parse_posts(markdowns) {
         && !url.endsWith(`${filter_post}index.html`) // xxxx
       )
         continue
+
+      if (filter_post) {
+        // eslint-disable-next-line no-use-before-define
+        head_insert_titles(title)
+      }
+
 
       // eslint-disable-next-line no-nested-ternary
       const img = featured === ''
