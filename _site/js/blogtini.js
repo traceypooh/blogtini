@@ -628,9 +628,15 @@ function add_css(file) {
 function head_inserts() {
   add_css(`${state.pathrel}css/blogtini.css`) // xxxx theme.css
 
-  const charsetMetaTag = document.createElement('meta') // xxxx no worky
-  charsetMetaTag.setAttribute('charset', 'utf-8')
-  document.head.appendChild(charsetMetaTag)
+  let e
+  e = document.createElement('meta') // xxxx no worky
+  e.setAttribute('charset', 'utf-8')
+  document.head.appendChild(e)
+
+  e = document.createElement('meta')
+  e.setAttribute('name', 'viewport')
+  e.setAttribute('content', 'width=device-width, initial-scale=1')
+  document.head.appendChild(e)
 }
 
 
