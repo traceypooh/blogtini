@@ -35,8 +35,8 @@ function keeps() { # xxx only modify keep_files
   (
     echo '
 exclude:
-  - .githooks
   - bin
+  - hooks
   - README.md
 keep_files:'
     for i in $(/bin/ls _site); do
