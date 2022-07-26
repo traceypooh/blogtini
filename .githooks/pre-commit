@@ -1,0 +1,18 @@
+#!/bin/zsh -e
+
+mydir=${0:a:h}
+cd $mydir/..
+
+echo -n Verifying sitemap
+./bin/sitemap
+
+UPDATED=$(git diff  --name-only  _config.yml  _site/sitemap.xml)
+
+if [ "$UPDATED" != "" ]; then
+	echo '
+	Some files have changed, please `git add` to your commit:
+
+'
+	git diff  _config.yml  _site/sitemap.xml
+	exit 1
+fi
