@@ -10,7 +10,7 @@ UPDATED=$(git diff  --name-only  _config.yml  _site/sitemap.xml  _site/comments/
 
 if [ "$UPDATED" != "" ]; then
 	echo '
-	Some files have changed, please `git add` to your commit:
+	Some files have changed, please `git add` and `git commit`:
 
 '
 	git diff  _config.yml  _site/sitemap.xml  _site/comments/
