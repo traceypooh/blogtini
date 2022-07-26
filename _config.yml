@@ -1,5 +1,6 @@
 
 exclude:
+  - .githooks
   - bin
   - README.md
 keep_files:
@@ -117,6 +118,7 @@ keep_files:
   - '2022-01-traceys-tamalpais-thirty-3t'
   - '2022-07-blogtini-update'
   - 'CNAME'
+  - 'comments'
   - 'config.json'
   - 'css'
   - 'img'
