@@ -115,6 +115,7 @@ keep_files:
   - '2021-12-deno-oh-my-gawd-deno'
   - '2022-01-gravel-bikes'
   - '2022-01-traceys-tamalpais-thirty-3t'
+  - '2022-07-blogtini-update'
   - 'CNAME'
   - 'config.json'
   - 'css'
