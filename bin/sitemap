@@ -16,7 +16,7 @@ function sitemap() {
   ' >| $OUTFILE
 
   for htm in $(cd _site && find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r); do
-      echo -- "$htm"
+      echo -n .
       dir=$(dirname -- "$htm")
       echo "
   <url>
@@ -28,6 +28,7 @@ function sitemap() {
 
 
   echo "Sitemap: $PREFIX/sitemap.xml" >| _site/robots.txt
+  echo
 }
 
 function keeps() { # xxx only modify keep_files
