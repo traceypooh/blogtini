@@ -35,6 +35,7 @@ function keeps() { # xxx only modify keep_files
   (
     echo '
 exclude:
+  - .githooks
   - bin
   - README.md
 keep_files:'
@@ -44,6 +45,22 @@ keep_files:'
   ) >| _config.yml
 }
 
+function comments() {
+  mkdir -p _site/comments
+  cd       _site/comments
+  find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
+  for DIR in $(cat index.txt); do
+    OUT=$DIR/index.json
+    echo '[' >| $OUT
+    for JSON in $(ls $DIR |egrep -v '^index.json$'); do
+      cat "$DIR/$JSON" >> $OUT
+      echo ",\n" >> $OUT
+    done
+    echo "\n{}\n]" >> $OUT
+  done
+}
 
 sitemap
 keeps
+( comments )
+
