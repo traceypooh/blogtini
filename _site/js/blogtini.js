@@ -167,6 +167,7 @@ jekyll (GitHub Pages) plugins:
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
 import lunr from 'https://esm.archive.org/lunr'
+import dayjs from 'https://esm.archive.org/dayjs'
 
 import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
 
@@ -512,7 +513,7 @@ async function parse_posts(markdowns) {
       const date_short = date.toString().split(' ').slice(0, 4).join(' ')
       htm += filter_post
         // eslint-disable-next-line no-use-before-define
-        ? post_full(title, img, date_short, taglinks, catlinks, body)
+        ? await post_full(title, img, date_short, taglinks, catlinks, body, url)
         // eslint-disable-next-line no-use-before-define
         : post_card(title, img, date_short, taglinks, catlinks, preview, url)
     }
@@ -548,7 +549,9 @@ function search_setup() {
     log({ query }, searcher.search(query))
 }
 
-function post_full(title, img, date, taglinks, catlinks, body) {
+async function post_full(title, img, date, taglinks, catlinks, body, url) {
+  // eslint-disable-next-line no-use-before-define
+  const comments_htm = await comments_markup(url.replace(/\/index.html*$/, ''))
   return `
     <h3 class="d-none d-md-block float-md-end">${date}</h3>
     <h1>${title}</h1>
@@ -564,6 +567,7 @@ function post_full(title, img, date, taglinks, catlinks, body) {
       ${catlinks ? '📁 Categories: ' : ''} ${catlinks} ${catlinks ? '<br>' : ''}
       ${taglinks ? '🏷️ Tags: ' : ''} ${taglinks}
     </div>
+    ${comments_htm}
   `
 }
 
@@ -584,6 +588,26 @@ function post_card(title, img, date, taglinks, catlinks, body, url) {
       ${taglinks ? '🏷️ ' : ''}
       ${taglinks}
     </div>`
+}
+
+
+async function comments_markup(path) {
+  const posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`)).split('\n')
+  if (!posts_with_comments.includes(path)) return ''
+
+  const comments = (await fetcher(`${state.pathrel}comments/${path}/index.json`)).filter((e) => Object.keys(e).length)
+
+  return comments.map((e) => `
+    <hr>
+    <img class="comment-avatar circle"
+      style="border-radius:25px"
+      src="https://www.gravatar.com/avatar/${e.email}?s=100"
+      alt="${e.name}'s Gravatar">
+    ${e.name}
+    ${dayjs(e.date).format('dddd, MMM D, YYYY h:mm A')}
+    <br>
+    ${e.body}
+    `).join('')
 }
 
 
