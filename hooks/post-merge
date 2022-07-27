@@ -3,7 +3,6 @@
 mydir=${0:a:h}
 cd $mydir/..
 
-echo -n Verifying sitemap
 ./bin/sitemap
 
 UPDATED=$(git diff  --name-only  _config.yml  _site/sitemap.xml  _site/comments/)
