@@ -4,6 +4,15 @@ live at:
 - https://blogtini.com
 - https://traceypooh.github.io/blogtini/
 
+## Hooks
+- Whenever you create or delete a post, we want your `sitemap` updated.
+- Whenever someone comments on your site, we run a small script.
+- `github` uses `jekyll`, so we need to keep your source files AS IS.
+
+Thus, we suggest you use our "pre commit" and "post merge" `git` 'hooks' to automate the above "housekeeping".  You can set them up like this:
+```sh
+git config --local core.hooksPath bin/
+```
 
 ## Best two website/blog setup options
 ### Blog source repository that uses markdown inside html markup files

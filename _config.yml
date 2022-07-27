@@ -1,7 +1,6 @@
 
 exclude:
   - bin
-  - hooks
   - README.md
 keep_files:
   - '2006-03-stones-jfk'
