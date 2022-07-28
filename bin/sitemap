@@ -19,9 +19,11 @@ function sitemap() {
   for htm in $(cd _site && find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r); do
       echo -n .
       dir=$(dirname -- "$htm")
+      lastmod=$(git log -1 --format='%cI' -- "_site/$htm")
       echo "
   <url>
     <loc>$PREFIX/$dir/</loc>
+    <lastmod>$lastmod</lastmod>
   </url>" >> $OUTFILE
   done
 

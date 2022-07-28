@@ -1,4 +1,5 @@
 /*
+xxx if post date is just day specific, omit 7pm / 8pm from full/mini posts
 
 Set off each post with its own front-matter YAML section.
 
