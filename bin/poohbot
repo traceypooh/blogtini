@@ -1,0 +1,19 @@
+#!/bin/zsh -e
+
+# imports posts from poohbot.com
+
+mydir=${0:a:h}
+cd $mydir/../_site/
+
+POSTS=$HOME/poohbot/content/post/
+for MD in $(cd $POSTS; ls 20??/*.md |tac); do
+  DIR=$(echo "$MD" |tr / - |perl -pe 's/\.md$//')
+  echo     $DIR
+  mkdir -p $DIR
+  (
+    echo '---'
+    echo 'comment: <script src="../theme.js" type="module"></script>'
+    tail +2 $POSTS/$MD \
+      |perl -pe 's=../../../img/=../img/=;  s=/post/20\d\d/img/=../img/=g'
+  ) >| $DIR/index.html
+done
