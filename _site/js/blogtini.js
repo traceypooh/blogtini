@@ -555,7 +555,7 @@ function search_setup() {
     this.field('categories')
 
     // Loop through all documents and add them to index so they can be searched
-    for (const doc of Object.values(STORAGE))
+    for (const doc of Object.values(STORAGE.docs))
       this.add(doc)
   })
 
