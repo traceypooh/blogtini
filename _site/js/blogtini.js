@@ -188,7 +188,7 @@ const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
 
-const STORAGE = JSON.parse(localStorage.getItem('blogtini')) ?? { docs: {} }
+const STORAGE = JSON.parse(localStorage.getItem('blogtini')) ?? {}
 
 let searcher
 
@@ -287,7 +287,7 @@ cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
 
-  if (!Object.keys(STORAGE.docs).length || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
+  if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
     // eslint-disable-next-line no-use-before-define
     await storage_create()
   }
@@ -302,6 +302,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
 async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
+  STORAGE.docs = STORAGE.docs || {}
   for (const pass of [1, 0]) {
     // eslint-disable-next-line no-use-before-define
     const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
