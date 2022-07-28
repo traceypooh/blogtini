@@ -17,3 +17,8 @@ for MD in $(cd $POSTS; ls 20??/*.md |tac); do
       |perl -pe 's=../../../img/=../img/=;  s=/post/20\d\d/img/=../img/=g'
   ) >| $DIR/index.html
 done
+
+for IMG in $(cd $POSTS; ls 20??/img/*.* |tac); do
+  echo $IMG
+  rsync -a $POSTS/$IMG img/$(basename $IMG)
+done
