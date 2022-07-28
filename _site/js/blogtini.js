@@ -187,8 +187,9 @@ const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
 
+const STORAGE = JSON.parse(localStorage.getItem('blogtini')) ?? { docs: {} }
+
 let searcher
-const searcher_map = {}
 
 // defaults
 let cfg = {
@@ -200,11 +201,6 @@ let cfg = {
   branch: 'main', // xxxx autodetect or 'master'
 }
 
-
-/*
-return JSON.parse(localStorage.getItem('playset'))
-www/js/playset/playset.js:    localStorage.setItem('playset', JSON.stringify(item))
-*/
 
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
@@ -290,6 +286,21 @@ cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
 
+  if (!Object.keys(STORAGE.docs).length || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
+    // eslint-disable-next-line no-use-before-define
+    await storage_create()
+  }
+
+  // eslint-disable-next-line no-use-before-define
+  await storage_loop()
+
+  // eslint-disable-next-line no-use-before-define
+  finish()
+}
+
+
+async function storage_create() {
+  STORAGE.created = dayjs().format('MMM D, YYYY')
   for (const pass of [1, 0]) {
     // eslint-disable-next-line no-use-before-define
     const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
@@ -335,9 +346,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
     if (state.num_posts)
       break
   }
-
-  // eslint-disable-next-line no-use-before-define
-  finish()
+  localStorage.setItem('blogtini', JSON.stringify(STORAGE))
 }
 
 
@@ -412,7 +421,6 @@ async function find_posts_from_github_api_tree() {
 
 
 async function parse_posts(markdowns) {
-  let htm = ''
   for (const [file, markdown] of Object.entries(markdowns)) {
     // the very first post might have been loaded into text if the webserver served the markdown
     // file directly.  the rest are fetch() results.
@@ -435,8 +443,6 @@ async function parse_posts(markdowns) {
     while (parts.length) {
       const front_matter = parts.shift()
       const body_raw = parts.shift()
-      const body = body_raw.replace(/\n\n/g, '<br><br>')
-      const preview = body_raw.replace(/</g, '&lt;')
       let parsed
       try {
         parsed = yml.load(front_matter)
@@ -458,9 +464,6 @@ async function parse_posts(markdowns) {
         continue
       }
 
-      // eslint-disable-next-line no-use-before-define
-      searcher_map_setup(file, title, date, body_raw, tags, categories)
-
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
       const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
@@ -469,63 +472,73 @@ async function parse_posts(markdowns) {
       log({ date, featured })
       // author xxx
 
-      for (const tag of tags) {
-        state.tags[tag] = state.tags[tag] || []
-        state.tags[tag].push(file)
-      }
-      for (const cat of categories) {
-        state.cats[cat] = state.cats[cat] || []
-        state.cats[cat].push(file)
-      }
-
-      const ymd = [
-        date.getUTCFullYear(),
-        `${1 + date.getUTCMonth()}`.padStart(2, '0'),
-        `${date.getUTCDate()}`.padStart(2, '0'),
-      ].join('-')
+      // eslint-disable-next-line no-use-before-define
+      const ref = multiples ? `${date2ymd(date)}-${slugify(title)}` : file.replace(/\.md$/, '')
 
       // eslint-disable-next-line no-use-before-define
-      const url = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
-
-      state.num_posts += 1
-
-      if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
-      if (filter_cat.length  && !(categories.includes(filter_cat))) continue
-      if (filter_post && url !== filter_post
-        && !url.endsWith(`${filter_post}index.html`) // xxxx
-      )
-        continue
-
-      if (filter_post) {
-        // eslint-disable-next-line no-use-before-define
-        head_insert_titles(title)
-      }
-
-
-      // eslint-disable-next-line no-nested-ternary
-      const img = featured === ''
-        ? `${state.pathrel}${cfg.img_site}`
-        : (featured.match(/\//) ? featured : `${state.pathrel}img/${featured}`)
-
-      const taglinks =       tags.map((e) => `<a href="${state.toprel}?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
-      const catlinks = categories.map((e) => `<a href="${state.toprel}?categories/${e}">${e}</a>`).join(' · ').trim()
-
-      const date_short = date.toString().split(' ').slice(0, 4).join(' ')
-      htm += filter_post
-        // eslint-disable-next-line no-use-before-define
-        ? await post_full(title, img, date_short, taglinks, catlinks, body, url)
-        // eslint-disable-next-line no-use-before-define
-        : post_card(title, img, date_short, taglinks, catlinks, preview, url)
+      storage_add(ref, title, date, body_raw, tags, categories, featured)
     }
+  }
+}
+
+async function storage_loop() {
+  let htm = ''
+  for (const [ref, doc] of Object.entries(STORAGE.docs)) {
+    const {
+      title, date, body_raw, tags, categories, featured,
+    } = doc
+
+    for (const tag of tags) {
+      state.tags[tag] = state.tags[tag] || []
+      state.tags[tag].push(ref)
+    }
+    for (const cat of categories) {
+      state.cats[cat] = state.cats[cat] || []
+      state.cats[cat].push(ref)
+    }
+
+    state.num_posts += 1
+
+    if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
+    if (filter_cat.length  && !(categories.includes(filter_cat))) continue
+    if (filter_post && ref !== filter_post
+      && !ref.endsWith(`${filter_post}index.html`) // xxxx
+    )
+      continue
+
+    if (filter_post) {
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(title)
+    }
+
+
+    // eslint-disable-next-line no-nested-ternary
+    const img = featured === ''
+      ? `${state.pathrel}${cfg.img_site}`
+      : (featured.match(/\//) ? featured : `${state.pathrel}img/${featured}`)
+
+    const taglinks =       tags.map((e) => `<a href="${state.toprel}?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
+    const catlinks = categories.map((e) => `<a href="${state.toprel}?categories/${e}">${e}</a>`).join(' · ').trim()
+
+    const date_short = date.toString().split(' ').slice(0, 4).join(' ')
+
+    const body = body_raw.replace(/\n\n/g, '<br><br>')
+    const preview = body_raw.replace(/</g, '&lt;')
+
+    htm += filter_post
+      // eslint-disable-next-line no-use-before-define
+      ? await post_full(title, img, date_short, taglinks, catlinks, body, ref)
+      // eslint-disable-next-line no-use-before-define
+      : post_card(title, img, date_short, taglinks, catlinks, preview, ref)
   }
 
   document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
 }
 
 
-function searcher_map_setup(ref, title, date, body, tags, categories) { // xxx use snippet
-  searcher_map[ref] = {
-    ref, title, date, body, tags, categories,
+function storage_add(ref, title, date, body_raw, tags, categories, featured) { // xxx use snippet
+  STORAGE.docs[ref] = {
+    ref, title, date, body_raw, tags, categories, featured,
   }
 }
 
@@ -536,12 +549,12 @@ function search_setup() {
     this.ref('ref')
     this.field('title')
     this.field('date') // xxx typo in source!
-    this.field('body')
+    this.field('body_raw')
     this.field('tags')
     this.field('categories')
 
     // Loop through all documents and add them to index so they can be searched
-    for (const doc of Object.values(searcher_map))
+    for (const doc of Object.values(STORAGE))
       this.add(doc)
   })
 
@@ -552,10 +565,12 @@ function search_setup() {
 async function post_full(title, img, date, taglinks, catlinks, body, url) {
   // eslint-disable-next-line no-use-before-define
   const comments_htm = await comments_markup(url.replace(/\/index.html*$/, ''))
+  const date_nice = dayjs(date).format('dddd, MMM D, YYYY h:mm A')
+
   return `
-    <h3 class="d-none d-md-block float-md-end">${date}</h3>
+    <h3 class="d-none d-md-block float-md-end">${date_nice}</h3>
     <h1>${title}</h1>
-    <h3 class="d-md-none" style="text-align:center">${date}</h3>
+    <h3 class="d-md-none" style="text-align:center">${date_nice}</h3>
     <div class="float-none" style="clear:both">
       <img src="${img}" class="img-fluid rounded mx-auto d-block">
     </div>
@@ -573,18 +588,21 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
 
 
 function post_card(title, img, date, taglinks, catlinks, body, url) {
+  const date_nice = dayjs(date).format('dddd, MMM D, YYYY h:mm A')
+
   return `
     <div class="card card-body bg-light">
       <a href="${location.protocol === 'file:' ? url : url.replace(/\/index.html*$/, '')}">
         ${img ? `<img src="${img}">` : ''}
         <h2>${title}</h2>
       </a>
-      ${date}
+      ${date_nice}
       <div>
         ${friendly_truncate(body, 200)}
       </div>
       ${catlinks ? '📁 ' : ''}
       ${catlinks}
+      ${catlinks ? '<br>' : ''}
       ${taglinks ? '🏷️ ' : ''}
       ${taglinks}
     </div>`
@@ -620,10 +638,16 @@ function slugify(str) {
     .replace(/-$/, '')
 }
 
+function date2ymd(date) {
+  return [
+    date.getUTCFullYear(),
+    `${1 + date.getUTCMonth()}`.padStart(2, '0'),
+    `${date.getUTCDate()}`.padStart(2, '0'),
+  ].join('-')
+}
+
 
 function finish() {
-  search_setup()
-
   let htm
 
   htm = '<ul>'
@@ -647,6 +671,8 @@ function finish() {
     htm += `<a href="${state.toprel}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
   }
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
+
+  search_setup()
 }
 
 
