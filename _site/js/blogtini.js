@@ -1,6 +1,4 @@
 /*
-xxx if post date is just day specific, omit 7pm / 8pm from full/mini posts
-
 Set off each post with its own front-matter YAML section.
 
 Your posts or directories of posts, should ideally natural sort in time order, examples:
@@ -468,7 +466,7 @@ async function parse_posts(markdowns) {
 
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
-      const featured   = json.featured?.trim() || json.featured_image?.trim() || (json.images
+      const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
         ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
         : '')
       log({ date, featured })
@@ -567,7 +565,8 @@ function search_setup() {
 async function post_full(title, img, date, taglinks, catlinks, body, url) {
   // eslint-disable-next-line no-use-before-define
   const comments_htm = await comments_markup(url.replace(/\/index.html*$/, ''))
-  const date_nice = dayjs(date).format('dddd, MMM D, YYYY h:mm A')
+  // eslint-disable-next-line no-use-before-define
+  const date_nice = datetime(date)
 
   return `
     <h3 class="d-none d-md-block float-md-end">${date_nice}</h3>
@@ -590,7 +589,8 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
 
 
 function post_card(title, img, date, taglinks, catlinks, body, url) {
-  const date_nice = dayjs(date).format('dddd, MMM D, YYYY h:mm A')
+  // eslint-disable-next-line no-use-before-define
+  const date_nice = datetime(date)
 
   return `
     <div class="card card-body bg-light">
@@ -624,7 +624,8 @@ async function comments_markup(path) {
       src="https://www.gravatar.com/avatar/${e.email}?s=100"
       alt="${e.name}'s Gravatar">
     ${e.name}
-    ${dayjs(e.date).format('dddd, MMM D, YYYY h:mm A')}
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${datetime(e.date)}
     <br>
     ${e.body}
     `).join('')
@@ -646,6 +647,14 @@ function date2ymd(date) {
     `${1 + date.getUTCMonth()}`.padStart(2, '0'),
     `${date.getUTCDate()}`.padStart(2, '0'),
   ].join('-')
+}
+
+function datetime(date) {
+  const fmt = typeof date === 'string' && (date.length <= 10 || date.endsWith('T00:00:00.000Z'))
+    ? 'dddd, MMM D, YYYY'
+    : 'dddd, MMM D, YYYY h:mm A'
+
+  return dayjs(date).format(fmt)
 }
 
 
