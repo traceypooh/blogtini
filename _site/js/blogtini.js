@@ -508,6 +508,12 @@ async function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(title)
+    } else if (filter_tag.length) {
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
+    } else if (filter_cat.length) {
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
     }
 
 
