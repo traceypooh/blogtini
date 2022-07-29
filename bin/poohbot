@@ -6,18 +6,20 @@ mydir=${0:a:h}
 cd $mydir/../_site/
 
 POSTS=$HOME/poohbot/content/post/
+
+# import posts
 for MD in $(cd $POSTS; ls 20??/*.md |tac); do
   DIR=$(echo "$MD" |tr / - |perl -pe 's/\.md$//')
   echo     $DIR
   mkdir -p $DIR
   (
-    echo '---'
-    echo 'comment: <script src="../theme.js" type="module"></script>'
-    tail +2 $POSTS/$MD \
+    cat $POSTS/$MD \
+      |perl -ne '$in=join("",<STDIN>); @a=split(/^---$/m,$in,2); print "---\n" . @a[0] . "comment: <script src=\"../theme.js\" type=\"module\"></script>\n---\n" . @a[1]' \
       |perl -pe 's=../../../img/=../img/=;  s=/post/20\d\d/img/=../img/=g'
   ) >| $DIR/index.html
 done
 
+# import imagery
 for IMG in $(cd $POSTS; ls 20??/img/*.* |tac); do
   echo $IMG
   rsync -a $POSTS/$IMG img/$(basename $IMG)

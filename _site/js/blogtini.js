@@ -29,10 +29,9 @@ tech terminal try-out:
   wget https://raw.githubusercontent.com/traceypooh/test1/main/index.html
   wget https://raw.githubusercontent.com/traceypooh/test1/main/README.md
   [edit 1st real post in README.md]
-  [open in Safari; Developer Menu; [check] Disable Local File Restrictions]
+  [open in Safari; Developer Menu; check `Disable Cross-Origin Restrictions` during development
   open index.html
-  [when you are done]
-  [Developer Menu; [uncheck] Disable Local File Restrictions]
+  [Developer Menu; uncheck `Disable Cross-Origin Restrictions` when done
 
 
 existing GH repo try-out: /?preview=github/repo-name    (we'll use GH API to find .md files)
@@ -233,7 +232,7 @@ async function main() {
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
-  head_inserts()
+  head_insert_generics()
 
   if (state.is_topdir)
     // eslint-disable-next-line no-use-before-define
@@ -696,7 +695,7 @@ function add_css(file) {
   head.appendChild(e)
 }
 
-function head_inserts() {
+function head_insert_generics() {
   add_css(`${state.pathrel}css/blogtini.css`) // xxxx theme.css
   {
     const e = document.createElement('meta') // xxxx no worky
@@ -733,9 +732,11 @@ function head_insert_titles(title) {
   }
 }
 
+function head_insert_specifics() {
+  // document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
+  // document.getElementsByTagName('meta')['description'].content = 'updated description xxx'
+}
+
 
 // eslint-disable-next-line no-void
 void main()
-
-// document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
-// document.getElementsByTagName('meta')['description'].content = 'updated description xxx'
