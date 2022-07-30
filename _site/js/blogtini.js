@@ -265,6 +265,11 @@ async function main() {
   if (tmp)
     cfg = { ...cfg, ...tmp }
 
+  const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
+  // eslint-disable-next-line no-use-before-define
+  add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
+
+
   document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
     <img id="blogtini" src="${blogtini}">
     <h1>
@@ -702,8 +707,6 @@ function add_css(file) {
 }
 
 function head_insert_generics() {
-  const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
-  add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
   {
     const e = document.createElement('meta') // xxxx no worky
     e.setAttribute('charset', 'utf-8')
