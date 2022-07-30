@@ -702,7 +702,8 @@ function add_css(file) {
 }
 
 function head_insert_generics() {
-  add_css(`${state.pathrel}css/blogtini.css`) // xxxx theme.css
+  const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
+  add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
   {
     const e = document.createElement('meta') // xxxx no worky
     e.setAttribute('charset', 'utf-8')
