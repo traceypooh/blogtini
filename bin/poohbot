@@ -14,7 +14,7 @@ for MD in $(cd $POSTS; ls 20??/*.md |tac); do
   mkdir -p $DIR
   (
     cat $POSTS/$MD \
-      |perl -ne '$in=join("",<STDIN>); @a=split(/^---$/m,$in,2); print "---\n" . @a[0] . "comment: <script src=\"../theme.js\" type=\"module\"></script>\n---\n" . @a[1]' \
+      |perl -ne '$in=join("",<STDIN>); @a=split(/^---$/m,$in,2); print "---\n" . @a[0] . "comment: <script src=\"../theme.js\" type=\"module\" charset=\"utf-8\"></script>\n---\n" . @a[1]' \
       |perl -pe 's=../../../img/=../img/=;  s=/post/20\d\d/img/=../img/=g'
   ) >| $DIR/index.html
 done
