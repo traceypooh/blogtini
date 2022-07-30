@@ -167,7 +167,6 @@ import yml from 'https://esm.archive.org/js-yaml'
 import lunr from 'https://esm.archive.org/lunr'
 import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
-import hljs from 'https://esm.archive.org/highlightjs'
 
 import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
 
@@ -309,6 +308,9 @@ async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
   STORAGE.docs = STORAGE.docs || {}
 
+  const fetch_headers = new Headers()
+  fetch_headers.append('Content-Type', 'text/html; charset=UTF-8')
+
   for (const pass of [1, 0]) {
     // eslint-disable-next-line no-use-before-define
     const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
@@ -335,6 +337,7 @@ async function storage_create() {
           ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
           : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
         ).concat(url),
+        fetch_headers,
       ))
 
       if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
@@ -428,11 +431,35 @@ async function find_posts_from_github_api_tree() {
 }
 
 
+async function fetch_text_utf8(url_or_response, is_response = false) {
+  const response = is_response ? url_or_response : await fetch(url_or_response)
+  const reader = response.body.getReader()
+  const utf8Decoder = new TextDecoder('utf-8')
+
+  let ret = ''
+  for (;;) {
+    const { value, done } = await reader.read()
+    ret += value ? utf8Decoder.decode(value) : ''
+    if (done)
+      break
+  }
+  return ret
+}
+
+
 async function parse_posts(markdowns) {
   for (const [file, markdown] of Object.entries(markdowns)) {
     // the very first post might have been loaded into text if the webserver served the markdown
     // file directly.  the rest are fetch() results.
-    const yaml = typeof markdown === 'string' ? markdown : await markdown.text()
+    // eslint-disable-next-line no-nested-ternary
+    const yaml = typeof markdown === 'string' ? markdown : (location.protocol === 'https:'
+      ? await markdown.text()
+      : await fetch_text_utf8(markdown, true)
+    )
+log(yaml)
+const md2html = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
+log(md2html.makeHtml(yaml))
+
 
     const chunks = yaml.split('\n---')
 
@@ -450,7 +477,9 @@ async function parse_posts(markdowns) {
 
     while (parts.length) {
       const front_matter = parts.shift()
+      // const body_raw = new TextDecoder('utf-8').decode(parts.shift())
       const body_raw = parts.shift()
+
       let parsed
       try {
         parsed = yml.load(front_matter)
@@ -703,8 +732,6 @@ function finish() {
   }
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 
-  document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
-
   search_setup()
 }
 
@@ -761,4 +788,34 @@ function head_insert_specifics() {
 
 
 // eslint-disable-next-line no-void
-void main()
+// void main()
+
+
+const fetch_headers = new Headers()
+fetch_headers.append('Content-Type', 'text/html; charset=iso-8859-1')
+const xxx = await fetch(
+  location.protocol.startsWith('file:')
+    ? 'file:///Users/tracey/dev/testy/2022-06-gravel-bike-upgrades/index.html'
+    : 'http://localhost:4507/2022-06-gravel-bike-upgrades/index.html',
+  fetch_headers,
+)
+const buff = await xxx.arrayBuffer()
+
+const decoder = new TextDecoder('utf-8')
+const yaml = decoder.decode(buff)
+
+/*
+const encoder = new TextEncoder()
+const u8array = new Uint8Array(10000)
+log(encoder.encodeInto(yaml, u8array))
+log(u8array)
+log('encdec')
+log(decoder.decode(u8array))
+
+log(yaml)
+*/
+
+const md2html = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
+const htm = md2html.makeHtml(yaml)
+log(htm)
+document.write(htm)
