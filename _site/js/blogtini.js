@@ -356,7 +356,7 @@ async function find_posts() {
     const urls = (await fetcher(`${state.pathrel}sitemap.xml`)).split('<loc>').slice(1)
       .map((e) => e.split('</loc>').slice(0, 1).join(''))
       // eslint-disable-next-line no-confusing-arrow
-      .map((e) => e.replace('https://blogtini.com/', '')) // xxxx
+      .map((e) => e.replace('https://blogtini.com/', '').replace(/https:\/\/[^.]+\.github\.io\/[^/]+\//, ''))
       .filter((e) => e !== '')
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
@@ -476,6 +476,8 @@ async function parse_posts(markdowns) {
 
       // eslint-disable-next-line no-use-before-define
       storage_add(ref, title, date, body_raw, tags, categories, featured)
+
+      state.num_posts += 1
     }
   }
 }
@@ -495,8 +497,6 @@ async function storage_loop() {
       state.cats[cat] = state.cats[cat] || []
       state.cats[cat].push(ref)
     }
-
-    state.num_posts += 1
 
     if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(categories.includes(filter_cat))) continue
