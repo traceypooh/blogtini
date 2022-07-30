@@ -166,6 +166,7 @@ jekyll (GitHub Pages) plugins:
 import yml from 'https://esm.archive.org/js-yaml'
 import lunr from 'https://esm.archive.org/lunr'
 import dayjs from 'https://esm.archive.org/dayjs'
+import showdown from 'https://esm.archive.org/showdown'
 
 import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
 
@@ -185,7 +186,8 @@ const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
 
-const STORAGE = JSON.parse(localStorage.getItem('blogtini')) ?? {}
+const STORAGE = location.search.match(/[&?]recache=1/i) ? {} :
+  JSON.parse(localStorage.getItem('blogtini')) ?? {}
 
 let searcher
 
@@ -305,6 +307,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
   STORAGE.docs = STORAGE.docs || {}
+
   for (const pass of [1, 0]) {
     // eslint-disable-next-line no-use-before-define
     const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
@@ -488,6 +491,9 @@ async function parse_posts(markdowns) {
 }
 
 async function storage_loop() {
+  showdown.setFlavor('github') // xxx?
+  const md2html = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
+
   let htm = ''
   for (const [ref, doc] of Object.entries(STORAGE.docs)) {
     const {
@@ -532,14 +538,17 @@ async function storage_loop() {
 
     const date_short = date.toString().split(' ').slice(0, 4).join(' ')
 
-    const body = body_raw.replace(/\n\n/g, '<br><br>')
-    const preview = body_raw.replace(/</g, '&lt;')
 
-    htm += filter_post
+    if (filter_post) {
+      const body = md2html.makeHtml(body_raw)
+
       // eslint-disable-next-line no-use-before-define
-      ? await post_full(title, img, date_short, taglinks, catlinks, body, ref)
+      htm += await post_full(title, img, date_short, taglinks, catlinks, body, ref)
+    } else {
+      const preview = body_raw.replace(/</g, '&lt;')
       // eslint-disable-next-line no-use-before-define
-      : post_card(title, img, date_short, taglinks, catlinks, preview, ref)
+      htm +=       post_card(title, img, date_short, taglinks, catlinks, preview, ref)
+    }
   }
 
   document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
