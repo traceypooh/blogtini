@@ -1,0 +1,11 @@
+{
+    "_id": "wp12510",
+    "name": "mckenz",
+    "website": "",
+    "email": "4918155d1c20eb3738a823cffc75a2f8",
+    "date": "2012-12-26T16:27:15Z",
+    "body": "<p>thanks for this, a neat solution. for any fellow mac users like me, it works great on a macbook too with a minor modification &#8211; commenting out the &#8220;make a static binary&#8221; and &#8220;qt-faststart&#8221; lines. I also ran into a problem in that my ffmpeg doesn&#8217;t do aac encoding. However there is a command line utility &#8220;afconvert&#8221; on the mac for qt encoding which does the job. So I added an extra line after the MP4Box line:<br />\n<code>afconvert -f mp4f -b 256000 audio.wav audio.aac</code><br />\nand then modified the ffmpeg line to use the file generated above rather than convert on the fly<br />\n<code>ffmpeg -y -i tmp.mp4 -i audio.aac -acodec copy -vcodec copy \"$OUT\"</code></p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+}

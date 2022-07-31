@@ -1,0 +1,11 @@
+{
+    "_id": "wp3549",
+    "name": "tracey pooh",
+    "website": "https://poohBot.com",
+    "email": "ec81ca784652ba2c915455f340186811",
+    "date": "2011-06-23T09:06:30Z",
+    "body": "<p>thanks for the tip.<br />\ni did check w/ the original author and his site at<br />\n<a href=\"http://multimedia.cx/eggs/improving-qt-faststart/\" rel=\"nofollow\">http://multimedia.cx/eggs/improving-qt-faststart/</a> where he seems to suggest/prefer the bundled source w/ ffmpeg.</p>\n<p>it seems most of the issues people have had with the C aspect of qt-faststart relate to 32bit vs 64bit compiling &#8212; which we don&#8217;t really have to worry about in our setup when compiling from ffmpeg as instructed.   (and having been &#8220;raised on C&#8221;, i don&#8217;t have any major issues w/ C vs. python.</p>\n<p>was there something compelling otherwise about the python variant you liked?</p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+}

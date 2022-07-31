@@ -1,0 +1,40 @@
+[
+{
+    "_id": "wp12510",
+    "name": "mckenz",
+    "website": "",
+    "email": "4918155d1c20eb3738a823cffc75a2f8",
+    "date": "2012-12-26T16:27:15Z",
+    "body": "<p>thanks for this, a neat solution. for any fellow mac users like me, it works great on a macbook too with a minor modification &#8211; commenting out the &#8220;make a static binary&#8221; and &#8220;qt-faststart&#8221; lines. I also ran into a problem in that my ffmpeg doesn&#8217;t do aac encoding. However there is a command line utility &#8220;afconvert&#8221; on the mac for qt encoding which does the job. So I added an extra line after the MP4Box line:<br />\n<code>afconvert -f mp4f -b 256000 audio.wav audio.aac</code><br />\nand then modified the ffmpeg line to use the file generated above rather than convert on the fly<br />\n<code>ffmpeg -y -i tmp.mp4 -i audio.aac -acodec copy -vcodec copy \"$OUT\"</code></p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+},
+
+{
+    "_id": "wp12580",
+    "name": "tracey pooh",
+    "website": "https://poohBot.com",
+    "email": "ec81ca784652ba2c915455f340186811",
+    "date": "2013-01-05T20:39:19Z",
+    "body": "<p>ah, cool, thanks for mentioning some workarounds and for finding my post helpful, too!</p>\n<p>regarding ffmpeg and aac encoding, as well as qt-faststart (that tool is included in the ffmpeg build), in the future you might find this little recipe to make ffmpeg, that I use at home and work helpful:</p>\n<p><a href=\"https://github.com/traceypooh/deriver-archive/blob/master/ffmpeg-README.sh\" rel=\"nofollow\">https://github.com/traceypooh/deriver-archive/blob/master/ffmpeg-README.sh</a></p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+},
+
+{
+    "_id": "wp14514",
+    "name": "Heather",
+    "website": "http://yahoo.com",
+    "email": "988816599da2834ede5f34524ca08fb5",
+    "date": "2013-10-29T03:56:56Z",
+    "body": "<p>This is the second article,  of your blog I personally went through.<br />\nHowever , I personally enjoy this particular 1, \u201cconvert yuvj420p to yuv420p (chrome playable!<br />\n) mp4 video (eg: canon/nikon video) | PoohBot Pictures and more\u201d the most.</p>\n<p>All the best ,Micki</p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+},
+
+
+{}
+]

@@ -1,0 +1,11 @@
+{
+    "_id": "wp106731",
+    "name": "pooh",
+    "website": "https://poohBot.com",
+    "email": "ec81ca784652ba2c915455f340186811",
+    "date": "2015-05-24T03:18:53Z",
+    "body": "<p>[2015 update]</p>\n<p>With Yosemite OSX I had problems making the .dmg with Disk Utility.</p>\n<p>So even easier (but requires a new *blank* disk!) success path:<br />\n* open &#8220;Disk Utility&#8221; app<br />\n* *carefully* figure out which your source and dest disks are<br />\n* click on the dest/blank disk<br />\n* click &#8220;Restore&#8221; tab to the right<br />\n* drag source disk (from left) to the &#8220;Source&#8221; type-in.<br />\n* drag dest/blank disk (from left) to the &#8220;Destination&#8221; type-in.<br />\n* click &#8220;Restore&#8221; in lower right<br />\n* go watch a movie!</p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+}

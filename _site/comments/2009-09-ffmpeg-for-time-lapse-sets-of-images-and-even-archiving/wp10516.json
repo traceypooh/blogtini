@@ -1,0 +1,11 @@
+{
+    "_id": "wp10516",
+    "name": "tracey pooh",
+    "website": "https://poohBot.com",
+    "email": "ec81ca784652ba2c915455f340186811",
+    "date": "2012-08-10T04:18:05Z",
+    "body": "<p>to tweak/force framerate:</p>\n<p> ffmpeg -framerate 30 -i &#8220;cape%04d.jpg&#8221; -an -vcodec copy output.avi</p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+}

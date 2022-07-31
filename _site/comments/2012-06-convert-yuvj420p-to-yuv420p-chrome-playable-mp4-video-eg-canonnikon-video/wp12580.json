@@ -1,0 +1,11 @@
+{
+    "_id": "wp12580",
+    "name": "tracey pooh",
+    "website": "https://poohBot.com",
+    "email": "ec81ca784652ba2c915455f340186811",
+    "date": "2013-01-05T20:39:19Z",
+    "body": "<p>ah, cool, thanks for mentioning some workarounds and for finding my post helpful, too!</p>\n<p>regarding ffmpeg and aac encoding, as well as qt-faststart (that tool is included in the ffmpeg build), in the future you might find this little recipe to make ffmpeg, that I use at home and work helpful:</p>\n<p><a href=\"https://github.com/traceypooh/deriver-archive/blob/master/ffmpeg-README.sh\" rel=\"nofollow\">https://github.com/traceypooh/deriver-archive/blob/master/ffmpeg-README.sh</a></p>\n",
+    "replyThread": "",
+    "replyID": "",
+    "replyName": ""
+}

@@ -5,7 +5,8 @@
 mydir=${0:a:h}
 cd $mydir/../_site/
 
-POSTS=$HOME/poohbot/content/post/
+POOH=$HOME/poohbot
+POSTS=$POOH/content/post/
 
 # import posts
 for MD in $(cd $POSTS; ls 20??/*.md |tac); do
@@ -23,4 +24,16 @@ done
 for IMG in $(cd $POSTS; ls 20??/img/*.* |tac); do
   echo $IMG
   rsync -a $POSTS/$IMG img/$(basename $IMG)
+done
+
+
+# import comments
+# echo -n post/2019/09-techo-tuesday-make-a-free-website-static-site-generators-and-hugo.md |md5
+#        _site/2019-09-techo-tuesday-make-a-free-website-static-site-generators-and-hugo/index.html
+for DIR in $(find . -type d -name '20*'); do
+  KEY=$(echo $DIR |perl -pe 's=^\./(20\d\d)\-=$1/=')
+  MD5=$(echo -n post/$KEY.md |md5)
+  [ -e $POOH/data/comments/$MD5 ] && (
+    rsync -a $POOH/data/comments/$MD5/  comments/$DIR/
+  )
 done
