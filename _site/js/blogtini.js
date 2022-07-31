@@ -1,6 +1,8 @@
 /*
 Set off each post with its own front-matter YAML section.
 
+xxx `{{< youtube ..`
+
 Your posts or directories of posts, should ideally natural sort in time order, examples:
   2022-11-03-a-birthday.md
   2020-10-31-halloween-fun.md
