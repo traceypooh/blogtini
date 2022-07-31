@@ -30,10 +30,11 @@ done
 # import comments
 # echo -n post/2019/09-techo-tuesday-make-a-free-website-static-site-generators-and-hugo.md |md5
 #        _site/2019-09-techo-tuesday-make-a-free-website-static-site-generators-and-hugo/index.html
-for DIR in $(find . -type d -name '20*'); do
-  KEY=$(echo $DIR |perl -pe 's=^\./(20\d\d)\-=$1/=')
+for DIR in $(find . -type d -name '20*' |cut -b3-); do
+  KEY=$(echo $DIR |perl -pe 's=^(20\d\d)\-=$1/=')
   MD5=$(echo -n post/$KEY.md |md5)
   [ -e $POOH/data/comments/$MD5 ] && (
     rsync -a $POOH/data/comments/$MD5/  comments/$DIR/
+    ls -1 comments/$DIR/*
   )
 done
