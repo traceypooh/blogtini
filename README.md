@@ -41,6 +41,7 @@ git config --local core.hooksPath bin/
   - check `Disable Cross-Origin Restrictions` during development
   - reload html page
   - uncheck `Disable Cross-Origin Restrictions` when done
+- example: file:///Users/tracey/dev/blogtini/index.html
 
 ### Option 2
 (any basic static file webserver will do):
