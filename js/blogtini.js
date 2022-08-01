@@ -76,7 +76,7 @@ https://[YOUR-GITHUB-USERNAME].github.io/blogtini/?setup
 
 
 # make a new file, 'Name your file....' like YYYY-MM-DD-first-test-post.md
-https://github.com/xxx/blogtini/new/main/_site/posts
+https://github.com/xxx/blogtini/new/main/posts
 ---
 title: first test post
 date: xxx
@@ -84,9 +84,8 @@ tags: blogging, testing, blogtini
 ---
 # scroll down, hit [Commit new file]
 
-https://github.com/xxx/blogtini/edit/main/_site/posts/2022-02-02.md
+https://github.com/xxx/blogtini/edit/main/posts/2022-02-02.md
 [<> Code] upper left tab
-[📁  _site]
 [📁  posts]
 click 2022-02-02.md
 upper-mid right [✏️] (hover shows "Edit this file")
@@ -98,7 +97,7 @@ tags:
 
 (scroll down, find [Commit changes] button and press)
 
-https://github.com/xxx/blogtini/edit/main/_site/config.json
+https://github.com/xxx/blogtini/edit/main/config.json
 change, to taste:
 `title`
 `user`
@@ -228,7 +227,7 @@ async function main() {
   state.filedev = location.protocol === 'file:'
   // eslint-disable-next-line no-nested-ternary
   state.is_topdir = location.protocol === 'file:'
-    ? dirs.slice(-2, -1)[0] === '_site' // eg: .../_site/index.html
+    ? dirs.slice(-2, -1)[0] === 'blogtini' // eg: .../blogtini/index.html
     : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
   state.pathrel = state.is_topdir ? './' : '../' // xxxx generalize
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')

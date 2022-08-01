@@ -5,13 +5,13 @@ cd $mydir/..
 
 ./bin/sitemap
 
-UPDATED=$(git diff  --name-only  _config.yml  _site/sitemap.xml  _site/comments/)
+UPDATED=$(git diff  --name-only  sitemap.xml  comments/)
 
 if [ "$UPDATED" != "" ]; then
 	echo '
 	Some files have changed, please `git add` and `git commit`:
 
 '
-	git diff  _config.yml  _site/sitemap.xml  _site/comments/
+	git diff  sitemap.xml  comments/
 	exit 1
 fi

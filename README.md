@@ -16,14 +16,14 @@ git config --local core.hooksPath bin/
 
 ## Best two website/blog setup options
 ### Blog source repository that uses markdown inside html markup files
-- /_site/2022/01/i-baked-a-pie/
-- /_site/2022/01/i-baked-a-pie/index.html
+- /2022/01/i-baked-a-pie/
+- /2022/01/i-baked-a-pie/index.html
   - start with front matter
-    - including `comment: <script type="module" src="../../../theme.js"></script>`
+    - including `comment: <script src="../theme.js" type="module" charset="utf-8"></script>`
   - you can then have the nice url `https://example.com/2022/01/i-baked-a-pie/` where the included JS transforms the markdown to markup
-- your `/_site/sitemap.xml` can reference each of your directory urls
-- manage your `/_site/sitemap.xml` manually or run the `/bin/sitemap` script any time your create or delete a post.  The `/bin/sitemap` script can be found on the blogtini website.
-- have `/_site/theme.js` do an `import` of whatever theme you desire
+- your `/sitemap.xml` can reference each of your directory urls
+- manage your `/sitemap.xml` manually or run the `/bin/sitemap` script any time your create or delete a post.  The `/bin/sitemap` script can be found on the blogtini website.
+- have `/theme.js` do an `import` of whatever theme you desire
 - create a `/_config.yml` file with (minimally):
 ```yml
 keep_files: [
@@ -54,7 +54,6 @@ keep_files: [
 ### Option 2
 (any basic static file webserver will do):
 ```bash
-cd _site
 ( sleep 3; open http://localhost:8000 ) &
 python3 -m http.server
 ```

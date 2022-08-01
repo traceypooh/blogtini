@@ -5,7 +5,7 @@ cd $mydir/..
 
 NAME=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f1)
 REPO=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f2)
-OUTFILE=_site/sitemap.xml
+OUTFILE=sitemap.xml
 
 PREFIX=https://$NAME.github.io/$REPO
 [ -e CNAME ]  &&  PREFIX=https://$(cat CNAME)
@@ -16,10 +16,10 @@ function sitemap() {
   <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   ' >| $OUTFILE
 
-  for htm in $(cd _site && find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r); do
+  for htm in $(find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r); do
       echo -n .
       dir=$(dirname -- "$htm")
-      lastmod=$(git log -1 --format='%cI' -- "_site/$htm")
+      lastmod=$(git log -1 --format='%cI' -- "$htm")
       echo "
   <url>
     <loc>$PREFIX/$dir/</loc>
@@ -30,27 +30,14 @@ function sitemap() {
   echo '</urlset>' >> $OUTFILE
 
 
-  echo "Sitemap: $PREFIX/sitemap.xml" >| _site/robots.txt
+  echo "Sitemap: $PREFIX/sitemap.xml" >| robots.txt
   echo
-}
-
-function keeps() { # xxx only modify keep_files
-  (
-    echo '
-exclude:
-  - bin
-  - README.md
-keep_files:'
-    for i in $(/bin/ls _site); do
-      echo "  - '$i'"
-    done
-  ) >| _config.yml
 }
 
 function comments() {
   (
-    mkdir -p _site/comments
-    cd       _site/comments
+    mkdir -p comments
+    cd       comments
     find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
     for DIR in $(cat index.txt); do
       OUT=$DIR/index.json
@@ -65,5 +52,4 @@ function comments() {
 }
 
 sitemap
-keeps
 comments
