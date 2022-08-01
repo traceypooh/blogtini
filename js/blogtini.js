@@ -153,6 +153,7 @@ import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
 import hljs from 'https://esm.archive.org/highlightjs'
 
+
 import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // eslint-disable-next-line no-console
@@ -575,8 +576,11 @@ function search_setup() {
 }
 
 async function post_full(title, img, date, taglinks, catlinks, body, url) {
+  const entryId = url.replace(/\/index.html*$/, '')
   // eslint-disable-next-line no-use-before-define
-  const comments_htm = await comments_markup(url.replace(/\/index.html*$/, ''))
+  const comments_form = await create_comment_form(entryId)
+  // eslint-disable-next-line no-use-before-define
+  const comments_htm = await comments_markup(entryId)
   // eslint-disable-next-line no-use-before-define
   const date_nice = datetime(date)
 
@@ -595,6 +599,7 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
       ${catlinks ? '📁 Categories: ' : ''} ${catlinks} ${catlinks ? '<br>' : ''}
       ${taglinks ? '🏷️ Tags: ' : ''} ${taglinks}
     </div>
+    ${comments_form}
     ${comments_htm}
   `
 }
@@ -644,11 +649,12 @@ async function comments_markup(path) {
 }
 
 
-function create_comment_form() {
+async function create_comment_form(entryId) {
   if (!cfg.staticman.enabled)
     return ''
 
-  const entryId = 'ee1a8129e56d41d32b4930a5e2f8ebee'
+  window.cfg = cfg // xxx
+
   const xxx = '' // reply stuff
   return `
   <div class="post">
@@ -742,6 +748,8 @@ function finish() {
   document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
 
   document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
+
+  import('./staticman.js')
 
   search_setup()
 }
