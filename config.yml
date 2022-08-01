@@ -1,0 +1,13 @@
+title: Tracey Jaquith - blogtini
+user: traceypooh
+repo: blogtini
+git_provider: github # github or gitlab
+img_site: img/traceymonet-half.jpg
+posts_per_page: 10
+
+staticman:
+  # If using GitHub, go to https://github.com/apps/staticman-net
+  # If using GitLab, just add the GitLab bot, NO need to hit `/connect/v3/...`
+  enabled:  true
+  api:      traceypooh-staticman.dev.archive.org"  # without trailing slash, defaults to "staticman3.herokuapp.com"
+  branch:   main
