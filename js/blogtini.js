@@ -646,48 +646,46 @@ async function comments_markup(path) {
 
 function create_comment_form() {
   if (!cfg.staticman.enabled)
-    return
+    return ''
 
   const entryId = 'ee1a8129e56d41d32b4930a5e2f8ebee'
   const xxx = '' // reply stuff
   return `
   <div class="post">
-
     <div>
       <h2 id="say-something">Say Something</h2>
-        <form id="comment-form" class="new-comment" method="POST">
+      <form id="comment-form" class="new-comment" method="POST">
+        <h3 class="reply-notice hidden">
+          <span class="reply-name"></span>
+          <a class="reply-close-btn button"><i class="fas fa-times"></i></a>
+        </h3>
 
-          <h3 class="reply-notice hidden">
-            <span class="reply-name"></span>
-            <a class="reply-close-btn button"><i class="fas fa-times"></i></a>
-          </h3>
+        <input type="hidden" name="options[entryId]"    value="${entryId}">
+        <input type="hidden" name="fields[replyThread]" value="${xxx}">
+        <input type="hidden" name="fields[replyID]"     value="${xxx}">
+        <input type="hidden" name="fields[replyName]"   value="${xxx}">
 
-          <input type="hidden" name="options[entryId]"    value="${entryId}">
-          <input type="hidden" name="fields[replyThread]" value="${xxx}">
-          <input type="hidden" name="fields[replyID]"     value="${xxx}">
-          <input type="hidden" name="fields[replyName]"   value="${xxx}">
+        <input required="" name="fields[name]" type="text" placeholder="Your Name">
+        <input name="fields[website]" type="text" placeholder="Your Website">
+        <input required="" name="fields[email]" type="email" placeholder="Your Email">
+        <textarea required="" name="fields[body]" placeholder="Your Message" rows="10"></textarea>
 
-          <input required="" name="fields[name]" type="text" placeholder="Your Name">
-          <input name="fields[website]" type="text" placeholder="Your Website">
-          <input required="" name="fields[email]" type="email" placeholder="Your Email">
-          <textarea required="" name="fields[body]" placeholder="Your Message" rows="10"></textarea>
+        <div class="submit-notice">
+          <strong class="submit-notice-text submit-success hidden">Thanks for your comment! It will be shown on the site once it has been approved.</strong>
+          <strong class="submit-notice-text submit-failed hidden">Sorry, there was an error with your submission. Please make sure all required fields have been completed and try again.</strong>
+        </div>
 
-          <div class="submit-notice">
-            <strong class="submit-notice-text submit-success hidden">Thanks for your comment! It will be shown on the site once it has been approved.</strong>
-            <strong class="submit-notice-text submit-failed hidden">Sorry, there was an error with your submission. Please make sure all required fields have been completed and try again.</strong>
-          </div>
-
-          <button type="button" id="comment-form-submit" class="button">Submit</button>
-          <button type="button" id="comment-form-submitted" class="hidden button" disabled="">Submitted</button>
-          <button type="reset"  id="comment-form-reset" class="button">Reset</button>
-        </form>
+        <button type="button" id="comment-form-submit" class="button">Submit</button>
+        <button type="button" id="comment-form-submitted" class="hidden button" disabled="">Submitted</button>
+        <button type="reset"  id="comment-form-reset" class="button">Reset</button>
+      </form>
     </div>
 
 
     <div class="comments-container">
       <h2>Comments</h2><p>Nothing yet.</p>
-
     </div>
+
   </div>`
 }
 
