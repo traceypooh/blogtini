@@ -1,3 +1,4 @@
+/* eslint-disable */
 (function() {
   let form = document.querySelector('.new-comment');
   if (form) {
@@ -7,11 +8,11 @@
       form.querySelector('#comment-form-submitted').classList.remove('hidden'); // show "submitted"
 
       // Construct form action URL form JS to avoid spam
-      let api = '{{ .api }}';
-      let gitProvider = '{{ .gitprovider }}';
-      let username = '{{ .username }}';
-      let repo = '{{ .repo }}';
-      let branch = '{{ .branch }}';
+      let api = cfg.staticman.api
+      let gitProvider = cfg.git_provider
+      let username = cfg.user
+      let repo = cfg.repo
+      let branch = cfg.staticman.branch
       let url = ['https:/', api, 'v3/entry', gitProvider, username, repo, branch, 'comments'].join('/');
 
       // Convert form fields to a JSON-friendly string
