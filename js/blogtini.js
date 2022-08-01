@@ -1,5 +1,4 @@
 /*
-Set off each post with its own front-matter YAML section.
 
 xxx `{{< youtube ..`
 
@@ -10,15 +9,6 @@ Your posts or directories of posts, should ideally natural sort in time order, e
   2022/11/03/a-birthday.md
   2020/10/31/halloween-fun.md
 
-
-GitHub Pages (top-level dir options):
-- /README.md      (contains all your posts)
-Uses GH API to retrieve *each* markdown file unless your repo has required:
-  - top-level `/_config.yml` file with our setting: `markdown_ext: "nope"`
-  - each markdown file has a top extra dummy/sacrificial front-matter
-       @see top 3 lines: https://raw.githubusercontent.com/traceypooh/test1/main/README.md
-       (due to limitations w/ `jekyll` in GitHub Pages)
-(**) uses GH trees API single call to list all files in repo
 
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
 

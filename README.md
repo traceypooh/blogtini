@@ -7,7 +7,6 @@ live at:
 ## Hooks
 - Whenever you create or delete a post, we want your `sitemap` updated.
 - Whenever someone comments on your site, we run a small script.
-- `github` uses `jekyll`, so we need to keep your source files AS IS.
 
 Thus, we suggest you use our "pre commit" and "post merge" `git` 'hooks' to automate the above "housekeeping".  You can set them up like this:
 ```sh
@@ -16,6 +15,7 @@ git config --local core.hooksPath bin/
 
 ## Best two website/blog setup options
 ### Blog source repository that uses markdown inside html markup files
+- /.nojekyll
 - /2022/01/i-baked-a-pie/
 - /2022/01/i-baked-a-pie/index.html
   - start with front matter
@@ -24,16 +24,7 @@ git config --local core.hooksPath bin/
 - your `/sitemap.xml` can reference each of your directory urls
 - manage your `/sitemap.xml` manually or run the `/bin/sitemap` script any time your create or delete a post.  The `/bin/sitemap` script can be found on the blogtini website.
 - have `/theme.js` do an `import` of whatever theme you desire
-- create a `/_config.yml` file with (minimally):
-```yml
-keep_files: [
-  sitemap.xml,
-  theme.css,
-  theme.js,
-  "2022",
-  "2021",
-]
-```
+
 
 ### Blog source repository that uses markdown files
 - /2022/01/i-baked-a-pie.md
