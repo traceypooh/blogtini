@@ -52,9 +52,6 @@ Use JS redirect to a URL that server responds w/ 404 HTTP status (for example /n
 
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
 xxx pagination
-xxx body formatting: highlightjs
-xxx body formatting: bold, ital, lists, links...
-xxx --- hr, table headers disambiguate for multi-post single file...
 xxx JS/CSS versioning..
 
 github.com cookie: dotcom_user
