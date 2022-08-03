@@ -241,15 +241,10 @@ async function main() {
     <div id="main-row" class="row">
       <div class="col-md-10 order-md-2">
         <div id="posts"></div>
-        <div id="spa"></div>
       </div>
       <div class="nav-left col-md-2 order-md-1">
-        <h5>Categories</h5>
-        <div id="nav-cats">
-        </div>
-        <h5>Tags</h5>
-        <div id="nav-tags">
-        </div>
+        <div id="categories"></div>
+        <div id="tags"></div>
       </div>
     </div>
   </div>`;
@@ -527,8 +522,8 @@ async function storage_loop() {
       ? `${state.pathrel}${cfg.img_site}`
       : (featured.match(/\//) ? featured : `${state.pathrel}img/${featured}`)
 
-    const taglinks =       tags.map((e) => `<a href="${state.toprel}?tags/${e}">${e}</a>`/*  */).join(' · ').trim()
-    const catlinks = categories.map((e) => `<a href="${state.toprel}?categories/${e}">${e}</a>`).join(' · ').trim()
+    const taglinks =       tags.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
+    const catlinks = categories.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?categories/${e}">${e}</a></li>`).join(' ').trim()
 
     const date_short = date.toString().split(' ').slice(0, 4).join(' ')
 
@@ -536,16 +531,18 @@ async function storage_loop() {
     if (filter_post) {
       const body = md2html.makeHtml(body_raw)
 
-      // eslint-disable-next-line no-use-before-define
-      htm += await post_full(title, img, date_short, taglinks, catlinks, body, ref)
+      document.getElementsByTagName('body')[0].innerHTML =
+        // eslint-disable-next-line no-use-before-define
+        await post_full(title, img, date_short, taglinks, catlinks, body, ref)
     } else {
       const preview = body_raw.replace(/</g, '&lt;')
       // eslint-disable-next-line no-use-before-define
-      htm +=       post_card(title, img, date_short, taglinks, catlinks, preview, ref)
+      htm +=  post_card(title, img, date_short, taglinks, catlinks, preview, ref)
     }
   }
 
-  document.getElementById(filter_post ? 'spa' : 'posts').insertAdjacentHTML('beforeend', htm)
+  if (!filter_post)
+    document.getElementById('posts').insertAdjacentHTML('beforeend', htm)
 }
 
 
@@ -578,29 +575,59 @@ function search_setup() {
 async function post_full(title, img, date, taglinks, catlinks, body, url) {
   const entryId = url.replace(/\/index.html*$/, '')
   // eslint-disable-next-line no-use-before-define
-  const comments_form = await create_comment_form(entryId)
-  // eslint-disable-next-line no-use-before-define
   const comments_htm = await comments_markup(entryId)
+  // eslint-disable-next-line no-use-before-define
+  const comments_form = await create_comment_form(entryId, comments_htm)
   // eslint-disable-next-line no-use-before-define
   const date_nice = datetime(date)
 
   return `
-    <h3 class="d-none d-md-block float-md-end">${date_nice}</h3>
-    <h1>${title}</h1>
-    <h3 class="d-md-none" style="text-align:center">${date_nice}</h3>
-    <div class="float-none" style="clear:both">
-      <img src="${img}" class="img-fluid rounded mx-auto d-block">
+    <div id="wrapper">
+      <main id="site-main">
+        <article>
+          <div class="post single">
+            <header>
+              <div class="title">
+                <h2><a href="${url}">${title}</a></h2>
+              </div>
+              <div class="meta">
+                <time datetime="${date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
+                <p>1-Minute Read</p> <!-- xxx -->
+              </div>
+            </header>
+
+            <div class="float-none" style="clear:both">
+              <img src="${img}" class="img-fluid rounded mx-auto d-block">
+            </div>
+            <div>
+              ${body}
+            </div>
+
+            <footer>
+              <div class="stats">
+                <ul class="categories">
+                  ${catlinks}
+                </ul>
+                <ul class="tags">
+                  ${taglinks}
+                </ul>
+              </div>
+            </footer>
+
+          </div>
+
+          ${comments_form}
+        </article>
+      </main>
+      <section id="site-sidebar">
+        <section id="recent-posts">
+        </secton>
+        <section id="categories">
+        </section>
+        <section id="tags" style="text-align:center">
+        </section>
+      </section>
     </div>
-    <div>
-      ${body}
-    </div>
-    <hr>
-    <div>
-      ${catlinks ? '📁 Categories: ' : ''} ${catlinks} ${catlinks ? '<br>' : ''}
-      ${taglinks ? '🏷️ Tags: ' : ''} ${taglinks}
-    </div>
-    ${comments_form}
-    ${comments_htm}
   `
 }
 
@@ -630,26 +657,34 @@ function post_card(title, img, date, taglinks, catlinks, body, url) {
 
 async function comments_markup(path) {
   const posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`)).split('\n')
-  if (!posts_with_comments.includes(path)) return ''
+  if (!posts_with_comments.includes(path)) return null
 
   const comments = (await fetcher(`${state.pathrel}comments/${path}/index.json`)).filter((e) => Object.keys(e).length)
 
+  const refId = 'xxx'
+
   return comments.map((e) => `
-    <hr>
-    <img class="comment-avatar circle"
-      style="border-radius:25px"
-      src="https://www.gravatar.com/avatar/${e.email}?s=100"
-      alt="${e.name}'s Gravatar">
-    ${e.name}
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${datetime(e.date)}
-    <br>
+<article id="${refId}" class="comment" data-reply-thread="${refId}">
+  <header>
+    <img class="comment-avatar circle" src="https://www.gravatar.com/avatar/${e.email}?s=100" alt="${e.name}'s Gravatar">
+    <div>
+      <div class="comment-author-container">
+        <h3 class="comment-author">${e.name}</h3>
+        <a class="comment-date" href="#${refId}" title="Permalink to this comment">
+          <time datetime="${e.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(e.date)}</time>
+        </a>
+      </div>
+      <a class="comment-reply-btn" href="#say-something">Reply</a>
+    </div>
+  </header>
+  <div class="comment-content">
     ${e.body}
-    `).join('')
+  </div>
+</article>`).join('')
 }
 
 
-async function create_comment_form(entryId) {
+async function create_comment_form(entryId, comments) {
   if (!cfg.staticman.enabled)
     return ''
 
@@ -689,7 +724,8 @@ async function create_comment_form(entryId) {
 
 
     <div class="comments-container">
-      <h2>Comments</h2><p>Nothing yet.</p>
+      <h2>Comments</h2>
+      ${comments ?? '<p>Nothing yet.</p>'}
     </div>
 
   </div>`
@@ -725,13 +761,22 @@ function datetime(date) {
 function finish() {
   let htm
 
-  htm = '<ul>'
+  htm = `
+  <header>
+    <h1><a href="${state.toprel}?categories">Categories</a></h1>
+  </header>
+  <ul>`
+
   for (const cat of Object.keys(state.cats).sort())
     htm += `<li><a href="${state.toprel}?categories/${cat}">${cat.toLowerCase()}</a> ${state.cats[cat].length}</li>`
   htm += '</ul>'
-  document.getElementById('nav-cats').insertAdjacentHTML('beforeend', htm)
+  document.getElementById('categories')?.insertAdjacentHTML('beforeend', htm)
 
-  htm = ''
+
+  htm = `
+  <header>
+    <h1><a href="${state.toprel}?tags">Tags</a></h1>
+  </header>`
   const rem_min = 1
   const rem_max = 2.5
 
@@ -745,7 +790,7 @@ function finish() {
     const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
     htm += `<a href="${state.toprel}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
   }
-  document.getElementById('nav-tags').insertAdjacentHTML('beforeend', htm)
+  document.getElementById('tags')?.insertAdjacentHTML('beforeend', htm)
 
   document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
 
