@@ -37,13 +37,7 @@
   margin: 10px;
   width: var(--tile-width);
 }
-.card h2 {
-  font-size: 22px;
-  margin-top: 5px;
-}
-a {
-  text-decoration: none;
-}
+
 .card img {
   object-fit: cover;
   width: var(--tile-width);

@@ -189,6 +189,8 @@ let cfg = {
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png' // xxx
 }
 
+const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
+
 
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
@@ -476,7 +478,6 @@ async function parse_posts(markdowns) {
 
 async function storage_loop() {
   showdown.setFlavor('github') // xxx?
-  const md2html = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
 
   let htm = ''
   for (const [ref, doc] of Object.entries(STORAGE.docs)) {
@@ -523,16 +524,17 @@ async function storage_loop() {
     const date_short = date.toString().split(' ').slice(0, 4).join(' ')
 
 
-    if (filter_post) {
-      const body = md2html.makeHtml(body_raw)
+    const post = {
+      date: date_short, title, img, taglinks, catlinks, body_raw, url: ref,
+    }
 
+    if (filter_post) {
       document.getElementsByTagName('body')[0].innerHTML =
         // eslint-disable-next-line no-use-before-define
-        await post_full(title, img, date_short, taglinks, catlinks, body, ref)
+        await post_full(post)
     } else {
-      const preview = body_raw.replace(/</g, '&lt;')
       // eslint-disable-next-line no-use-before-define
-      htm +=  post_card(title, img, date_short, taglinks, catlinks, preview, ref)
+      htm +=  post_card(post)
     }
   }
 
@@ -567,14 +569,16 @@ function search_setup() {
     log({ query }, searcher.search(query))
 }
 
-async function post_full(title, img, date, taglinks, catlinks, body, url) {
-  const entryId = url.replace(/\/index.html*$/, '')
+async function post_full(post) {
+  const body = MD2HTM.makeHtml(post.body_raw)
+
+  const entryId = post.url.replace(/\/index.html*$/, '')
   // eslint-disable-next-line no-use-before-define
   const comments_htm = await comments_markup(entryId)
   // eslint-disable-next-line no-use-before-define
   const comments_form = await create_comment_form(entryId, comments_htm)
   // eslint-disable-next-line no-use-before-define
-  const date_nice = datetime(date)
+  const date_nice = datetime(post.date)
 
   return `
     ${'' /* eslint-disable-next-line no-use-before-define */}
@@ -584,30 +588,24 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
       <div class="post single">
         <header>
           <div class="title">
-            <h2><a href="${url}">${title}</a></h2>
+            <h2><a href="${post.url}">${post.title}</a></h2>
           </div>
           <div class="meta">
-            <time datetime="${date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
+            <time datetime="${post.date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
             <p>1-Minute Read</p> <!-- xxx -->
           </div>
         </header>
 
         <div class="float-none" style="clear:both">
-          <img src="${img}" class="img-fluid rounded mx-auto d-block">
+          <img src="${post.img}" class="img-fluid rounded mx-auto d-block">
         </div>
         <div>
           ${body}
         </div>
 
         <footer>
-          <div class="stats">
-            <ul class="categories">
-              ${catlinks}
-            </ul>
-            <ul class="tags">
-              ${taglinks}
-            </ul>
-          </div>
+          ${'' /* eslint-disable-next-line no-use-before-define */}
+          ${post_stats(post)}
         </footer>
 
       </div>
@@ -620,26 +618,115 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
 }
 
 
-function post_card(title, img, date, taglinks, catlinks, body, url) {
+function post_card(post) {
+  const preview = post.body_raw.replace(/</g, '&lt;')
+
   // eslint-disable-next-line no-use-before-define
-  const date_nice = datetime(date)
+  const date_nice = datetime(post.date)
 
   return `
     <div class="card card-body bg-light">
-      <a href="${location.protocol === 'file:' ? url : url.replace(/\/index.html*$/, '')}">
-        ${img ? `<img src="${img}">` : ''}
-        <h2>${title}</h2>
+      <a href="${location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '')}">
+        ${post.img ? `<img src="${post.img}">` : ''}
+        <h2>${post.title}</h2>
       </a>
       ${date_nice}
       <div>
-        ${friendly_truncate(body, 200)}
+        ${friendly_truncate(preview, 200)}
       </div>
-      ${catlinks ? '📁 ' : ''}
-      ${catlinks}
-      ${catlinks ? '<br>' : ''}
-      ${taglinks ? '🏷️ ' : ''}
-      ${taglinks}
+      ${'' /* eslint-disable-next-line no-use-before-define */}
+      ${post_stats(post)}
     </div>`
+}
+
+
+function post1(post) {
+  return `
+<article class="post">
+  ${post1_header()}
+  <div class="content">
+    ${post1_featured()}
+    {{ $.Scratch.Set "summary" ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
+    {{ $.Scratch.Get "summary" }}
+  </div>
+  <footer>
+    <a href="{{ .RelPermalink }}" class="button big">{{ i18n "read_more" }}</a>
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${post_stats(post)}
+  </footer>
+</article>
+`
+}
+
+function post1_header(post) {
+  return `
+<header>
+  <div class="title">
+    <h2><a href="${post.url}">${post.title}</a></h2>
+
+    {{ with .Description }}
+      <p>{{ . }}</p>
+    {{ end }}
+  </div>
+  {{ if eq .Type "post"}}
+  <div class="meta">
+    <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
+    ${post.author ? `<p>${post.author}</p>` /* chexxx */ : ''}
+    {{ if .Site.Params.ReadingTime }}<p>{{ i18n "reading_time" .ReadingTime }}</p>{{ end }}
+  </div>
+  {{ end }}
+</header>
+`
+}
+
+function post1_featured() {
+  return `
+  {{- if or .Params.images .Params.featured -}}
+  {{- $src := "" -}}
+  {{- $alt := "" -}}
+  {{- $stretch := .Site.Params.imageStretch -}}
+  {{- $blur := .Site.Params.removeBlur -}}
+  {{- if .Params.featured -}}
+    {{- $src = (cond (eq "https://" (substr .Params.featured 0 8)) (.Params.featured) ((path.Join "post" (.Page.Date.Format "2006") "img" .Params.featured) | relURL)) -}}
+    {{- $alt = .Params.featuredalt -}}
+    {{- with .Params.featuredstretch -}}
+      {{- $stretch = . -}}
+    {{- end -}}
+    {{- with .Params.removeBlur -}}
+      {{- $blur = . -}}
+    {{- end -}}
+  {{- else if .Params.images -}}
+    {{- range first 1 .Params.images -}}
+      {{- $src = .src | relURL -}}
+      {{- $alt = .alt -}}
+      {{- with .stretch -}}
+        {{- $stretch = . -}}
+      {{- end -}}
+      {{- with .removeBlur -}}
+        {{- $blur = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  <a href="{{ $.Page.RelPermalink }}" class="image featured {{ .Params.class }}"{{ if not ($blur) }} style="--bg-image: url('{{ $src }}');"{{ end }}>
+    <img {{ with $stretch }}class="{{ if or (eq (lower .) "vertical") (eq (lower .) "v") }}stretchV{{ else if or (eq (lower .) "horizontal") (eq (lower .) "h") }}stretchH{{ else if or (eq (lower .) "cover") (eq (lower .) "c") }}cover{{ end }}" {{ end }}src="{{ $src }}" alt="{{ $alt }}">
+  </a>
+  {{ if .Params.featuredcaption }}
+    <center>{{ .Params.featuredcaption | safeHTML }}</center>
+  {{ end }}
+{{- end -}}`
+}
+
+
+function post_stats(post) {
+  return `
+  <div class="stats">
+  <ul class="categories">
+    ${post.catlinks}
+  </ul>
+  <ul class="tags">
+    ${post.taglinks}
+  </ul>
+  </div>`
 }
 
 
