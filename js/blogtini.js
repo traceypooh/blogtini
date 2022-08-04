@@ -1,5 +1,6 @@
 /*
 
+xxx mobile size tables
 xxx `{{< youtube ..`
 
 Your posts or directories of posts, should ideally natural sort in time order, examples:
@@ -158,7 +159,6 @@ import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.j
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
-const blogtini = 'https://traceypooh.github.io/blogtini/img/blogtini.png' // xxx
 const state = {
   tags: {},
   cats: {},
@@ -186,6 +186,7 @@ let cfg = {
   img_site: '',
   posts_per_page: 10,
   branch: 'main', // xxxx autodetect or 'master'
+  site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png' // xxx
 }
 
 
@@ -235,20 +236,6 @@ async function main() {
     head_insert_titles('Tracey Jaquith - blogtini') // xxx
   }
 
-  document.getElementsByTagName('body')[0].innerHTML = `
-  <div class="container">
-    <div id="welcome" class="bg-light">
-    </div>
-    <div id="main-row" class="row">
-      <div class="col-md-10 order-md-2">
-        <div id="posts"></div>
-      </div>
-      <div class="nav-left col-md-2 order-md-1">
-        <div id="categories"></div>
-        <div id="tags"></div>
-      </div>
-    </div>
-  </div>`;
 
   // default expect github pages hostname - user can override via their own `config.yml` file
   [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
@@ -262,18 +249,16 @@ async function main() {
   add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
 
 
-  document.getElementById('welcome').insertAdjacentHTML('afterbegin', `
-    <img id="blogtini" src="${blogtini}">
-    <h1>
-      <a href="${state.toprel}">
-        ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}
-        ${cfg.title}
-      </a>
-    </h1>
-  `)
+  document.getElementsByTagName('body')[0].innerHTML = `
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_start()}
 
-  if (!filter_post)
-    document.getElementById('main-row').classList.add('g-0')
+    <div id="posts"></div>
+
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_end()}`;
+
+
 
 /*
 cfg.repo = 'blogtini'
@@ -592,53 +577,46 @@ async function post_full(title, img, date, taglinks, catlinks, body, url) {
   const date_nice = datetime(date)
 
   return `
-    <div id="wrapper">
-      <main id="site-main">
-        <article>
-          <div class="post single">
-            <header>
-              <div class="title">
-                <h2><a href="${url}">${title}</a></h2>
-              </div>
-              <div class="meta">
-                <time datetime="${date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
-                <p>1-Minute Read</p> <!-- xxx -->
-              </div>
-            </header>
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_start()}
 
-            <div class="float-none" style="clear:both">
-              <img src="${img}" class="img-fluid rounded mx-auto d-block">
-            </div>
-            <div>
-              ${body}
-            </div>
-
-            <footer>
-              <div class="stats">
-                <ul class="categories">
-                  ${catlinks}
-                </ul>
-                <ul class="tags">
-                  ${taglinks}
-                </ul>
-              </div>
-            </footer>
-
+    <article>
+      <div class="post single">
+        <header>
+          <div class="title">
+            <h2><a href="${url}">${title}</a></h2>
           </div>
+          <div class="meta">
+            <time datetime="${date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
+            <p>1-Minute Read</p> <!-- xxx -->
+          </div>
+        </header>
 
-          ${comments_form}
-        </article>
-      </main>
-      <section id="site-sidebar">
-        <section id="recent-posts">
-        </secton>
-        <section id="categories">
-        </section>
-        <section id="tags" style="text-align:center">
-        </section>
-      </section>
-    </div>
-  `
+        <div class="float-none" style="clear:both">
+          <img src="${img}" class="img-fluid rounded mx-auto d-block">
+        </div>
+        <div>
+          ${body}
+        </div>
+
+        <footer>
+          <div class="stats">
+            <ul class="categories">
+              ${catlinks}
+            </ul>
+            <ul class="tags">
+              ${taglinks}
+            </ul>
+          </div>
+        </footer>
+
+      </div>
+
+      ${comments_form}
+    </article>
+
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_end()}`
 }
 
 
@@ -742,6 +720,37 @@ async function create_comment_form(entryId, comments) {
     </div>
 
   </div>`
+}
+
+
+function site_start() {
+  return `
+  <div id="wrapper">
+    <div class="bg-light">
+    <img id="blogtini" src="${cfg.site_header}">
+      <h1>
+        <a href="${state.toprel}">
+          ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}
+          ${cfg.title}
+        </a>
+      </h1>
+    </div>
+    <main id="site-main">`
+}
+
+function site_end() {
+  return `
+    </main>
+    <section id="site-sidebar">
+      <section id="recent-posts">
+      </secton>
+      <section id="categories">
+      </section>
+      <section id="tags" style="text-align:center">
+      </section>
+    </section>
+  </div><!--//#wrapper-->
+  <a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
 }
 
 

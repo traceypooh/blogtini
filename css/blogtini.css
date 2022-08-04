@@ -55,14 +55,3 @@ a {
 #blogtini {
   float: right;
 }
-#welcome a {
-  color: initial;
-}
-#welcome img {
-  margin: 10px;
-  max-width: 40vw;
-}
-
-#main-row {
-  clear: right;
-}
