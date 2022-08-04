@@ -166,6 +166,7 @@ const state = {
   use_github_api_for_files: null,
   try_github_api_tree: false,
   num_posts: 0,
+  pathrel: '',
 }
 const search = decodeURIComponent(location.search)
 const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
@@ -197,14 +198,14 @@ async function fetcher(url)  {
     if (!ret.ok) {
       // safari file:// doesnt set .ok properly...
       if (!location.protocol.startsWith('file') || url.startsWith('http'))
-        return false
+        return null
     }
     const tmp = (text ? await ret.text() : await ret.json())
     return tmp
 
     /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
   } catch {}
-  return false
+  return null
 }
 
 async function main() {
@@ -216,7 +217,7 @@ async function main() {
   state.is_topdir = location.protocol === 'file:'
     ? dirs.slice(-2, -1)[0] === 'blogtini' // eg: .../blogtini/index.html
     : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
-  state.pathrel = state.is_topdir ? './' : '../' // xxxx generalize
+  state.pathrel = state.is_topdir ? '' : '../' // xxxx generalize
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
@@ -317,13 +318,15 @@ async function storage_create() {
         state.use_github_api_for_files = !contents
       }
       files.push(file)
-      proms.push(contents || fetch(
-        // eslint-disable-next-line no-nested-ternary
-        (state.use_github_api_for_files
-          ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-          : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
-        ).concat(url),
-      ))
+
+      const fetchee = // eslint-disable-next-line no-nested-ternary
+      (state.use_github_api_for_files
+        ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
+        : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
+      ).concat(url)
+      log({ file, url, fetchee })
+
+      proms.push(contents || fetch(fetchee))
 
       if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
         continue // keep building up requests
@@ -350,7 +353,7 @@ async function find_posts() {
   const FILES = []
 
   if (!FILES.length) {
-    const urls = (await fetcher(`${state.pathrel}sitemap.xml`)).split('<loc>').slice(1)
+    const sitemap_urls = (await fetcher(`${state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
       .map((e) => e.split('</loc>').slice(0, 1).join(''))
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => e.replace('https://blogtini.com/', '').replace(/https:\/\/[^.]+\.github\.io\/[^/]+\//, ''))
@@ -359,11 +362,18 @@ async function find_posts() {
       .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
       // eslint-disable-next-line no-confusing-arrow
       .map((e) => e.replace(/http:\/\/localhost:\d\d\d\d\//, '')) // xxxx
-    log({ urls })
-    FILES.push(...urls)
+
     state.try_github_api_tree = false
     state.use_github_api_for_files = false
-    state.sitemap_htm = true
+
+    if (sitemap_urls) {
+      log({ sitemap_urls })
+      FILES.push(...sitemap_urls)
+      state.sitemap_htm = true
+    } else {
+      FILES.push(location.pathname) // xxx
+      state.sitemap_htm = false
+    }
   }
 
   // check for simple dir of .md/.markdown files -- w/ webserver that responds w/ dir listings:
@@ -656,10 +666,13 @@ function post_card(title, img, date, taglinks, catlinks, body, url) {
 
 
 async function comments_markup(path) {
-  const posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`)).split('\n')
-  if (!posts_with_comments.includes(path)) return null
+  let posts_with_comments
+  try {
+    posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`))?.split('\n')
+  } catch {}
+  if (!posts_with_comments?.includes(path)) return null
 
-  const comments = (await fetcher(`${state.pathrel}comments/${path}/index.json`)).filter((e) => Object.keys(e).length)
+  const comments = (await fetcher(`${state.pathrel}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length)
 
   const refId = 'xxx'
 
@@ -685,7 +698,7 @@ async function comments_markup(path) {
 
 
 async function create_comment_form(entryId, comments) {
-  if (!cfg.staticman.enabled)
+  if (!cfg.staticman?.enabled)
     return ''
 
   window.cfg = cfg // xxx
