@@ -186,7 +186,8 @@ let cfg = {
   img_site: '',
   posts_per_page: 10,
   branch: 'main', // xxxx autodetect or 'master'
-  site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png' // xxx
+  site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
+  reading_time: true,
 }
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
@@ -258,8 +259,7 @@ async function main() {
     <div id="posts"></div>
 
     ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_end()}`;
-
+    ${site_end()}`
 
 
 /*
@@ -525,7 +525,7 @@ async function storage_loop() {
 
 
     const post = {
-      date: date_short, title, img, taglinks, catlinks, body_raw, url: ref,
+      date: date_short, title, img, taglinks, catlinks, body_raw, url: ref, type: 'post' /* xxx */,
     }
 
     if (filter_post) {
@@ -577,8 +577,6 @@ async function post_full(post) {
   const comments_htm = await comments_markup(entryId)
   // eslint-disable-next-line no-use-before-define
   const comments_form = await create_comment_form(entryId, comments_htm)
-  // eslint-disable-next-line no-use-before-define
-  const date_nice = datetime(post.date)
 
   return `
     ${'' /* eslint-disable-next-line no-use-before-define */}
@@ -586,15 +584,8 @@ async function post_full(post) {
 
     <article>
       <div class="post single">
-        <header>
-          <div class="title">
-            <h2><a href="${post.url}">${post.title}</a></h2>
-          </div>
-          <div class="meta">
-            <time datetime="${post.date /* xxx 2022-07-02 00:00:00 +0000 UTC */}">${date_nice}</time>
-            <p>1-Minute Read</p> <!-- xxx -->
-          </div>
-        </header>
+        ${'' /* eslint-disable-next-line no-use-before-define */}
+        ${post_header(post)}
 
         <div class="float-none" style="clear:both">
           <img src="${post.img}" class="img-fluid rounded mx-auto d-block">
@@ -643,8 +634,10 @@ function post_card(post) {
 function post1(post) {
   return `
 <article class="post">
-  ${post1_header()}
+  ${'' /* eslint-disable-next-line no-use-before-define */}
+  ${post_header(post)}
   <div class="content">
+    ${'' /* eslint-disable-next-line no-use-before-define */}
     ${post1_featured()}
     {{ $.Scratch.Set "summary" ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
     {{ $.Scratch.Get "summary" }}
@@ -658,23 +651,20 @@ function post1(post) {
 `
 }
 
-function post1_header(post) {
+function post_header(post) {
   return `
 <header>
   <div class="title">
     <h2><a href="${post.url}">${post.title}</a></h2>
-
-    {{ with .Description }}
-      <p>{{ . }}</p>
-    {{ end }}
+    ${post.description ? `<p>${post.description}</p>` /* chexxx */ : ''}
   </div>
-  {{ if eq .Type "post"}}
-  <div class="meta">
-    <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
-    ${post.author ? `<p>${post.author}</p>` /* chexxx */ : ''}
-    {{ if .Site.Params.ReadingTime }}<p>{{ i18n "reading_time" .ReadingTime }}</p>{{ end }}
-  </div>
-  {{ end }}
+  ${post.type === 'post' ? `
+    <div class="meta">
+      ${'' /* eslint-disable-next-line no-use-before-define */}
+      <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
+      ${post.author ? `<p>${post.author}</p>` /* chexxx */ : ''}
+      ${cfg.reading_time ? /* xxx */ `<p>${3}-Minute Read</p>` : ''}
+    </div>` : ''}
 </header>
 `
 }
@@ -734,6 +724,7 @@ async function comments_markup(path) {
   let posts_with_comments
   try {
     posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`))?.split('\n')
+    // eslint-disable-next-line no-empty
   } catch {}
   if (!posts_with_comments?.includes(path)) return null
 
@@ -749,6 +740,7 @@ async function comments_markup(path) {
       <div class="comment-author-container">
         <h3 class="comment-author">${e.name}</h3>
         <a class="comment-date" href="#${refId}" title="Permalink to this comment">
+          ${'' /* eslint-disable-next-line no-use-before-define */}
           <time datetime="${e.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(e.date)}</time>
         </a>
       </div>
