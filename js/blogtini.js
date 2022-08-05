@@ -188,6 +188,12 @@ let cfg = {
   branch: 'main', // xxxx autodetect or 'master'
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
   reading_time: true,
+  sidebar: {
+    post_amount: 5,
+    categories: true,
+    categories_by_count: true,
+  },
+  view_more_posts_link: '/post/', // xxx
 }
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
@@ -245,7 +251,7 @@ async function main() {
 
   tmp = yml.load(await fetcher(`${state.pathrel}config.yml`))
   if (tmp)
-    cfg = { ...cfg, ...tmp }
+    cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -448,8 +454,8 @@ async function parse_posts(markdowns) {
       log({ json })
 
       const title      = json.title?.trim() ?? ''
-      const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-'))
-      const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-'))
+      const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
+      const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
       const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
       if (!date) {
@@ -817,18 +823,32 @@ function site_start() {
 function site_end() {
   return `
     </main>
-    <section id="site-sidebar">
-      <section id="recent-posts">
-      </secton>
-      <section id="categories">
-      </section>
-      <section id="tags" style="text-align:center">
-      </section>
-    </section>
+    ${site_sidebar()}
   </div><!--//#wrapper-->
   <a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
 }
 
+function site_sidebar() {
+  return `
+<section id="site-sidebar">
+  ${cfg.sidebar.post_amount ? '<section id="recent-posts"></section>' : ''}
+  ${cfg.sidebar.categories ? '<section id="categories"></section>' : ''}
+  <section id="tags" style="text-align:center"></section>
+
+  ${cfg.sidebar.about ? `
+    <section id="mini-bio">
+      <header>
+        <h1>About</h1>
+      </header>
+      <p> ${safeHTML(cfg.sidebar.about)}</p>
+      <footer>
+        <a href="${state.toprel}about" class="button">Learn More</a>
+      </footer>
+    </section>` : ''}
+</section>`
+}
+
+function safeHTML(str) { return str } // xxx
 
 function slugify(str) {
   return str.toLowerCase()
@@ -859,16 +879,41 @@ function datetime(date) {
 function finish() {
   let htm
 
-  htm = `
-  <header>
-    <h1><a href="${state.toprel}?categories">Categories</a></h1>
-  </header>
-  <ul>`
+  if (cfg.sidebar.post_amount) {
+    const docs = Object.values(STORAGE.docs)
+    const more = docs.length > cfg.sidebar.post_amount
 
-  for (const cat of Object.keys(state.cats).sort())
-    htm += `<li><a href="${state.toprel}?categories/${cat}">${cat.toLowerCase()}</a> ${state.cats[cat].length}</li>`
-  htm += '</ul>'
-  document.getElementById('categories')?.insertAdjacentHTML('beforeend', htm)
+    document.getElementById('recent-posts')?.insertAdjacentHTML('beforeend', `
+  <header>
+    <h1>Recent Posts</h1>
+  </header>
+  ${docs.slice(0, cfg.sidebar.post_amount).map((post) => `
+  <article class="mini-post">
+    ${post_featured(post)}
+    <header>
+      <h2><a href="${post.url}">${post.title}</a></h2>
+      <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
+    </header>
+  </article>`).join('')}
+  ${more ? `
+  <footer>
+    <a href="${cfg.view_more_posts_link}" class="button">See More</a>
+  </footer>` : ''}`)
+  }
+
+
+  if (cfg.sidebar.categories) { // xxx could support cfg.sidebar.categories_by_count option..
+    htm = `
+    <header>
+      <h1><a href="${state.toprel}?categories">Categories</a></h1>
+    </header>
+    <ul>`
+
+    for (const cat of Object.keys(state.cats).sort())
+      htm += `<li><a href="${state.toprel}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${state.cats[cat].length}</span></li>`
+    htm += '</ul>'
+    document.getElementById('categories')?.insertAdjacentHTML('beforeend', htm)
+  }
 
 
   htm = `

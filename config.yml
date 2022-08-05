@@ -6,6 +6,15 @@ img_site: img/traceymonet-half.jpg
 posts_per_page: 10
 remove_blur: true
 
+sidebar:
+  about: tracey is a nonstop dance party.  so you dont have to.  dont ask me about <a href=/2019-08-meesa-3-k8s-annie/>containers</a>.  thanks for dropping by today.  you look nice.
+  post_amount: 5
+  # set to show or to hide categories in the sidebar
+  categories: true
+  # Sets Categories to sort by number of posts instead of alphabetical
+  categories_by_count: true
+
+
 staticman:
   # If using GitHub, go to https://github.com/apps/staticman-net
   # If using GitLab, just add the GitLab bot, NO need to hit `/connect/v3/...`
