@@ -4,6 +4,7 @@ repo: blogtini
 git_provider: github # github or gitlab
 img_site: img/traceymonet-half.jpg
 posts_per_page: 10
+remove_blur: true
 
 staticman:
   # If using GitHub, go to https://github.com/apps/staticman-net

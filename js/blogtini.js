@@ -525,7 +525,7 @@ async function storage_loop() {
 
 
     const post = {
-      date: date_short, title, img, taglinks, catlinks, body_raw, url: ref, type: 'post' /* xxx */,
+      date: date_short, title, featured, img, taglinks, catlinks, body_raw, url: ref, type: 'post' /* xxx */, // xxx 'class' traceyism for images -- needs to go into localStorage plus all the imagery effery?!?
     }
 
     if (filter_post) {
@@ -534,7 +534,7 @@ async function storage_loop() {
         await post_full(post)
     } else {
       // eslint-disable-next-line no-use-before-define
-      htm +=  post_card(post)
+      htm +=  post1(post)
     }
   }
 
@@ -609,41 +609,31 @@ async function post_full(post) {
 }
 
 
-function post_card(post) {
+function post1(post) {
+  // eslint-disable-next-line no-param-reassign
+  post.url = location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '') // xxx
+
   const preview = post.body_raw.replace(/</g, '&lt;')
 
-  // eslint-disable-next-line no-use-before-define
-  const date_nice = datetime(post.date)
-
-  return `
-    <div class="card card-body bg-light">
-      <a href="${location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '')}">
-        ${post.img ? `<img src="${post.img}">` : ''}
-        <h2>${post.title}</h2>
-      </a>
-      ${date_nice}
-      <div>
-        ${friendly_truncate(preview, 200)}
-      </div>
-      ${'' /* eslint-disable-next-line no-use-before-define */}
-      ${post_stats(post)}
-    </div>`
-}
-
-
-function post1(post) {
   return `
 <article class="post">
   ${'' /* eslint-disable-next-line no-use-before-define */}
   ${post_header(post)}
   <div class="content">
     ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${post1_featured()}
+    ${post_featured(post)}
+
+
+    ${friendly_truncate(preview, 200)}
+    <!-- xxx
     {{ $.Scratch.Set "summary" ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
     {{ $.Scratch.Get "summary" }}
+    -->
+
+
   </div>
   <footer>
-    <a href="{{ .RelPermalink }}" class="button big">{{ i18n "read_more" }}</a>
+    <a href="${post.url}" class="button big">Read More</a>
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${post_stats(post)}
   </footer>
@@ -669,41 +659,48 @@ function post_header(post) {
 `
 }
 
-function post1_featured() {
+function post_featured(post) {
+  if (!post?.featured && !post?.images)
+    return ''
+
+  let src = ''
+  let alt = ''
+  let blur
+  let stretch = cfg.image_stretch ?? ''
+
+  if (post.featured) {
+    // eslint-disable-next-line max-len
+    // xxx original: {{- $src = (path.Join "img" (cond (eq .Params.featuredpath "date") (.Page.Date.Format "2006/01") (.Params.featuredpath)) .Params.featured) | relURL -}}
+    src = post.featured?.match(/\//) ? post.featured : `${state.pathrel}img/${post.featured}` // xxx img/ parameterize
+
+    alt = post.featuredalt
+    stretch = (post.featuredstretch ?? '').toLowerCase()
+    blur = post.removeBlur ?? (cfg.remove_blur ?? '')
+  } else if (post.images) {
+    src = `${state.pathrel}${post.images[0].src}`
+    alt = post.images[0].alt
+    stretch = (post.images[0].stretch ?? '').toLowerCase()
+    blur = post.images[0].removeBlur ?? (cfg.remove_blur ?? '')
+  }
+
+  // eslint-disable-next-line no-nested-ternary
+  const cls = (stretch === 'vertical' || stretch === 'v'
+    ? 'class="stretchV"'
+    // eslint-disable-next-line no-nested-ternary
+    : (stretch === 'horizontal' || stretch === 'h'
+      ? 'class="stretchH"'
+      : (stretch === 'cover' || stretch === 'c'
+        ? 'class="cover"'
+        : '')))
+
   return `
-  {{- if or .Params.images .Params.featured -}}
-  {{- $src := "" -}}
-  {{- $alt := "" -}}
-  {{- $stretch := .Site.Params.imageStretch -}}
-  {{- $blur := .Site.Params.removeBlur -}}
-  {{- if .Params.featured -}}
-    {{- $src = (cond (eq "https://" (substr .Params.featured 0 8)) (.Params.featured) ((path.Join "post" (.Page.Date.Format "2006") "img" .Params.featured) | relURL)) -}}
-    {{- $alt = .Params.featuredalt -}}
-    {{- with .Params.featuredstretch -}}
-      {{- $stretch = . -}}
-    {{- end -}}
-    {{- with .Params.removeBlur -}}
-      {{- $blur = . -}}
-    {{- end -}}
-  {{- else if .Params.images -}}
-    {{- range first 1 .Params.images -}}
-      {{- $src = .src | relURL -}}
-      {{- $alt = .alt -}}
-      {{- with .stretch -}}
-        {{- $stretch = . -}}
-      {{- end -}}
-      {{- with .removeBlur -}}
-        {{- $blur = . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  <a href="{{ $.Page.RelPermalink }}" class="image featured {{ .Params.class }}"{{ if not ($blur) }} style="--bg-image: url('{{ $src }}');"{{ end }}>
-    <img {{ with $stretch }}class="{{ if or (eq (lower .) "vertical") (eq (lower .) "v") }}stretchV{{ else if or (eq (lower .) "horizontal") (eq (lower .) "h") }}stretchH{{ else if or (eq (lower .) "cover") (eq (lower .) "c") }}cover{{ end }}" {{ end }}src="{{ $src }}" alt="{{ $alt }}">
-  </a>
-  {{ if .Params.featuredcaption }}
+  <a href="${post.url}" class="image featured ${post.class ?? '' /* xxx traceyism */}"
+    ${blur ? '' : `style="--bg-image: url('${src}')"`}>
+    <img src="${src}" alt="${alt}" ${cls}>
+  </a>`
+  /* xxx {{ if .Params.featuredcaption }}
     <center>{{ .Params.featuredcaption | safeHTML }}</center>
-  {{ end }}
-{{- end -}}`
+  {{ end }} */
 }
 
 
