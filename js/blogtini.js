@@ -619,11 +619,9 @@ function post1(post) {
   // eslint-disable-next-line no-param-reassign
   post.url = location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '') // xxx
 
-  const preview = MD2HTM.makeHtml(post.body_raw) // .replace(/</g, '&lt;')
-
-  // eslint-disable-next-line max-len
-  const summary = friendly_truncate(preview, cfg.summary_length) /* xxx ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
-  */
+  const body_md = MD2HTM.makeHtml(post.body_raw)
+  const para1 = (body_md.match(/<p.*?>(.|\n)*?<\/p>/) || [undefined])[0]
+  const summary = friendly_truncate(para1 || body_md, cfg.summary_length).replace(/&amp;/g, '&')
 
   return `
 <article class="post">
