@@ -200,6 +200,9 @@ let cfg = {
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
 
+function PR(str, val) {
+  return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
+}
 
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
@@ -659,15 +662,15 @@ function post_header(post) {
 <header>
   <div class="title">
     <h2><a href="${post.url}">${post.title}</a></h2>
-    ${post.description ? `<p>${post.description}</p>` /* chexxx */ : ''}
+    ${PR`<p>${post.description}</p>` /* chexxx */}
   </div>
   ${post.type === 'post' ? `
     <div class="meta">
       ${'' /* eslint-disable-next-line no-use-before-define */}
       <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
-      ${post.author ? `<p>${post.author}</p>` /* chexxx */ : ''}
+      ${PR`<p>${post.author}</p>` /* chexxx */}
       ${'' /* eslint-disable-next-line no-use-before-define */}
-      ${cfg.reading_time ? `<p>${wordcount(post.body_raw)}-Minute Read</p>` : ''}
+      ${cfg.reading_time ? `<p>${Math.round((212 + wordcount(post.body_raw)) / 213)}-Minute Read</p>` : ''}
     </div>` : ''}
 </header>
 `
@@ -730,9 +733,6 @@ function post_stats(post) {
   </div>`
 }
 
-function PR(str, val) {
-  return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
-}
 
 function SOC(str, svc) {
   const val = cfg.social[svc]
@@ -994,7 +994,7 @@ function datetime(date) {
 }
 
 function wordcount(str) {
-  return 3 // xxx (words + 212) / 213
+  return str?.match(/(\w+)/g).length ?? 0
 }
 
 function finish() {
