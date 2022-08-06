@@ -14,6 +14,20 @@ sidebar:
   # Sets Categories to sort by number of posts instead of alphabetical
   categories_by_count: true
 
+social:
+  twitter: tracey_pooh
+  youtube: channel/UCBcfKCrYjtWcuTk5LLT-7xg
+  linkedin: tracey-jaquith-929432
+  pinterest: poohbot
+  github: traceypooh
+  gitlab: traceypooh
+  codepen: traceypooh
+  stackoverflow: 11941875 # User Number
+  flickr: 46222920@N05
+  tumblr: traceypooh
+  strava: traceypooh
+
+
 
 staticman:
   # If using GitHub, go to https://github.com/apps/staticman-net
