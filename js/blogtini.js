@@ -631,7 +631,7 @@ function post1(post) {
     ${post_featured(post)}
 
 
-    ${friendly_truncate(preview, 200)}
+    ${friendly_truncate(preview, 400)}
     <!-- xxx
     {{ $.Scratch.Set "summary" ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
     {{ $.Scratch.Get "summary" }}
@@ -864,15 +864,36 @@ async function create_comment_form(entryId, comments) {
 function site_start() {
   return `
   <div id="wrapper">
-    <div class="bg-light">
-    <img id="blogtini" src="${cfg.site_header}">
-      <h1>
-        <a href="${state.toprel}">
-          ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}
-          ${cfg.title}
-        </a>
-      </h1>
-    </div>
+    <!--
+    <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
+      {{ with .Site.Params.intro.pic }}<a href="{{ "/" | relLangURL}}"><img src="{{ .src | relURL }}"{{ with .shape}} class="{{ . }}"{{ end }} width="{{ .width | default "100" }}" alt="{{ .alt }}" /></a>{{ end }}
+      <header>
+        {{ with .Site.Params.intro.header }}<h1>{{ . | safeHTML }}</h1>{{ end }}
+      </header>
+      <main>
+        {{ with .Site.Params.intro.paragraph }}<p>{{ . | safeHTML }}</p>{{ end }}
+      </main>
+    {{ if or (.Site.Params.intro.rssIntro) (.Site.Params.intro.socialIntro) }}
+        <footer>
+          <ul class="socnet-icons"> -->
+
+    <section id="site-intro">
+      <header>
+        <img id="blogtini" src="${cfg.site_header}">
+        <h1>
+          <a href="${state.toprel}">
+            ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}<br>
+            ${cfg.title}
+          </a>
+        </h1>
+      </header>
+
+      ${cfg.intro.paragraph ? `<main><p>${safeHTML(cfg.intro.paragraph)}</p></main>` : ''}
+
+      <footer>
+        ${socnet_icon()}
+      </footer>
+    </section>
     <main id="site-main">`
 }
 
@@ -888,7 +909,7 @@ function site_end() {
 function site_sidebar() {
   return `
 <section id="site-sidebar">
-  ${socnet_icon()}
+
   ${cfg.sidebar.post_amount ? '<section id="recent-posts"></section>' : ''}
   ${cfg.sidebar.categories ? '<section id="categories"></section>' : ''}
   <section id="tags" style="text-align:center"></section>
