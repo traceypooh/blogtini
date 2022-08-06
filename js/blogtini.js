@@ -183,6 +183,7 @@ let cfg = {
   user: '',
   repo: '',
   title: 'welcome to my blog',
+  attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
   posts_per_page: 10,
   branch: 'main', // xxxx autodetect or 'master'
@@ -464,6 +465,11 @@ async function parse_posts(markdowns) {
         continue
       }
 
+      // eslint-disable-next-line no-use-before-define
+      const ymd = date2ymd(date)
+      if (!STORAGE.newest || ymd > STORAGE.newest)
+        STORAGE.newest = ymd
+
       // hugo uses 'images' array
       // eslint-disable-next-line no-nested-ternary
       const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
@@ -473,7 +479,7 @@ async function parse_posts(markdowns) {
       // author xxx
 
       // eslint-disable-next-line no-use-before-define
-      const ref = multiples ? `${date2ymd(date)}-${slugify(title)}` : file.replace(/\.md$/, '')
+      const ref = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
 
       // eslint-disable-next-line no-use-before-define
       storage_add(ref, title, date, body_raw, tags, categories, featured)
@@ -660,7 +666,8 @@ function post_header(post) {
       ${'' /* eslint-disable-next-line no-use-before-define */}
       <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
       ${post.author ? `<p>${post.author}</p>` /* chexxx */ : ''}
-      ${cfg.reading_time ? /* xxx */ `<p>${3}-Minute Read</p>` : ''}
+      ${'' /* eslint-disable-next-line no-use-before-define */}
+      ${cfg.reading_time ? `<p>${wordcount(post.body_raw)}-Minute Read</p>` : ''}
     </div>` : ''}
 </header>
 `
@@ -723,59 +730,72 @@ function post_stats(post) {
   </div>`
 }
 
+function PR(str, val) {
+  return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
+}
+
+function SOC(str, svc) {
+  const val = cfg.social[svc]
+  return (val === '' || val === undefined || val === null ? '' :
+    `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="noopener"></a></li>`)
+}
+function SOC2(str, arg, svc) {
+  log({str,arg,svc})
+  const val = cfg.social[svc]
+  return (val === '' || val === undefined || val === null ? '' :
+    `<li><a ${str[0]}${arg}${str[1]}${val}${str[2]} target="_blank" rel="noopener"></a></li>`)
+}
 
 function socnet_icon() {
   // TODO: WeChat and QQ Check
-  // eslint-disable-next-line no-confusing-arrow
-  const fn = (str, svc) => cfg.social[svc] === '' || cfg.social[svc] === undefined ? '' :
-    `<li><a ${str[0]}${cfg.social[svc]}${str[1]} target="_blank" rel="noopener"></a></li>`
 
   return `
-<ul class="socnet-icons">
+${SOC`href="https://github.com/${'github'}" title="GitHub" class="fab fa-github"`}
+${SOC`href="https://gitlab.com/${'gitlab'}" title="GitLab" class="fab fa-gitlab"`}
+${SOC`href="https://stackoverflow.com/users/${'stackoverflow'}" title="Stack Overflow" class="fab fa-stack-overflow"`}
+${SOC`href="https://bitbucket.com/${'bitbucket'}" title="Bitbucket" class="fab fa-bitbucket"`}
+${SOC`href="https://jsfiddle.com/${'jsfiddle'}" title="JSFiddle" class="fab fa-jsfiddle"`}
+${SOC`href="https://codepen.io/${'codepen'}" title="CodePen" class="fab fa-codepen"`}
+${SOC`href="https://${'deviantart'}.deviantart.com/" title="DeviantArt" class="fab fa-deviantart"`}
+${SOC`href="https://flickr.com/photos/${'flickr'}" title="Flickr" class="fab fa-flickr"`}
+${SOC`href="https://behance.net/${'behance'}" title="Behance" class="fab fa-behance"`}
+${SOC`href="https://dribbble.com/${'dribbble'}" title="Dribbble" class="fab fa-dribbble"`}
+${SOC`href="https://${'wordpress'}.wordpress.com" title="WordPress" class="fab fa-wordpress"`}
+${SOC`href="https://medium.com/@${'medium'}" title="Medium" class="fab fa-medium"`}
+${SOC`href="https://www.linkedin.com/in/${'linkedin'}" title="LinkedIn" class="fab fa-linkedin"`}
+${SOC`href="https://linkedin.com/company/${'linkedin_company'}" title="LinkedIn Company" class="fab fa-linkedin"`}
+${SOC`href="https://foursquare.com/${'foursquare'}" title="Foursquare" class="fab fa-foursquare"`}
+${SOC`href="https://xing.com/profile/${'xing'}" title="Xing" class="fab fa-xing"`}
+${SOC`href="https://slideshare.com/${'slideshare'}" title="SlideShare" class="fab fa-slideshare"`}
+${SOC`href="https://facebook.com/${'facebook'}" title="Facebook" class="fab fa-facebook"`}
+${SOC`href="https://reddit.com/user/${'reddit'}" title="Reddit" class="fab fa-reddit"`}
+${SOC`href="https://quora.com/profile/${'quora'}" title="Quora" class="fab fa-quora"`}
+${SOC`href="https://youtube.com/${'youtube'}" title="YouTube" class="fab fa-youtube"`}
+${SOC`href="https://vimeo.com/${'vimeo'}" title="Vimeo" class="fab fa-vimeo"`}
+${SOC`href="https://api.whatsapp.com/send?phone=${'whatsapp'}" title="WhatsApp" class="fab fa-whatsapp"`}
+${SOC`href="weixin://contacts/profile/${'wechat'}" title="WeChat" class="fab fa-weixin"`}
+${SOC`href="https://wpa.qq.com/msgrd?v=3&amp;uin=${'qq'}&amp;site=qq&amp;menu=yes" title="QQ" class="fab fa-qq"`}
+${SOC`href="https://instagram.com/${'instagram'}" title="Instagram" class="fab fa-instagram"`}
+${SOC`href="https://${'tumblr'}.tumblr.com" title="Tumblr" class="fab fa-tumblr"`}
+${SOC`href="https://twitter.com/${'twitter'}" title="Twitter" class="fab fa-twitter"`}
+${SOC`href="https://strava.com/athletes/${'strava'}" title="Strava" class="fab fa-strava"`}
+${SOC`href="skype:${'skype'}?userinfo" title="Skype" class="fab fa-skype"`}
+${SOC`href="https://snapchat.com/add/${'snapchat'}" title="snapchat" class="fab fa-snapchat"`}
+${SOC`href="https://www.pinterest.com/${'pinterest'}" title="Pinterest" class="fab fa-pinterest-p"`}
+${SOC`href="https://telegram.me/${'telegram'}" title="telegram" class="fab fa-telegram"`}
+${SOC`href="https://vine.co/${'vine'}" title="Vine" class="fab fa-vine"`}
+${SOC`href="https://keybase.io/${'keybase'}" title="keybase" class="fab fa-keybase"`}
+${SOC`href="https://${'mastodon'}" title="mastodon" class="fab fa-mastodon"`}
+${SOC`href="mailto:${'email'}" target="_blank" title="Email" class="far fa-envelope"`}
 
-${fn`href="https://github.com/${'github'}" title="GitHub" class="fab fa-github"`}
-${fn`href="https://gitlab.com/${'gitlab'}" title="GitLab" class="fab fa-gitlab"`}
-${fn`href="https://stackoverflow.com/users/${'stackoverflow'}" title="Stack Overflow" class="fab fa-stack-overflow"`}
-${fn`href="https://bitbucket.com/${'bitbucket'}" title="Bitbucket" class="fab fa-bitbucket"`}
-${fn`href="https://jsfiddle.com/${'jsfiddle'}" title="JSFiddle" class="fab fa-jsfiddle"`}
-${fn`href="https://codepen.io/${'codepen'}" title="CodePen" class="fab fa-codepen"`}
-${fn`href="https://${'deviantart'}.deviantart.com/" title="DeviantArt" class="fab fa-deviantart"`}
-${fn`href="https://flickr.com/photos/${'flickr'}" title="Flickr" class="fab fa-flickr"`}
-${fn`href="https://behance.net/${'behance'}" title="Behance" class="fab fa-behance"`}
-${fn`href="https://dribbble.com/${'dribbble'}" title="Dribbble" class="fab fa-dribbble"`}
-${fn`href="https://${'wordpress'}.wordpress.com" title="WordPress" class="fab fa-wordpress"`}
-${fn`href="https://medium.com/@${'medium'}" title="Medium" class="fab fa-medium"`}
-${fn`href="https://www.linkedin.com/in/${'linkedin'}" title="LinkedIn" class="fab fa-linkedin"`}
-${fn`href="https://linkedin.com/company/${'linkedin_company'}" title="LinkedIn Company" class="fab fa-linkedin"`}
-${fn`href="https://foursquare.com/${'foursquare'}" title="Foursquare" class="fab fa-foursquare"`}
-${fn`href="https://xing.com/profile/${'xing'}" title="Xing" class="fab fa-xing"`}
-${fn`href="https://slideshare.com/${'slideshare'}" title="SlideShare" class="fab fa-slideshare"`}
-${fn`href="https://facebook.com/${'facebook'}" title="Facebook" class="fab fa-facebook"`}
-${fn`href="https://reddit.com/user/${'reddit'}" title="Reddit" class="fab fa-reddit"`}
-${fn`href="https://quora.com/profile/${'quora'}" title="Quora" class="fab fa-quora"`}
-${fn`href="https://youtube.com/${'youtube'}" title="YouTube" class="fab fa-youtube"`}
-${fn`href="https://vimeo.com/${'vimeo'}" title="Vimeo" class="fab fa-vimeo"`}
-${fn`href="https://api.whatsapp.com/send?phone=${'whatsapp'}" title="WhatsApp" class="fab fa-whatsapp"`}
-${fn`href="weixin://contacts/profile/${'wechat'}" title="WeChat" class="fab fa-weixin"`}
-${fn`href="https://wpa.qq.com/msgrd?v=3&amp;uin=${'qq'}&amp;site=qq&amp;menu=yes" title="QQ" class="fab fa-qq"`}
-${fn`href="https://instagram.com/${'instagram'}" title="Instagram" class="fab fa-instagram"`}
-${fn`href="https://${'tumblr'}.tumblr.com" title="Tumblr" class="fab fa-tumblr"`}
-${fn`href="https://twitter.com/${'twitter'}" title="Twitter" class="fab fa-twitter"`}
-${fn`href="https://strava.com/athletes/${'strava'}" title="Strava" class="fab fa-strava"`}
-${fn`href="skype:${'skype'}?userinfo" title="Skype" class="fab fa-skype"`}
-${fn`href="https://snapchat.com/add/${'snapchat'}" title="snapchat" class="fab fa-snapchat"`}
-${fn`href="https://www.pinterest.com/${'pinterest'}" title="Pinterest" class="fab fa-pinterest-p"`}
-${fn`href="https://telegram.me/${'telegram'}" title="telegram" class="fab fa-telegram"`}
-${fn`href="https://vine.co/${'vine'}" title="Vine" class="fab fa-vine"`}
-${fn`href="https://keybase.io/${'keybase'}" title="keybase" class="fab fa-keybase"`}
-${fn`href="https://${'mastodon'}" title="mastodon" class="fab fa-mastodon"`}
-${fn`href="mailto:${'email'}" target="_blank" title="Email" class="far fa-envelope"`}
+${SOC`href="https://scholar.google.com/citations?user=${'googlescholar'}" title="Google Scholar"`}
+${SOC`href="https://orcid.org/${'orcid'}" title="ORCID"`}
+${SOC`href="https://researchgate.net/profile/${'researchgate'}" title="Research Gate"`}
+`
+}
 
-${fn`href="https://scholar.google.com/citations?user=${'googlescholar'}" title="Google Scholar"`}
-${fn`href="https://orcid.org/${'orcid'}" title="ORCID"`}
-${fn`href="https://researchgate.net/profile/${'researchgate'}" title="Research Gate"`}
-
-</ul>`
+function rss_icon() {
+  return SOC2`href="${state.pathrel}${'rss'}" type="application/rss+xml" title="RSS" class="fas fa-rss"`
 }
 
 
@@ -890,8 +910,12 @@ function site_start() {
 
       ${cfg.intro.paragraph ? `<main><p>${safeHTML(cfg.intro.paragraph)}</p></main>` : ''}
 
-      <footer>
-        ${socnet_icon()}
+      ${cfg.intro.rss || cfg.intro.social ? `
+        <footer>
+          <ul class="socnet-icons">
+            ${cfg.intro.rss ? rss_icon() : ''}
+            ${cfg.intro.social ? socnet_icon() : ''}
+          </ul>` : ''}
       </footer>
     </section>
     <main id="site-main">`
@@ -902,7 +926,21 @@ function site_end() {
     </main>
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_sidebar()}
+
+    <footer id="site-footer">
+      ${cfg.footer.rss || cfg.footer.social ? `
+        <ul class="socnet-icons">
+          ${cfg.footer.rss ? rss_icon() : ''}
+          ${cfg.footer.social ? socnet_icon() : ''}
+        </ul>` : ''}
+      <p class="copyright">
+        ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4)} ${cfg.author ?? cfg.title}`}
+        <br>
+        ${cfg.attribution ?? ''}
+      </p>
+    </footer>
   </div><!--//#wrapper-->
+
   <a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
 }
 
@@ -955,6 +993,9 @@ function datetime(date) {
   return dayjs(date).format(fmt)
 }
 
+function wordcount(str) {
+  return 3 // xxx (words + 212) / 213
+}
 
 function finish() {
   let htm
