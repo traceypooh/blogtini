@@ -1,7 +1,9 @@
 /*
 
+xxx autogen rss
 xxx mobile size tables
 xxx `{{< youtube ..`
+xxx .newest only defined 2nd request / when localStorage is read from prior 1st request as of now
 
 Your posts or directories of posts, should ideally natural sort in time order, examples:
   2022-11-03-a-birthday.md
@@ -168,12 +170,12 @@ const state = {
   num_posts: 0,
   pathrel: '',
 }
-const search = decodeURIComponent(location.search)
-const filter_tag  = (search.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
-const filter_cat  = (search.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
+const SEARCH = decodeURIComponent(location.search)
+const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
+const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
 
-const STORAGE = location.search.match(/[&?]recache=1/i) ? {} :
+const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
 
 let searcher
@@ -182,13 +184,14 @@ let searcher
 let cfg = {
   user: '',
   repo: '',
+  branch: 'main', // xxxx autodetect or 'master'
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
   posts_per_page: 10,
-  branch: 'main', // xxxx autodetect or 'master'
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
   reading_time: true,
+  summary_length: 500,
   sidebar: {
     post_amount: 5,
     categories: true,
@@ -239,7 +242,7 @@ async function main() {
   head_insert_generics()
 
   if (state.is_topdir) {
-    if (search.match(/^\?20\d\d-\d\d-\d\d-/)) {
+    if (SEARCH.match(/^\?20\d\d-\d\d-\d\d-/)) {
       // prior SPA type blogtini method.  so now do a soft 404
       // https://developers.google.com/search/docs/advanced/javascript/javascript-seo-basics#avoid-soft-404s
       window.location.href = '/not-found' // redirect to 404 page on the server
@@ -473,7 +476,7 @@ async function parse_posts(markdowns) {
       if (!STORAGE.newest || ymd > STORAGE.newest)
         STORAGE.newest = ymd
 
-      // hugo uses 'images' array
+      // hugo uses 'images' array - xxx reconcile & copy over related 0th element featuredalt, etc.
       // eslint-disable-next-line no-nested-ternary
       const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
         ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
@@ -482,10 +485,16 @@ async function parse_posts(markdowns) {
       // author xxx
 
       // eslint-disable-next-line no-use-before-define
-      const ref = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
+      const url = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
+
+      const post = {
+        url, title, date, body_raw, tags, categories, featured,
+      }
+      for (const key of ['featuredcaption', 'class'])
+        if (key in json) post[key] = json[key]
 
       // eslint-disable-next-line no-use-before-define
-      storage_add(ref, title, date, body_raw, tags, categories, featured)
+      storage_add(post)
 
       state.num_posts += 1
     }
@@ -496,22 +505,18 @@ async function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
   let htm = ''
-  for (const [ref, doc] of Object.entries(STORAGE.docs)) {
-    const {
-      title, date, body_raw, tags, categories, featured,
-    } = doc
-
-    for (const tag of tags) {
+  for (const [ref, post] of Object.entries(STORAGE.docs)) {
+    for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
       state.tags[tag].push(ref)
     }
-    for (const cat of categories) {
+    for (const cat of post.categories) {
       state.cats[cat] = state.cats[cat] || []
       state.cats[cat].push(ref)
     }
 
-    if (filter_tag.length  &&       !(tags.includes(filter_tag))) continue
-    if (filter_cat.length  && !(categories.includes(filter_cat))) continue
+    if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
+    if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
     if (filter_post && ref !== filter_post
       && !ref.endsWith(`${filter_post}index.html`) // xxxx
     )
@@ -519,7 +524,7 @@ async function storage_loop() {
 
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
-      head_insert_titles(title)
+      head_insert_titles(post.title)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
@@ -529,20 +534,8 @@ async function storage_loop() {
     }
 
 
-    // eslint-disable-next-line no-nested-ternary
-    const img = featured === ''
-      ? `${state.pathrel}${cfg.img_site}`
-      : (featured.match(/\//) ? featured : `${state.pathrel}img/${featured}`)
-
-    const taglinks =       tags.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
-    const catlinks = categories.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?categories/${e}">${e}</a></li>`).join(' ').trim()
-
-    const date_short = date.toString().split(' ').slice(0, 4).join(' ')
-
-
-    const post = {
-      date: date_short, title, featured, img, taglinks, catlinks, body_raw, url: ref, type: 'post' /* xxx */, // xxx 'class' traceyism for images -- needs to go into localStorage plus all the imagery effery?!?
-    }
+    post.type = 'post' // xxx
+    // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
 
     if (filter_post) {
       document.getElementsByTagName('body')[0].innerHTML =
@@ -559,17 +552,15 @@ async function storage_loop() {
 }
 
 
-function storage_add(ref, title, date, body_raw, tags, categories, featured) { // xxx use snippet
-  STORAGE.docs[ref] = {
-    ref, title, date, body_raw, tags, categories, featured,
-  }
+function storage_add(post) { // xxx use snippet
+  STORAGE.docs[post.url] = post
 }
 
 function search_setup() {
   // Build the index so Lunr can search it.  The `ref` field will hold the URL
   // to the page/post.  title, excerpt, and body will be fields searched.
   searcher = lunr(function adder() {
-    this.ref('ref')
+    this.ref('url')
     this.field('title')
     this.field('date') // xxx typo in source!
     this.field('body_raw')
@@ -602,10 +593,9 @@ async function post_full(post) {
       <div class="post single">
         ${'' /* eslint-disable-next-line no-use-before-define */}
         ${post_header(post)}
+        ${'' /* eslint-disable-next-line no-use-before-define */}
+        ${post_featured(post)}
 
-        <div class="float-none" style="clear:both">
-          <img src="${post.img}" class="img-fluid rounded mx-auto d-block">
-        </div>
         <div>
           ${body}
         </div>
@@ -629,7 +619,11 @@ function post1(post) {
   // eslint-disable-next-line no-param-reassign
   post.url = location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '') // xxx
 
-  const preview = post.body_raw.replace(/</g, '&lt;')
+  const preview = MD2HTM.makeHtml(post.body_raw) // .replace(/</g, '&lt;')
+
+  // eslint-disable-next-line max-len
+  const summary = friendly_truncate(preview, cfg.summary_length) /* xxx ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
+  */
 
   return `
 <article class="post">
@@ -638,15 +632,7 @@ function post1(post) {
   <div class="content">
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${post_featured(post)}
-
-
-    ${friendly_truncate(preview, 400)}
-    <!-- xxx
-    {{ $.Scratch.Set "summary" ((delimit (findRE "<p.*?>(.|\n)*?</p>" .Content 1) "") | truncate (default 500 .Site.Params.summary_length) (default "&hellip;" .Site.Params.text.truncated ) | replaceRE "&amp;" "&" | safeHTML) }}
-    {{ $.Scratch.Get "summary" }}
-    -->
-
-
+    ${summary}
   </div>
   <footer>
     <a href="${post.url}" class="button big">Read More</a>
@@ -677,9 +663,6 @@ function post_header(post) {
 }
 
 function post_featured(post) {
-  if (!post?.featured && !post?.images)
-    return ''
-
   let src = ''
   let alt = ''
   let blur
@@ -698,6 +681,11 @@ function post_featured(post) {
     alt = post.images[0].alt
     stretch = (post.images[0].stretch ?? '').toLowerCase()
     blur = post.images[0].removeBlur ?? (cfg.remove_blur ?? '')
+  } else if (cfg.img_site) {
+    src = `${state.pathrel}${cfg.img_site}`
+    blur = post.removeBlur ?? (cfg.remove_blur ?? '')
+  } else {
+    return ''
   }
 
   // eslint-disable-next-line no-nested-ternary
@@ -714,21 +702,22 @@ function post_featured(post) {
   <a href="${post.url}" class="image featured ${post.class ?? '' /* xxx traceyism */}"
     ${blur ? '' : `style="--bg-image: url('${src}')"`}>
     <img src="${src}" alt="${alt}" ${cls}>
-  </a>`
-  /* xxx {{ if .Params.featuredcaption }}
-    <center>{{ .Params.featuredcaption | safeHTML }}</center>
-  {{ end }} */
+  </a>
+  ${PR`<center>${post.featuredcaption}</center>`}`
 }
 
 
 function post_stats(post) {
+  const taglinks =       post.tags.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
+  const catlinks = post.categories.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?categories/${e}">${e}</a></li>`).join(' ').trim()
+
   return `
   <div class="stats">
   <ul class="categories">
-    ${post.catlinks}
+    ${catlinks}
   </ul>
   <ul class="tags">
-    ${post.taglinks}
+    ${taglinks}
   </ul>
   </div>`
 }
@@ -740,7 +729,6 @@ function SOC(str, svc) {
     `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="noopener"></a></li>`)
 }
 function SOC2(str, arg, svc) {
-  log({str,arg,svc})
   const val = cfg.social[svc]
   return (val === '' || val === undefined || val === null ? '' :
     `<li><a ${str[0]}${arg}${str[1]}${val}${str[2]} target="_blank" rel="noopener"></a></li>`)
@@ -908,7 +896,7 @@ function site_start() {
         </h1>
       </header>
 
-      ${cfg.intro.paragraph ? `<main><p>${safeHTML(cfg.intro.paragraph)}</p></main>` : ''}
+      ${PR`<main><p>${cfg.intro.paragraph}</p></main>`}
 
       ${cfg.intro.rss || cfg.intro.social ? `
         <footer>
@@ -934,7 +922,7 @@ function site_end() {
           ${cfg.footer.social ? socnet_icon() : ''}
         </ul>` : ''}
       <p class="copyright">
-        ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4)} ${cfg.author ?? cfg.title}`}
+        ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
         <br>
         ${cfg.attribution ?? ''}
       </p>
