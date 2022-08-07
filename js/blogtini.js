@@ -157,7 +157,7 @@ import showdown from 'https://esm.archive.org/showdown'
 import hljs from 'https://esm.archive.org/highlightjs'
 
 
-import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
+import { friendly_truncate, krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
@@ -177,6 +177,7 @@ const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] //
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
+let STORED = 10000
 
 let searcher
 
@@ -285,6 +286,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
     // eslint-disable-next-line no-use-before-define
     await storage_create()
+    STORAGE.docs = krsort(STORAGE.docs)
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -472,7 +474,7 @@ async function parse_posts(markdowns) {
       }
 
       // eslint-disable-next-line no-use-before-define
-      const ymd = date2ymd(date)
+      const ymd = date2ymd(new Date(date))
       if (!STORAGE.newest || ymd > STORAGE.newest)
         STORAGE.newest = ymd
 
@@ -492,6 +494,9 @@ async function parse_posts(markdowns) {
       }
       for (const key of ['featuredcaption', 'class'])
         if (key in json) post[key] = json[key]
+      // keep stored hashmap small as possible - delete key/val where val is empty
+      for (const key of Object.keys(post))
+        if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
 
       // eslint-disable-next-line no-use-before-define
       storage_add(post)
@@ -505,20 +510,20 @@ async function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
   let htm = ''
-  for (const [ref, post] of Object.entries(STORAGE.docs)) {
+  for (const post of Object.values(STORAGE.docs)) {
     for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
-      state.tags[tag].push(ref)
+      state.tags[tag].push(post.url)
     }
     for (const cat of post.categories) {
       state.cats[cat] = state.cats[cat] || []
-      state.cats[cat].push(ref)
+      state.cats[cat].push(post.url)
     }
 
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
-    if (filter_post && ref !== filter_post
-      && !ref.endsWith(`${filter_post}index.html`) // xxxx
+    if (filter_post && post.url !== filter_post
+      && !post.url.endsWith(`${filter_post}index.html`) // xxxx
     )
       continue
 
@@ -553,7 +558,10 @@ async function storage_loop() {
 
 
 function storage_add(post) { // xxx use snippet
-  STORAGE.docs[post.url] = post
+  const ts = Math.round(new Date(post.date) / 1000)
+  const key = isNaN(ts) ? (post.url ?? '') : ts
+  STORAGE.docs[`p${key || STORED}`] = post
+  STORED += 1
 }
 
 function search_setup() {
