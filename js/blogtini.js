@@ -177,12 +177,11 @@ const state = {
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = (location.pathname.match(/\/(20\d\d-.*)/) || ['', ''])[1] // xxx generalize
+const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname : ''
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
-let STORED = 10000
-
+// let SELF = ''
 
 // defaults
 let cfg = {
@@ -250,6 +249,10 @@ async function main() {
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
+  dark_mode()
+  // SELF = document.getElementsByTagName('body')[0].innerHTML // xxx *could* use if not in sitemap
+
+  // eslint-disable-next-line no-use-before-define
   head_insert_generics()
 
   if (state.is_topdir) {
@@ -293,11 +296,9 @@ cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
 
-  if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
+  if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
     // eslint-disable-next-line no-use-before-define
     await storage_create()
-    STORAGE.docs = krsort(STORAGE.docs)
-  }
 
   // eslint-disable-next-line no-use-before-define
   await storage_loop()
@@ -358,6 +359,9 @@ async function storage_create() {
     if (state.num_posts)
       break
   }
+
+  STORAGE.docs = Object.values(krsort(STORAGE.docs))
+
   localStorage.setItem('blogtini', JSON.stringify(STORAGE))
 }
 
@@ -384,6 +388,7 @@ async function find_posts() {
       FILES.push(...sitemap_urls)
       state.sitemap_htm = true
     } else {
+      // handles the "i'm just trying it out" / no sitemap case
       FILES.push(location.pathname) // xxx
       state.sitemap_htm = false
     }
@@ -520,7 +525,7 @@ async function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
   let htm = ''
-  for (const post of Object.values(STORAGE.docs)) {
+  for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
       state.tags[tag].push(post.url)
@@ -532,10 +537,13 @@ async function storage_loop() {
 
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
-    if (filter_post && post.url !== filter_post
-      && !post.url.endsWith(`${filter_post}index.html`) // xxxx
-    )
-      continue
+    if (filter_post) {
+      const match = post.url === filter_post
+        || post.url.endsWith(`${filter_post}index.html`) // xxxx
+        || (state.filedev  &&  filter_post.endsWith(post.url)) // xxxx
+      if (!match && STORAGE.docs.length !== 1)
+        continue
+    }
 
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
@@ -569,9 +577,8 @@ async function storage_loop() {
 
 function storage_add(post) { // xxx use snippet
   const ts = Math.round(new Date(post.date) / 1000)
-  const key = isNaN(ts) ? (post.url ?? '') : ts
-  STORAGE.docs[`p${key || STORED}`] = post
-  STORED += 1
+  const key = `p${isNaN(ts) ? '' : ts} ${post.url}`
+  STORAGE.docs[key] = post
 }
 
 
@@ -965,13 +972,13 @@ function site_start() {
         </h1>
       </header>
 
-      ${PR`<main><p>${cfg.intro.paragraph}</p></main>`}
+      ${PR`<main><p>${cfg.intro?.paragraph}</p></main>`}
 
-      ${cfg.intro.rss || cfg.intro.social ? `
+      ${cfg.intro?.rss || cfg.intro?.social ? `
         <footer>
           <ul class="socnet-icons">
-            ${cfg.intro.rss ? rss_icon() : ''}
-            ${cfg.intro.social ? socnet_icon() : ''}
+            ${cfg.intro?.rss ? rss_icon() : ''}
+            ${cfg.intro?.social ? socnet_icon() : ''}
           </ul>` : ''}
       </footer>
     </section>
@@ -985,10 +992,10 @@ function site_end() {
     ${site_sidebar()}
 
     <footer id="site-footer">
-      ${cfg.footer.rss || cfg.footer.social ? `
+      ${cfg.footer?.rss || cfg.footer?.social ? `
         <ul class="socnet-icons">
-          ${cfg.footer.rss ? rss_icon() : ''}
-          ${cfg.footer.social ? socnet_icon() : ''}
+          ${cfg.footer?.rss ? rss_icon() : ''}
+          ${cfg.footer?.social ? socnet_icon() : ''}
         </ul>` : ''}
       <p class="copyright">
         ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
@@ -1044,7 +1051,7 @@ function date2ymd(date) {
 
 function datetime(date) {
   const fmt = typeof date === 'string' && (date.length <= 10 || date.endsWith('T00:00:00.000Z'))
-    ? 'dddd, MMM D, YYYY'
+    ? 'MMMM D, YYYY'
     : 'dddd, MMM D, YYYY h:mm A'
 
   return dayjs(date).format(fmt)
@@ -1054,18 +1061,30 @@ function wordcount(str) {
   return str?.match(/(\w+)/g).length ?? 0
 }
 
+function dark_mode() {
+  if (window.matchMedia  &&  window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    log('bring on the darkness!')
+    const hour = new Date().getHours()
+    if (hour >= 7  &&  hour < 17) { // override [7am .. 5pm] localtime
+      log('.. but its vampire sleep time')
+      document.getElementsByTagName('body')[0].classList.add('lite')
+    }
+    // macOS can force chrome to always use light mode (since it's slaved to mac sys pref otherwise)
+    //   defaults write com.google.Chrome NSRequiresAquaSystemAppearance -bool yesa
+  }
+}
+
 function finish() {
   let htm
 
   if (cfg.sidebar.post_amount) {
-    const docs = Object.values(STORAGE.docs)
-    const more = docs.length > cfg.sidebar.post_amount
+    const more = STORAGE.docs.length > cfg.sidebar.post_amount
 
     document.getElementById('recent-posts')?.insertAdjacentHTML('beforeend', `
   <header>
     <h1>Recent Posts</h1>
   </header>
-  ${docs.slice(0, cfg.sidebar.post_amount).map((post) => `
+  ${STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((post) => `
   <article class="mini-post">
     ${post_featured(post)}
     <header>
@@ -1117,7 +1136,7 @@ function finish() {
 
   import('./staticman.js')
 
-  search_setup(Object.values(STORAGE.docs), cfg)
+  search_setup(STORAGE.docs, cfg)
 }
 
 
