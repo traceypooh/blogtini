@@ -155,11 +155,12 @@ import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
 import hljs from 'https://esm.archive.org/highlightjs'
 
-import { friendly_truncate, krsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
 import search_setup from './future-imperfect.js'
+import { markdown_to_html, summarize_markdown } from './text.js'
 
 
 // eslint-disable-next-line no-console
@@ -212,7 +213,6 @@ let cfg = {
   view_more_posts_link: '/post/', // xxx
 }
 
-const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
 
 function PR(str, val) {
   return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
@@ -576,7 +576,7 @@ function storage_add(post) { // xxx use snippet
 
 
 async function post_full(post) {
-  const body = MD2HTM.makeHtml(post.body_raw)
+  const body = markdown_to_html(post.body_raw)
 
   const entryId = post.url.replace(/\/index.html*$/, '')
   // eslint-disable-next-line no-use-before-define
@@ -618,9 +618,7 @@ function post1(post) {
   // eslint-disable-next-line no-param-reassign
   post.url = location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '') // xxx
 
-  const body_md = MD2HTM.makeHtml(post.body_raw)
-  const para1 = (body_md.match(/<p.*?>(.|\n)*?<\/p>/) || [undefined])[0]
-  const summary = friendly_truncate(para1 || body_md, cfg.summary_length).replace(/&amp;/g, '&')
+  const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
   return `
 <article class="post">
@@ -1119,7 +1117,7 @@ function finish() {
 
   import('./staticman.js')
 
-  search_setup(Object.values(STORAGE.docs))
+  search_setup(Object.values(STORAGE.docs), cfg)
 }
 
 

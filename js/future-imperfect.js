@@ -1,9 +1,13 @@
 /* eslint-disable */
-import lunr from 'https://esm.archive.org/lunr'
 import $ from 'https://esm.archive.org/jquery'
+import lunr from 'https://esm.archive.org/lunr'
+import dayjs from 'https://esm.archive.org/dayjs'
+
+import { summarize_markdown } from './text.js'
+
 
 // Flyout Menu Functions
-var toggles = {
+let toggles = {
   ".search-toggle": "#search-input",
   ".lang-toggle": "#lang-menu",
   ".share-toggle": "#share-menu",
@@ -11,12 +15,17 @@ var toggles = {
 };
 
 // Search
-var idx = null;         // Lunr index
-var resultDetails = []; // Will hold the data for the search results (titles and summaries)
-var $searchResults;     // The element on the page holding search results
-var $searchInput;       // The search box element
+let idx;                // Lunr index
+let resultDetails = {}; // Will hold the data for the search results (titles and summaries)
+let $searchResults;     // The element on the page holding search results
+let $searchInput;       // The search box element
+let site_cfg;           // config from main blogtini.js
 
-function search_setup(docs) {
+function search_setup(docs, cfg) {
+  site_cfg = cfg;
+  for (const doc of docs)
+    resultDetails[doc.url] = doc
+
   $.each(toggles, function(toggle, menu) {
     $(toggle).on("click", function() {
       if ($(menu).hasClass("active")) {
@@ -99,7 +108,22 @@ function renderSearchResults(results) {
   if (results.length > 0) {
     results.forEach(function(result) {
       // Create result item
-      container.innerHTML += '<article class="mini-post"><a href="' + result.ref + '"><header><h2>' + resultDetails[result.ref].title + '</h2><time class="published" datetime="">' + resultDetails[result.ref].date + '</time></header><main><p>' + resultDetails[result.ref].description + '</p></main></a></article>';
+      container.innerHTML += `
+        <article class="mini-post">
+          <a href="${result.ref}">
+            <header>
+              <h2>${resultDetails[result.ref].title}</h2>
+              <time class="published" datetime="">
+                ${dayjs(resultDetails[result.ref].date).format('MMM D, YYYY')}
+              </time>
+            </header>
+            <main>
+              <p>
+                ${summarize_markdown(resultDetails[result.ref].body_raw, site_cfg.summary_length)}
+              </p>
+            </main>
+          </a>
+        </article>`
     });
 
     // Remove any existing content so results aren't continually added as the user types
