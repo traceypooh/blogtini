@@ -193,6 +193,14 @@ let cfg = {
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
   reading_time: true,
   summary_length: 500,
+  menu: {
+    main: [], // xxx add some defaults
+  },
+  header: {
+    share: true,
+    search: true,
+    language: false,
+  },
   sidebar: {
     post_amount: 5,
     categories: true,
@@ -874,9 +882,83 @@ async function create_comment_form(entryId, comments) {
   </div>`
 }
 
+function share_buttons() { // xxx
+  return ''
+  /*
+{{ $permalink := $.Scratch.Get "Permalink" }}
+{{ $title := $.Scratch.Get "Title" }}
+{{ $author := $.Scratch.Get "Author" }}
+{{ $tags := $.Scratch.Get "Tags" }}
+{{ range .Site.Params.socialShare }}
+  {{ if eq . "twitter" }}
+    <!-- TODO: Add Hashtags &amp;hashtags= -->
+    <a href="//twitter.com/share?text={{ $title }}&amp;url={{ $permalink }}" target="_blank" rel="noopener" class="nav share-btn twitter">
+        <p>Twitter</p>
+      </a>
+  {{ else if eq . "facebook" }}
+      <a href="//www.facebook.com/sharer/sharer.php?u={{ $permalink }}" target="_blank" rel="noopener" class="nav share-btn facebook">
+        <p>Facebook</p>
+        </a>
+  {{ else if eq . "reddit" }}
+    <a href="//www.reddit.com/submit?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn reddit">
+          <p>Reddit</p>
+        </a>
+  {{ else if eq . "linkedin" }}
+        <a href="//www.linkedin.com/shareArticle?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn linkedin">
+            <p>LinkedIn</p>
+          </a>
+  {{ else if eq . "pinterest" }}
+        <a href="//www.pinterest.com/pin/create/button/?url={{ $permalink }}&amp;description={{ $title }}" target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <p>Pinterest</p>
+        </a>
+  {{ else if eq . "vk" }}
+        <a href="//vk.com/share.php?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn vk">
+          <p>VK</p>
+        </a>
+  {{ else if eq . "email" }}
+        <a href="mailto:?subject={{ i18n "check_out" }} {{ $author }}&amp;body={{ $permalink }}" target="_blank" class="nav share-btn email" data-proofer-ignore>
+          <p>Email</p>
+        </a>
+  {{ end }}
+{{ end }}
+*/
+}
+
+function site_header() {
+  return `
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="${state.pathrel}/" class="nav">
+        <!-- {{ if or .IsHome (not .Site.Params.header.dynamicTitles) }}
+          {{ .Site.Params.header.navbarTitle  | safeHTML }}
+        {{ else }} -->
+          ${cfg.title}
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      ${cfg.menu.main.map((e) => `<a href="${state.pathrel}${e.url}" class="nav link">${e.pre} ${e.name}</a>`).join('')}
+      ${cfg.header.share ? '<a href="#share-menu" class="nav link share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>' : ''}
+      ${cfg.header.search ? '<a href="#search-input" class="nav link search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>' : ''}
+    </menu>
+    ${cfg.header.search ? '<a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>' : ''}
+    ${cfg.header.share ? '<a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>' : ''}
+    ${cfg.header.language ? `<a href="#lang-menu" class="nav lang-toggle" lang="${cfg.language.lang}">${cfg.language.lang}</a>` : ''}
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  ${cfg.header.search ? '<menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>' : ''}
+  <!-- {{ if .Site.Params.header.languageMenu }}{{ partial "language-menu" . }}{{ end }} -->
+  ${cfg.header.share ? `
+    <menu id="share-menu" class="flyout-menu menu">
+      <h1>Share Post</h1>
+      ${share_buttons()}
+    </menu>` : ''}
+</header>`
+}
 
 function site_start() {
   return `
+  ${site_header()}
   <div id="wrapper">
     <!--
     <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>

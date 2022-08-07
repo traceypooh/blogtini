@@ -11,6 +11,47 @@ intro:
   social: true
   paragraph: "Technophile · Optimist · <a href=/biking>Cyclist</a> · <a href=https://archive.org/about/bios.php>Archivist</a> · Design · <a href=/video>Video</a> · TV · Nomad · Docker"
 
+menu:
+  # Sets the menu items in the navigation bar
+  # Identifier prepends a Font Awesome icon to the menu item
+  main:
+    - name:              Home
+      identifier:        home
+      url:               /
+      pre:               <i class='fa fa-home'></i>
+      weight:            1
+
+    - name:              About
+      identifier:        about
+      url:               /about/
+      pre:               <i class='far fa-id-card'></i>
+      weight:            2
+
+    - name:              Categories
+      identifier:        categories
+      url:               /categories/
+      pre:               <i class='fas fa-sitemap'></i>
+      weight:            3
+
+    - name:              Favorites
+      identifier:        favorites
+      url:               /favorites/
+      pre:               <i class='far fa-star'></i>
+      weight:            4
+
+    - name:              Quotes
+      identifier:        quotes
+      url:               /quotes/
+      pre:               <i class='fa fa-quote-left'></i>
+      weight:            5
+
+    - name:              Contact
+      identifier:        contact
+      url:               /contact/
+      pre:               <i class='far fa-envelope'></i>
+      weight:            6
+
+
 sidebar:
   about: tracey is a nonstop dance party.  so you dont have to.  dont ask me about <a href=/2019-08-meesa-3-k8s-annie/>containers</a>.  thanks for dropping by today.  you look nice.
   post_amount: 5
