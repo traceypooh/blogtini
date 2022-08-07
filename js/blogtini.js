@@ -151,13 +151,16 @@ jekyll (GitHub Pages) plugins:
 
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
-import lunr from 'https://esm.archive.org/lunr'
 import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
 import hljs from 'https://esm.archive.org/highlightjs'
 
-
 import { friendly_truncate, krsort } from 'https://av.prod.archive.org/js/util/strings.js'
+
+// adds header click actions, etc.
+// eslint-disable-next-line import/no-named-as-default
+import search_setup from './future-imperfect.js'
+
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
@@ -179,7 +182,6 @@ const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
 let STORED = 10000
 
-let searcher
 
 // defaults
 let cfg = {
@@ -572,25 +574,6 @@ function storage_add(post) { // xxx use snippet
   STORED += 1
 }
 
-function search_setup() {
-  // Build the index so Lunr can search it.  The `ref` field will hold the URL
-  // to the page/post.  title, excerpt, and body will be fields searched.
-  searcher = lunr(function adder() {
-    this.ref('url')
-    this.field('title')
-    this.field('date') // xxx typo in source!
-    this.field('body_raw')
-    this.field('tags')
-    this.field('categories')
-
-    // Loop through all documents and add them to index so they can be searched
-    for (const doc of Object.values(STORAGE.docs))
-      this.add(doc)
-  })
-
-  for (const query of ['bike', 'geek', 'family'])
-    log({ query }, searcher.search(query))
-}
 
 async function post_full(post) {
   const body = MD2HTM.makeHtml(post.body_raw)
@@ -1136,7 +1119,7 @@ function finish() {
 
   import('./staticman.js')
 
-  search_setup()
+  search_setup(Object.values(STORAGE.docs))
 }
 
 

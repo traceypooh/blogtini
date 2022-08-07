@@ -1,3 +1,7 @@
+/* eslint-disable */
+import lunr from 'https://esm.archive.org/lunr'
+import $ from 'https://esm.archive.org/jquery'
+
 // Flyout Menu Functions
 var toggles = {
   ".search-toggle": "#search-input",
@@ -6,6 +10,13 @@ var toggles = {
   ".nav-toggle": "#site-nav-menu"
 };
 
+// Search
+var idx = null;         // Lunr index
+var resultDetails = []; // Will hold the data for the search results (titles and summaries)
+var $searchResults;     // The element on the page holding search results
+var $searchInput;       // The search box element
+
+function search_setup(docs) {
 $.each(toggles, function(toggle, menu) {
   $(toggle).on("click", function() {
     if ($(menu).hasClass("active")) {
@@ -43,65 +54,25 @@ $('#back-to-top').click(function() {
   return false;
 });
 
-// Search
-var idx = null;         // Lunr index
-var resultDetails = []; // Will hold the data for the search results (titles and summaries)
-var $searchResults;     // The element on the page holding search results
-var $searchInput;       // The search box element
-
-window.onload = function () {
-  // Set up for an Ajax call to request the JSON data file that is created by
-  // Hugo's build process, with the template we added above
-  var request = new XMLHttpRequest();
-  var query = '';
 
   // Get dom objects for the elements we'll be interacting with
   $searchResults = document.getElementById('search-results');
   $searchInput   = document.getElementById('search-input');
 
-  var lang = document.documentElement.lang;
-  var pathArgs = ["{{ replaceRE "/$" "" .Site.BaseURL }}", "index.json"];
-  if (lang != "{{ .Site.Language }}") {
-    pathArgs.splice(1, 0, lang);
-  }
-  path = pathArgs.join("/");
-  request.open("GET", path, true); // Request the JSON file created during build
-  request.onload = function() {
-    if (request.status >= 200 && request.status < 400) {
-      // Success response received in requesting the index.json file
-      var documents = JSON.parse(request.responseText);
+  // Build the index so Lunr can search it.  The `ref` field will hold the URL
+  // to the page/post.  title, excerpt, and body will be fields searched.
+  idx = lunr(function adder() {
+    this.ref('url')
+    this.field('title')
+    this.field('date') // xxx typo in source!
+    this.field('body_raw')
+    this.field('tags')
+    this.field('categories')
 
-      // Build the index so Lunr can search it.  The `ref` field will hold the URL
-      // to the page/post.  title, excerpt, and body will be fields searched.
-      idx = lunr(function () {
-        this.ref('ref');
-        this.field('title');
-        this.field('data');
-        this.field('description');
-        this.field('body');
-
-        // Loop through all the items in the JSON file and add them to the index
-        // so they can be searched.
-        documents.forEach(function(doc) {
-            this.add(doc);
-            resultDetails[doc.ref] = {
-              'title': doc.title,
-              'date': doc.date,
-              'description': doc.description,
-            };
-        }, this);
-      });
-    } else {
-      $searchResults.innerHTML = '<article class="mini-post"><main><p>Error loading search results...</p></main></a></article>';
-    }
-  };
-
-  request.onerror = function() {
-    $searchResults.innerHTML = '<article class="mini-post"><main><p>Error loading search results...</p></main></a></article>';
-  };
-
-  // Send the request to load the JSON
-  request.send();
+    // Loop through all documents and add them to index so they can be searched
+    for (const doc of docs)
+      this.add(doc)
+  });
 
   // Register handler for the search input field
   registerSearchHandler();
@@ -148,3 +119,5 @@ function renderSearchResults(results) {
 function search(query) {
   return idx.search(query);
 }
+
+export default search_setup
