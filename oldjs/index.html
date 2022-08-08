@@ -1,0 +1,48 @@
+---
+title: oldJS
+author: tracey pooh
+type: page
+date: 2010-06-04
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+
+## About my *PRIOR* JS-base (JavaScript) site
+_NOTE: this all refers to my prior site and uses some archived "Wayback Machine" page links so you can still see the code._
+
+September 2008, as I fretted over the upcoming election, I decided to <u>rewrite this website to use ("client side") JavaScript and JSON</u> for the majority of the look, navigation, and formatting.
+<img src="/img/emote_happy_dance_infinite.gif"/>
+
+So, for example, the upper header, the lower footer, the lefthand navigation, etc. are all inserted with Javascript around whatever each page's `<body>` tag is.
+I have a single Javascript file (see <a href="/old/js.js">source here</a>) that takes care of everything.
+It nicely only has one global (JSON) variable that encapsulates all my methods and (JSON) data elements.  At the bottom of the JS file is the call to `init()` which sets a `window.onload()` event to fire off and set the page up.
+
+For example, this is what the source of <u>hunter.htm</u> looked like:
+```html
+<html><head><meta mod="$Date: 2015/05/10 04:46:34 $" fi="$RCSfile: oldjs.php,v $"/>
+  <script src="js.js"></script>
+  <link rel="stylesheet" href="old-css.css" type="text/css"/>
+</head><body class="std">
+
+<div style="width:660px; margin-left:auto; margin-right:auto;">
+  <div style="text-align:center">
+    <a href="https://hunterleebrown.com">Hunter's Website</a> (he's Super!)
+  </div>
+  <br/>
+
+  <a class="hoverShower stealth" href="https://hunterleebrown.com">
+    <span class="hoverShower">
+      <img class="showOnHover" src="/img/superoverlay.gif"/>
+      <img src="/img/superman.jpg"
+           title="Hunter is Superman"
+           alt="Hunter is Superman"
+           width="640px" height="480px"/>
+    </span>
+  </a>
+</div>
+
+</body></html>
+```
+
+That's it!
+
+So please use any technique(s) you like from my site from what I've learned!

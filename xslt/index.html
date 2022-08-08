@@ -1,0 +1,119 @@
+---
+title: xslt
+author: tracey pooh
+type: page
+date: 2010-06-04
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+
+## About my *PRIOR* XSLT site
+**_&lt;------ NOTE: this all refers to my prior site and uses some archived "Wayback Machine" page links so you can still see the code ------&gt;_**
+
+_[ I used XSLT until Sep 2008, when I converted my site to [client-side/browser JS](/oldjs) ]_
+
+I'm using 100%
+[XML](http://www.w3.org/TR/REC-xml),
+[XSL](http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html), and (client side)
+[XSLT](http://www.w3.org/TR/xslt.html)
+for my superneato new look.  HTML is output by XSL
+(a language for transforming XML documents into other XML or HTML documents).
+I have a single HTML file for the "redirect" page
+[here](index.html).
+There is just a sk&#244;tch of javascript for "mouseover" events on my
+[time-lapses video page](/lapses).
+But other than that, it's just XML and XSL (and of course, CSS 8-).
+
+<img src="/img/emote_happy_dance_infinite.gif"/>
+
+### How this site works
+
+Each XML page simply contains the page-specific data as normal HTML elements
+inside the XML declaration.
+The declaration establishes to a web browser that it is XML, and then loads my
+[styles.xsl](http://web.archive.org/web/20071026101754/http://www.archive.org/~tracey/styles.xsl)
+XSL stylesheet.
+The XSL stylesheet outputs the top header and the left-hand navigation.
+Next, it "copies" all HTML from the XML as the page-specific content.
+Finally, the XSL stylesheet outputs the footer.
+
+For example, this is what the source of
+[hunter.xml](http://web.archive.org/web/20071013204549/http://www.archive.org/~tracey/hunter.xml)
+looks like:
+```xml
+<?xml version="1.0">
+<?xml-stylesheet rel="stylesheet" href="styles.xsl" type="text/xsl">
+<tracey tfile="$RCSfile: xslt.php,v $"
+        lastmod="$Date: 2015/05/10 05:27:34 $"
+        title="chez Tracey Jaquith">
+<div style="margin-top:30px; text-align: center;">
+  <a href="https://hunterleebrown.com">Hunter's Website</a>
+  (he's Super!)
+  <img src="images/superman.jpg"
+     title="Hunter is Superman"
+       alt="Hunter is Superman"
+     width="640px" height="480px">
+</div>
+</tracey>
+```
+
+That's it!
+
+
+My XSL, `styles.xsl`, will tell the browser how to output HTML.
+(NOTE: MSIEv7 requires the ` rel="stylesheet" ` in the stylesheet declaration
+or else it will assume your XSL is really an RSS feed and not display!)
+My XSL will start with the `<html>` tag and output the `<head>` and start the `<body>`.
+The body contains a main table which will:
+
+- output an overall site "header" row
+- output an overall site "left hand navigation column" in the next row
+- copy the XML "content" into the next column
+- make a final 3rd row and put an overall site "footer" in it
+
+There are some other special things I do like:
+
+- Have styles.xsl "load"(!) an XML file.  For example,
+I load
+[quotes.xml](http://web.archive.org/web/20071216090113/http://www.archive.org/~tracey/quotes.xml)
+because a random quote is used in
+[index.xml](http://web.archive.org/web/20080323091134/http://www.archive.org/~tracey/index.xml)
+- **Generate a random number in XSL** (a pseudorandom).
+See the top of
+[styles.xsl](http://web.archive.org/web/20071026101754/http://www.archive.org/~tracey/styles.xsl)
+to see how I finally figured a sneaky
+way to make a random number (to pick a random quote in
+[index.xml](http://web.archive.org/web/20080323091134/http://www.archive.org/~tracey/index.xml),
+to pick a random picture in
+[pictures.xml](http://web.archive.org/web/20060820081919/http://www.archive.org/~tracey/pictures.xml)).
+- Use CVS checkin special variables like
+`$Date: 2015/05/10 05:27:34 $` and
+`$RCSfile: xslt.php,v $`, which get automatically updated on checkin,
+to allow for page-specific information in the footer
+(like what page you are looking at and when it was most recently updated).
+
+But other than that, it's pretty straightforward.
+
+### You crackhead, why XML?
+Some benefits:
+
+- My prior website provider gave me no access to CGI
+  (so PERL, PHP, and such were out of the question).
+- By putting all my HTML in XML, the HTML is forced to be
+  validated as SGML.  This allows me to stay on my toes and forces me to
+  have to output well-formed SGML/HTML.
+- Similar to the first point, since I could not do much dynamically on the
+  server side, I can have the client's browser (which must understand XML and XSL,
+  which fortunately all modern browsers do and have for awhile) do the
+  "XML + XSL" transforming for me.
+- Viewing the source by browsing the XSL page itself with a browser is
+  supernice as the browser does all the XML prettying, formatting, and
+  coloring.
+- You can avoid most Javascript in lieu of the pretty sophisticated
+  [XSL language builtins](http://java.sun.com/xml/jaxp/dist/1.1/docs/tutorial/xslt/1_intro.html)
+  and rules once you get the hang of it.</li>
+- You can test and develop without a webserver running
+  (like needed for executed CGI) -- you can just drag files to a webbrowser.
+
+It took me about a week of "moonlighting" to learn all this and convert my site.
+
+So please use any technique(s) you like from my site from what I've learned!

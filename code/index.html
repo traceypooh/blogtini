@@ -1,0 +1,53 @@
+---
+title: code - stupid pet tricks
+author: tracey pooh
+type: page
+date: 2010-06-04
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+
+<!-- ****************** CSS HOVERING SOURCE ****************** -->
+<style>
+.showOnHover {
+  display:none;
+}
+span.hoverShower:hover .showOnHover {
+  display:inline;
+  z-index:100;
+  position:absolute;
+}
+</style>
+<!-- ****************** CSS HOVERING SOURCE ****************** -->
+
+## will geek for food
+
+### CSS hovering
+<!-- ****************** CSS HOVERING SOURCE ****************** -->
+<div style="padding:10px; border:1px solid orange;">
+
+<!-- neato CSS hovering example -->
+<a class="hoverShower" href="">
+<span class="hoverShower">
+  <!-- this is the hidden thing.  i put it first so when it displays, its upper left corder will start exactly right here, predictably -->
+  <span style="width:100px; padding:5px; background-color:purple; color:white;" class="showOnHover">
+    a UFO will hover over me and take me far away...
+  </span>
+  <!-- the rest of this is visible.  since the hidden span uses 'display:none' when hidden, then 'position:absolute' when visible, the hidden span won't affect where we are placed.  so in effect, our upper left corner will directly overlap the upper left corner of the prior hidden span (unless we move the hidden span's upper left corner (see 2nd example). -->
+  I can put anything here and if you hover over me...
+</span>
+</a>
+<br/>
+
+<!-- neato CSS hovering example -->
+<span class="hoverShower">
+  <span style="color:black; margin-left:200px; margin-top:100px; background-color:white;" class="showOnHover">
+    <img style="color:black; float:none; vertical-align:middle;" src="https://archive.org/images/mollymonster.jpg"/>boo!
+  </span>
+  You can make hovering over me launch an element elsewhere, too...<br/>
+  <small>(in this case, i picked relative to the start of the hoverShower span.  you can also pick absolute x/y coordinates on the screen, etc.)</small>
+</span>
+
+</div>
+<!-- ****************** CSS HOVERING SOURCE ****************** -->
+
+"View source" with your browser to see the code.
