@@ -15,11 +15,6 @@
   --tile-width: 300px;
 }
 
-@media (max-width: 768px) {
-  .container, .container-sm {
-    max-width: initial;
-  }
-}
 
 
 /* MAIN THEME OVERRIDES */ /* chexxx */
