@@ -1,5 +1,6 @@
 /*
 
+xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
 xxx autogen rss
 xxx mobile size tables
 xxx `{{< youtube ..`
@@ -177,7 +178,7 @@ const state = {
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname.replace(/^\//, '') : ''
+const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname.replace(/^\/+/, '') : ''
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
@@ -209,6 +210,7 @@ let cfg = {
     categories_by_count: true,
   },
   social: {},
+  social_share: ['twitter', 'facebook', 'pinterest', 'email'],
   view_more_posts_link: '/post/', // xxx
 }
 
@@ -605,6 +607,10 @@ async function post_full(post) {
       <div class="post single">
         ${'' /* eslint-disable-next-line no-use-before-define */}
         ${post_header(post)}
+        <div id="socnet-share">
+          ${'' /* eslint-disable-next-line no-use-before-define */}
+          ${share_buttons(post)}
+        </div>
         ${'' /* eslint-disable-next-line no-use-before-define */}
         ${post_featured(post)}
 
@@ -877,24 +883,34 @@ async function create_comment_form(entryId, comments) {
   </div>`
 }
 
-function share_buttons() { // xxx
-  return ''
-  /*
-{{ $permalink := $.Scratch.Get "Permalink" }}
-{{ $title := $.Scratch.Get "Title" }}
-{{ $author := $.Scratch.Get "Author" }}
-{{ $tags := $.Scratch.Get "Tags" }}
-{{ range .Site.Params.socialShare }}
-  {{ if eq . "twitter" }}
-    <!-- TODO: Add Hashtags &amp;hashtags= -->
-    <a href="//twitter.com/share?text={{ $title }}&amp;url={{ $permalink }}" target="_blank" rel="noopener" class="nav share-btn twitter">
-        <p>Twitter</p>
-      </a>
-  {{ else if eq . "facebook" }}
-      <a href="//www.facebook.com/sharer/sharer.php?u={{ $permalink }}" target="_blank" rel="noopener" class="nav share-btn facebook">
-        <p>Facebook</p>
-        </a>
-  {{ else if eq . "reddit" }}
+function share_buttons(post) {
+  if (!post) return '' // if no post, parse url for ?tags etc and fake, else fake from parsed body.innerHTML
+
+  const permalink = post.permalink || post.url // fqdn
+  return cfg.social_share.map((social) => {
+    switch (social) {
+    case 'twitter':
+      return `
+        <a href="//twitter.com/share?text=${post.title}&amp;url=${permalink}"
+            target="_blank" rel="noopener" class="nav share-btn twitter">
+          <p>Twitter</p>
+        </a>`
+    case 'facebook':
+      return `
+        <a href="//www.facebook.com/sharer/sharer.php?u=${permalink}"
+            target="_blank" rel="noopener" class="nav share-btn facebook">
+          <p>Facebook</p>
+        </a>`
+    case 'pinterest':
+      return `
+        <a href="//www.pinterest.com/pin/create/button/?url=${permalink}&amp;description=${post.title}"
+            target="_blank" rel="noopener" class="nav share-btn pinterest">
+          <p>Pinterest</p>
+        </a>`
+    default:
+      return ''
+    /*
+    {{ else if eq . "reddit" }}
     <a href="//www.reddit.com/submit?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn reddit">
           <p>Reddit</p>
         </a>
@@ -902,21 +918,19 @@ function share_buttons() { // xxx
         <a href="//www.linkedin.com/shareArticle?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn linkedin">
             <p>LinkedIn</p>
           </a>
-  {{ else if eq . "pinterest" }}
-        <a href="//www.pinterest.com/pin/create/button/?url={{ $permalink }}&amp;description={{ $title }}" target="_blank" rel="noopener" class="nav share-btn pinterest">
-          <p>Pinterest</p>
-        </a>
-  {{ else if eq . "vk" }}
+   {{ else if eq . "vk" }}
         <a href="//vk.com/share.php?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn vk">
           <p>VK</p>
         </a>
   {{ else if eq . "email" }}
-        <a href="mailto:?subject={{ i18n "check_out" }} {{ $author }}&amp;body={{ $permalink }}" target="_blank" class="nav share-btn email" data-proofer-ignore>
+        <a href="mailto:?subject={{ i18n "check_out" }} ${post.author}&amp;body={{ $permalink }}" target="_blank" class="nav share-btn email" data-proofer-ignore>
           <p>Email</p>
         </a>
   {{ end }}
 {{ end }}
 */
+    }
+  }).join('')
 }
 
 function site_header() {
@@ -955,18 +969,11 @@ function site_start() {
   return `
   ${site_header()}
   <div id="wrapper">
-    <!--
-    <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
+    <!-- xxx <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
       {{ with .Site.Params.intro.pic }}<a href="{{ "/" | relLangURL}}"><img src="{{ .src | relURL }}"{{ with .shape}} class="{{ . }}"{{ end }} width="{{ .width | default "100" }}" alt="{{ .alt }}" /></a>{{ end }}
       <header>
         {{ with .Site.Params.intro.header }}<h1>{{ . | safeHTML }}</h1>{{ end }}
-      </header>
-      <main>
-        {{ with .Site.Params.intro.paragraph }}<p>{{ . | safeHTML }}</p>{{ end }}
-      </main>
-    {{ if or (.Site.Params.intro.rssIntro) (.Site.Params.intro.socialIntro) }}
-        <footer>
-          <ul class="socnet-icons"> -->
+      </header> -->
 
     <section id="site-intro">
       <header>
