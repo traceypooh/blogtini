@@ -5,7 +5,13 @@ const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true }
 
 
 function markdown_to_html(str) {
-  return MD2HTM.makeHtml(str)
+  return MD2HTM.makeHtml(
+    str.replace(
+      // replace any youtube shortcodes
+      /{{<\s*youtube\s+([^\s>}]+)\s*>}}/g,
+      '<iframe width="848" height="477" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+    ),
+  )
 }
 
 function summarize(str, maxlen = 500) {

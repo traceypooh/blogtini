@@ -3,7 +3,6 @@
 xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
 xxx autogen rss
 xxx mobile size tables
-xxx `{{< youtube ..`
 xxx .newest only defined 2nd request / when localStorage is read from prior 1st request as of now
 
 Your posts or directories of posts, should ideally natural sort in time order, examples:
