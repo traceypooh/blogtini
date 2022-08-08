@@ -177,7 +177,7 @@ const state = {
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname : ''
+const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname.replace(/^\//, '') : ''
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
