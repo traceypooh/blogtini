@@ -513,6 +513,8 @@ async function parse_posts(markdowns) {
       for (const key of Object.keys(post))
         if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
 
+      if (json.type === 'page') post.type = 'page'
+
       // eslint-disable-next-line no-use-before-define
       storage_add(post)
 
@@ -556,8 +558,8 @@ async function storage_loop() {
       head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
     }
 
-
-    post.type = 'post' // xxx
+    if (!('type' in post))
+      post.type = 'post'
     // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
 
     if (filter_post) {
@@ -586,10 +588,14 @@ async function post_full(post) {
   const body = markdown_to_html(post.body_raw)
 
   const entryId = post.url.replace(/\/index.html*$/, '')
-  // eslint-disable-next-line no-use-before-define
-  const comments_htm = await comments_markup(entryId)
-  // eslint-disable-next-line no-use-before-define
-  const comments_form = await create_comment_form(entryId, comments_htm)
+
+  let comments_form = ''
+  if (post.type === 'post') {
+    // eslint-disable-next-line no-use-before-define
+    const comments_htm = await comments_markup(entryId)
+    // eslint-disable-next-line no-use-before-define
+    comments_form = await create_comment_form(entryId, comments_htm)
+  }
 
   return `
     ${'' /* eslint-disable-next-line no-use-before-define */}
@@ -606,10 +612,11 @@ async function post_full(post) {
           ${body}
         </div>
 
+        ${post.type === 'post' ? `
         <footer>
           ${'' /* eslint-disable-next-line no-use-before-define */}
           ${post_stats(post)}
-        </footer>
+        </footer>` : ''}
 
       </div>
 
@@ -639,7 +646,7 @@ function post1(post) {
   <footer>
     <a href="${post.url}" class="button big">Read More</a>
     ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${post_stats(post)}
+    ${post.type === 'post' ? post_stats(post) : ''}
   </footer>
 </article>
 `
