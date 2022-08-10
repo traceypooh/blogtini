@@ -370,49 +370,28 @@ async function storage_create() {
 async function find_posts() {
   const FILES = []
 
-  if (!FILES.length) {
-    const sitemap_urls = (await fetcher(`${state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
-      .map((e) => e.split('</loc>').slice(0, 1).join(''))
-      // eslint-disable-next-line no-confusing-arrow
-      .map((e) => e.replace('https://blogtini.com/', '').replace(/https:\/\/[^.]+\.github\.io\/[^/]+\//, ''))
-      .filter((e) => e !== '')
-      // eslint-disable-next-line no-confusing-arrow
-      .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
-      // eslint-disable-next-line no-confusing-arrow
-      .map((e) => e.replace(/http:\/\/localhost:\d\d\d\d\//, '')) // xxxx
+  const sitemap_urls = (await fetcher(`${state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
+    .map((e) => e.split('</loc>').slice(0, 1).join(''))
+    // eslint-disable-next-line no-confusing-arrow
+    .map((e) => e.replace('https://blogtini.com/', '').replace(/https:\/\/[^.]+\.github\.io\/[^/]+\//, ''))
+    .filter((e) => e !== '')
+    // eslint-disable-next-line no-confusing-arrow
+    .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
+    // eslint-disable-next-line no-confusing-arrow
+    .map((e) => e.replace(/http:\/\/localhost:\d\d\d\d\//, '')) // xxxx
 
-    state.try_github_api_tree = false
-    state.use_github_api_for_files = false
+  state.try_github_api_tree = false
+  state.use_github_api_for_files = false
 
-    if (sitemap_urls) {
-      log({ sitemap_urls })
-      FILES.push(...sitemap_urls)
-      state.sitemap_htm = true
-    } else {
-      // handles the "i'm just trying it out" / no sitemap case
-      FILES.push(location.pathname) // xxx
-      state.sitemap_htm = false
-    }
+  if (sitemap_urls) {
+    log({ sitemap_urls })
+    FILES.push(...sitemap_urls)
+    state.sitemap_htm = true
+  } else {
+    // handles the "i'm just trying it out" / no sitemap case
+    FILES.push(location.pathname) // xxx
+    state.sitemap_htm = false
   }
-
-  // check for simple dir of .md/.markdown files -- w/ webserver that responds w/ dir listings:
-  if (!FILES.length) {
-    const txt = await fetcher('posts/')
-    if (txt) {
-      // local dev or something that replies with a directory listing (yay)
-      FILES.push(...[...txt.matchAll(/<a href="([^"]+.md)"/g)].map((e) => e[1])) // xxx .markdown too
-      state.file_prefix = './posts' // chexxxx
-    } else {
-      state.try_github_api_tree = true
-    }
-  }
-
-  // try 1+ post inside the main README.md
-  if (!FILES.length) {
-    FILES.push('README.md')
-    state.try_github_api_tree = true
-  }
-
   log({ cfg, state })
 
   const latest = FILES.filter((e) => e && e.match(/\.(md|markdown|html|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
@@ -453,17 +432,7 @@ async function parse_posts(markdowns) {
 
     const chunks = yaml.split('\n---')
 
-    const multiples = (file === 'README.md' && !(chunks.length % 2) && // xxx handle \n--- corner cases (hr, tables..)
-        !(chunks.filter((_e, idx) => !(idx % 2)).filter((e) => !e.match(/\ntitle:/m)).length))
-    const parts = multiples ? chunks : [chunks.shift(), chunks.join('\n---')]
-    if (multiples) {
-      if (parts.length > 2 && parts[1].trim() === '' && parts[0].match(/^---\ntitle:[^\n]+$/)) {
-        // prolly doing local dev -- pull dummy front-matter that GH Pages deploy's jekyll removes..
-        parts.shift()
-        parts.shift()
-      }
-      log('looks like single file with', parts.length / 2, 'posts')
-    }
+    const parts = [chunks.shift(), chunks.join('\n---')]
 
     while (parts.length) {
       const front_matter = parts.shift()
@@ -503,7 +472,7 @@ async function parse_posts(markdowns) {
       // author xxx
 
       // eslint-disable-next-line no-use-before-define
-      const url = multiples ? `${ymd}-${slugify(title)}` : file.replace(/\.md$/, '')
+      const url = file.replace(/\.md$/, '')
 
       const post = {
         url, title, date, body_raw, tags, categories, featured,
