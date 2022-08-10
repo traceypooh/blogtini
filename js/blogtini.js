@@ -181,7 +181,6 @@ const filter_post = !document.getElementsByTagName('body')[0].classList.contains
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
-// let SELF = ''
 
 // defaults
 let cfg = {
@@ -251,7 +250,6 @@ async function main() {
 
   // eslint-disable-next-line no-use-before-define
   dark_mode()
-  // SELF = document.getElementsByTagName('body')[0].innerHTML // xxx *could* use if not in sitemap
 
   // eslint-disable-next-line no-use-before-define
   head_insert_generics()
@@ -289,7 +287,6 @@ async function main() {
 
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_end()}`
-
 
 /*
 cfg.repo = 'blogtini'
@@ -532,6 +529,12 @@ async function storage_loop() {
       document.getElementsByTagName('body')[0].innerHTML =
         // eslint-disable-next-line no-use-before-define
         await post_full(post)
+
+      // copy sharing buttons to the fly-out menu
+      document.getElementById('share-menu').insertAdjacentHTML(
+        'beforeend',
+        document.getElementById('socnet-share').innerHTML,
+      )
     } else {
       // eslint-disable-next-line no-use-before-define
       htm +=  post1(post)
@@ -855,7 +858,12 @@ async function create_comment_form(entryId, comments) {
 }
 
 function share_buttons(post) {
-  if (!post) return '' // if no post, parse url for ?tags etc and fake, else fake from parsed body.innerHTML
+  if (!post) {
+    // if no post, parse url for ?tags etc and fake
+    // post = markdown_to_post(document.getElementsByTagName('body')[0].innerHTML, 'xxx')
+  }
+  if (!post)
+    return ''
 
   const permalink = post.permalink || post.url // fqdn
   return cfg.social_share.map((social) => {
