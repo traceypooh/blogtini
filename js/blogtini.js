@@ -424,72 +424,68 @@ async function find_posts_from_github_api_tree() {
 }
 
 
+function markdown_to_post(markdown, url = location.pathname) {
+  const chunks = markdown.split('\n---')
+  const front_matter = chunks.shift()
+  const body_raw = chunks.join('\n---')
+
+  let parsed
+  try {
+    parsed = yml.load(front_matter)
+  } catch {
+    // no front-matter or not parseable -- skip
+    log('not parseable', { url, front_matter })
+    return undefined
+  }
+  const json = parsed
+  log({ json })
+
+  const title      = json.title?.trim() ?? ''
+  const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
+  const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
+  const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
+
+  if (!date) {
+    log('no date', { url, front_matter })
+    return undefined
+  }
+
+  // hugo uses 'images' array - xxx reconcile & copy over related 0th element featuredalt, etc.
+  // eslint-disable-next-line no-nested-ternary
+  const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
+    ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
+    : '')
+  log({ date, featured })
+  // author xxx
+
+  const post = {
+    url, title, date, body_raw, tags, categories, featured,
+  }
+  for (const key of ['featuredcaption', 'class'])
+    if (key in json) post[key] = json[key]
+  // keep stored hashmap small as possible - delete key/val where val is empty
+  for (const key of Object.keys(post))
+    if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
+
+  if (json.type === 'page') post.type = 'page'
+
+  return post
+}
+
+
 async function parse_posts(markdowns) {
   for (const [file, markdown] of Object.entries(markdowns)) {
+    const url = file.replace(/\.md$/, '')
+
     // the very first post might have been loaded into text if the webserver served the markdown
     // file directly.  the rest are fetch() results.
-    const yaml = typeof markdown === 'string' ? markdown : await markdown.text()
-
-    const chunks = yaml.split('\n---')
-
-    const parts = [chunks.shift(), chunks.join('\n---')]
-
-    while (parts.length) {
-      const front_matter = parts.shift()
-      const body_raw = parts.shift()
-      let parsed
-      try {
-        parsed = yml.load(front_matter)
-      } catch {
-        // no front-matter or not parseable -- skip
-        log('not parseable', { file, front_matter })
-        continue
-      }
-      const json = parsed
-      log({ json })
-
-      const title      = json.title?.trim() ?? ''
-      const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
-      const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
-      const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
-
-      if (!date) {
-        log('no date', { file, front_matter })
-        continue
-      }
-
-      // eslint-disable-next-line no-use-before-define
-      const ymd = date2ymd(new Date(date))
-      if (!STORAGE.newest || ymd > STORAGE.newest)
-        STORAGE.newest = ymd
-
-      // hugo uses 'images' array - xxx reconcile & copy over related 0th element featuredalt, etc.
-      // eslint-disable-next-line no-nested-ternary
-      const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
-        ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
-        : '')
-      log({ date, featured })
-      // author xxx
-
-      // eslint-disable-next-line no-use-before-define
-      const url = file.replace(/\.md$/, '')
-
-      const post = {
-        url, title, date, body_raw, tags, categories, featured,
-      }
-      for (const key of ['featuredcaption', 'class'])
-        if (key in json) post[key] = json[key]
-      // keep stored hashmap small as possible - delete key/val where val is empty
-      for (const key of Object.keys(post))
-        if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
-
-      if (json.type === 'page') post.type = 'page'
-
+    const post = markdown_to_post(
+      typeof markdown === 'string' ? markdown : await markdown.text(),
+      url,
+    )
+    if (post)
       // eslint-disable-next-line no-use-before-define
       storage_add(post)
-
-      state.num_posts += 1
-    }
   }
 }
 
@@ -551,6 +547,13 @@ function storage_add(post) { // xxx use snippet
   const ts = Math.round(new Date(post.date) / 1000)
   const key = `p${isNaN(ts) ? '' : ts} ${post.url}`
   STORAGE.docs[key] = post
+
+  state.num_posts += 1
+
+  // eslint-disable-next-line no-use-before-define
+  const ymd = date2ymd(new Date(post.date))
+  if (!STORAGE.newest || ymd > STORAGE.newest)
+    STORAGE.newest = ymd
 }
 
 
