@@ -173,11 +173,14 @@ const state = {
   try_github_api_tree: false,
   num_posts: 0,
   pathrel: '',
+  filedev: location.protocol === 'file:',
+  is_homepage: document.getElementsByTagName('body')[0].classList.contains('homepage'),
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = !document.getElementsByTagName('body')[0].classList.contains('homepage') ? location.pathname.replace(/^\/+/, '') : ''
+const filter_post = (state.is_homepage ? '' : location.pathname.replace(/^\/+/, '')
+  .replace(state.filedev ? /\/index\.html$/ : /ignore-meeeee/, '/'))
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
@@ -217,6 +220,30 @@ function PR(str, val) {
   return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
 }
 
+function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
+  // eslint-disable-next-line no-param-reassign
+  url = url.replace(/\/index\.html$/, '').replace(/\/+$/, '')
+
+  const cgi = url.startsWith('?')
+  if (state.filedev) {
+    if (state.is_homepage)
+      return (cgi ? `./index.html${url}` : `${url}/index.html`)
+    return (cgi ? `../index.html${url}` : `../${url}/index.html`)
+  }
+
+  if (state.is_homepage)
+    return (cgi ? `./${url}` : `${url}/`)
+  return (cgi ? `../${url}` : `../${url}/`)
+
+  /*
+  xxx when state.filedev mode, change links like:  src="./"  src="../"  href="./"  href="../"
+  that end in "/" to "/index.html".  use same method for emitting urls, eg: site header /favorites/, / home, etc..., recent posts, etc.
+
+  xxx when in top page / tags / cats mode, change links like:  src="../"  href="../"  to  "./"
+  */
+}
+
+
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
 
@@ -225,7 +252,7 @@ async function fetcher(url)  {
 
     if (!ret.ok) {
       // safari file:// doesnt set .ok properly...
-      if (!location.protocol.startsWith('file') || url.startsWith('http'))
+      if (!state.filedev || url.startsWith('http'))
         return null
     }
     const tmp = (text ? await ret.text() : await ret.json())
@@ -239,13 +266,8 @@ async function fetcher(url)  {
 async function main() {
   let tmp
 
-  const dirs = location.pathname.split('/').filter((e) => e !== '')
-  state.filedev = location.protocol === 'file:'
   // eslint-disable-next-line no-nested-ternary
-  state.is_topdir = location.protocol === 'file:'
-    ? dirs.slice(-2, -1)[0] === 'blogtini' // eg: .../blogtini/index.html
-    : (location.hostname.endsWith('.github.io') ? dirs.length <= 1 : !dirs.length)
-  state.pathrel = state.is_topdir ? '' : '../' // xxxx generalize
+  state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
@@ -254,7 +276,7 @@ async function main() {
   // eslint-disable-next-line no-use-before-define
   head_insert_generics()
 
-  if (state.is_topdir) {
+  if (state.is_homepage) {
     if (SEARCH.match(/^\?20\d\d-\d\d-\d\d-/)) {
       // prior SPA type blogtini method.  so now do a soft 404
       // https://developers.google.com/search/docs/advanced/javascript/javascript-seo-basics#avoid-soft-404s
@@ -335,7 +357,7 @@ async function storage_create() {
       (state.use_github_api_for_files
         ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
         : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
-      ).concat(url)
+      ).concat(url).concat(state.filedev && url.endsWith('/') ? 'index.html' : '')
       log({ file, url, fetchee })
 
       proms.push(contents || fetch(fetchee))
@@ -370,12 +392,9 @@ async function find_posts() {
   const sitemap_urls = (await fetcher(`${state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     // eslint-disable-next-line no-confusing-arrow
-    .map((e) => e.replace('https://blogtini.com/', '').replace(/https:\/\/[^.]+\.github\.io\/[^/]+\//, ''))
+    .map((e) => e.replace(/^https:\/\/[^.]+\.github\.io\/[^/]+\//, '').replace(/^https:\/\/[^/]+\//, ''))
+    .map((e) => e.replace(/^http:\/\/localhost:\d+\//, ''))
     .filter((e) => e !== '')
-    // eslint-disable-next-line no-confusing-arrow
-    .map((e) => e.endsWith('/') ? e.concat('index.html') : e)
-    // eslint-disable-next-line no-confusing-arrow
-    .map((e) => e.replace(/http:\/\/localhost:\d\d\d\d\//, '')) // xxxx
 
   state.try_github_api_tree = false
   state.use_github_api_for_files = false
@@ -391,7 +410,7 @@ async function find_posts() {
   }
   log({ cfg, state })
 
-  const latest = FILES.filter((e) => e && e.match(/\.(md|markdown|html|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
+  const latest = FILES.filter((e) => e.endsWith('/') || e.match(/\.(md|markdown|html|htm)$/i)).sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
@@ -503,9 +522,11 @@ async function storage_loop() {
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
     if (filter_post) {
-      const match = post.url === filter_post
-        || post.url.endsWith(`${filter_post}index.html`) // xxxx
-        || (state.filedev  &&  filter_post.endsWith(post.url)) // xxxx
+      const match = (
+        post.url === filter_post ||
+        post.url === `${filter_post}/` ||
+        (state.filedev  &&  filter_post.endsWith(post.url)) // xxxx
+      )
       if (!match && STORAGE.docs.length !== 1)
         continue
     }
@@ -563,14 +584,12 @@ function storage_add(post) { // xxx use snippet
 async function post_full(post) {
   const body = markdown_to_html(post.body_raw)
 
-  const entryId = post.url.replace(/\/index.html*$/, '')
-
   let comments_form = ''
   if (post.type === 'post') {
     // eslint-disable-next-line no-use-before-define
-    const comments_htm = await comments_markup(entryId)
+    const comments_htm = await comments_markup(post.url)
     // eslint-disable-next-line no-use-before-define
-    comments_form = await create_comment_form(entryId, comments_htm)
+    comments_form = await create_comment_form(post.url, comments_htm)
   }
 
   return `
@@ -609,9 +628,6 @@ async function post_full(post) {
 
 
 function post1(post) {
-  // eslint-disable-next-line no-param-reassign
-  post.url = location.protocol === 'file:' ? post.url : post.url.replace(/\/index.html*$/, '') // xxx
-
   const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
   return `
@@ -624,7 +640,7 @@ function post1(post) {
     ${summary}
   </div>
   <footer>
-    <a href="${post.url}" class="button big">Read More</a>
+    <a href="${urlify(post.url)}" class="button big">Read More</a>
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${post.type === 'post' ? post_stats(post) : ''}
   </footer>
@@ -636,7 +652,7 @@ function post_header(post) {
   return `
 <header>
   <div class="title">
-    <h2><a href="${post.url}">${post.title}</a></h2>
+    <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
     ${PR`<p>${post.description}</p>` /* chexxx */}
   </div>
   ${post.type === 'post' ? `
@@ -688,7 +704,7 @@ function post_featured(post) {
         : '')))
 
   return `
-  <a href="${post.url}" class="image featured ${post.class ?? '' /* xxx traceyism */}"
+  <a href="${urlify(post.url)}" class="image featured ${post.class ?? '' /* xxx traceyism */}"
     ${blur ? '' : `style="--bg-image: url('${src}')"`}>
     <img src="${src}" alt="${alt}" ${cls}>
   </a>
@@ -1081,7 +1097,7 @@ function finish() {
   <article class="mini-post">
     ${post_featured(post)}
     <header>
-      <h2><a href="${post.url}">${post.title}</a></h2>
+      <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
       <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
     </header>
   </article>`).join('')}
