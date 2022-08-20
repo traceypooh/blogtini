@@ -180,7 +180,11 @@ const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (state.is_homepage ? '' : location.pathname.replace(/^\/+/, '')
-  .replace(state.filedev ? /\/index\.html$/ : /ignore-meeeee/, '/'))
+  .replace(state.filedev ? /\/index\.html$/ : /ignore-meeeee/, '/')
+  // if hosted on github.io or gitlab.io -- remove the first directory name (project/repo name)
+  // eg: https://traceypooh.github.io/dwebtini/2022-06-decentralized-markdown-blogs-with-blogtini/
+  .replace(location.hostname.match(/^[^.]+\/git(hub|lab)\.io$/) ? /^\/[^/]+\// : /ignore-meeee/, '/')
+)
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
