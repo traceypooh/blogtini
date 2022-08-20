@@ -213,6 +213,7 @@ let cfg = {
   social: {},
   social_share: ['twitter', 'facebook', 'pinterest', 'email'],
   view_more_posts_link: '/post/', // xxx
+  remove_blur: true,
 }
 
 
