@@ -1,5 +1,7 @@
 /*
 
+add storj, codepen, etc.
+
 xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
 xxx autogen rss
 xxx mobile size tables
@@ -14,9 +16,6 @@ Your posts or directories of posts, should ideally natural sort in time order, e
 
 
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
-
-
-xxx ignore markdown files w/o frontmatter
 
 wgeto 'https://api.github.com/repos/traceypooh/blogtini/git/trees/main?recursive=true'
 
@@ -166,30 +165,22 @@ import { markdown_to_html, summarize_markdown } from './text.js'
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
 
-const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
-
 
 const state = {
   tags: {},
   cats: {},
-  file_prefix: '',
   use_github_api_for_files: null,
   try_github_api_tree: false,
   num_posts: 0,
   filedev: location.protocol === 'file:',
   pathrel: '',
   is_homepage: document.getElementsByTagName('body')[0].classList.contains('homepage'),
-  base: my_frontmatter && typeof my_frontmatter === 'object' ? my_frontmatter.base : undefined,
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-const filter_post = (state.is_homepage ? '' : location.pathname.replace(/^\/+/, '')
-  .replace(state.filedev ? /\/index\.html$/ : /ignore-meeeee/, '/')
-  // if hosted on github.io or gitlab.io -- remove the first directory name (project/repo name)
-  // eg: https://traceypooh.github.io/dwebtini/2022-06-decentralized-markdown-blogs-with-blogtini/
-  .replace(location.hostname.match(/^[^.]+\.git(hub|lab)\.io$/) ? /^[^/]+\// : /ignore-meeee/, '')
-)
+const filter_post = (state.is_homepage ? '' :
+  `${location.origin}${location.pathname}`.replace(/\/index\.html$/, '/'))
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem('blogtini')) ?? {}
@@ -232,7 +223,14 @@ function PR(str, val) {
 
 function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
   // eslint-disable-next-line no-param-reassign
-  url = url.replace(/\/index\.html$/, '').replace(/\/+$/, '')
+  url = url.replace(/\/index\.html$/, '').replace(/\/+$/, '') // xxx remove trail / ??
+
+  if (state.filedev && STORAGE.base && url.startsWith('https://'))
+    // eslint-disable-next-line no-param-reassign
+    url = url.replace(RegExp(`^${STORAGE.base}`), '')
+
+  if (url.startsWith('https://'))
+    return url
 
   const cgi = url.startsWith('?')
   if (state.filedev) {
@@ -275,10 +273,10 @@ async function fetcher(url)  {
 
 async function main() {
   let tmp
-
-  // eslint-disable-next-line no-nested-ternary
   state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
   state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
+
+  const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
 
   // eslint-disable-next-line no-use-before-define
   dark_mode()
@@ -305,6 +303,13 @@ async function main() {
   tmp = yml.load(await fetcher(`${state.pathrel}config.yml`))
   if (tmp)
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
+
+  if (!STORAGE.base && cfg.base)
+    STORAGE.base = cfg.base
+  if (!STORAGE.base && my_frontmatter && typeof my_frontmatter === 'object')
+    STORAGE.base = my_frontmatter.base
+  log({ filter_post, base: STORAGE.base })
+
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -338,7 +343,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 }
 
 
-async function storage_create() {
+async function storage_create() { // xxx
   STORAGE.created = dayjs().format('MMM D, YYYY')
   STORAGE.docs = STORAGE.docs || {}
 
@@ -349,8 +354,7 @@ async function storage_create() {
     let proms = []
     let files = []
     for (let n = 0; n < latest.length; n++) {
-      const md = latest[n]
-      const url = `${state.file_prefix}${md}`
+      const url = latest[n]
       const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
       const file = state.sitemap_htm ? latest[n] : mat[2]
 
@@ -363,12 +367,14 @@ async function storage_create() {
       }
       files.push(file)
 
+      const url2 = state.filedev && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
+
       const fetchee = // eslint-disable-next-line no-nested-ternary
       (state.use_github_api_for_files
         ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-        : (state.sitemap_htm && !url.startsWith('https://') && !url.startsWith('http://') ? state.pathrel : '')
-      ).concat(url).concat(state.filedev && url.endsWith('/') ? 'index.html' : '')
-      log({ file, url, fetchee })
+        : (state.sitemap_htm && !url2.startsWith('https://') && !url2.startsWith('http://') ? state.pathrel : '')
+      ).concat(url2).concat(state.filedev && url2.endsWith('/') ? 'index.html' : '')
+      log({ file, url2, fetchee })
 
       proms.push(contents || fetch(fetchee))
 
@@ -396,15 +402,24 @@ async function storage_create() {
 }
 
 
+function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/toprel
+  for (const url of urls) {
+    const mat = url.match(/^https:\/\/([^.]+\.(github|gitlab)\.io\/[^/]+\/)/)
+    if (mat) {
+      // eslint-disable-next-line prefer-destructuring
+      STORAGE.base = mat[0] // eg: https://traceypooh.github.io/dwebtini/
+      return
+    }
+  }
+}
+
+
 async function find_posts() {
   const FILES = []
 
-  const sitemap_urls =
-    (await fetcher(`${state.base ?? state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
+  const sitemap_urls = (await fetcher(`${STORAGE.base ?? state.pathrel}sitemap.xml`))?.split('<loc>')
+    .slice(1)
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
-    // eslint-disable-next-line no-confusing-arrow
-    .map((e) => e.replace(/^https:\/\/[^.]+\.github\.io\/[^/]+\//, '').replace(/^https:\/\/[^/]+\//, ''))
-    .map((e) => e.replace(/^http:\/\/localhost:\d+\//, ''))
     .filter((e) => e !== '')
 
   state.try_github_api_tree = false
@@ -414,6 +429,8 @@ async function find_posts() {
     log({ sitemap_urls })
     FILES.push(...sitemap_urls)
     state.sitemap_htm = true
+    if (!STORAGE.base)
+      setup_base(sitemap_urls)
   } else {
     // handles the "i'm just trying it out" / no sitemap case
     FILES.push(location.pathname) // xxx
@@ -543,7 +560,7 @@ async function storage_loop() {
       const match = (
         post.url === filter_post ||
         post.url === `${filter_post}/` ||
-        (state.filedev  &&  filter_post.endsWith(post.url)) // xxxx
+        (state.filedev && STORAGE.base && filter_post.endsWith(post.url.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
       if (!match && STORAGE.docs.length !== 1)
         continue
