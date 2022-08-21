@@ -404,10 +404,12 @@ async function storage_create() { // xxx
 
 function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/toprel
   for (const url of urls) {
-    const mat = url.match(/^https:\/\/([^.]+\.(github|gitlab)\.io\/[^/]+\/)/)
+    const mat = url.match(/^https:\/\/[^.]+\.(github|gitlab)\.io\/[^/]+\//) ||
+      url.match(/^https:\/\/blogtini\.com\//)
     if (mat) {
       // eslint-disable-next-line prefer-destructuring
       STORAGE.base = mat[0] // eg: https://traceypooh.github.io/dwebtini/
+      log('BASE', STORAGE.base)
       return
     }
   }
@@ -557,10 +559,11 @@ async function storage_loop() {
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
     if (filter_post) {
+      const url_no_args = post.url.replace(/\?.*$/, '').replace(/&.*$/, '')
       const match = (
-        post.url === filter_post ||
-        post.url === `${filter_post}/` ||
-        (state.filedev && STORAGE.base && filter_post.endsWith(post.url.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
+        url_no_args === filter_post ||
+        url_no_args === `${filter_post}/` ||
+        (state.filedev && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
       if (!match && STORAGE.docs.length !== 1)
         continue
