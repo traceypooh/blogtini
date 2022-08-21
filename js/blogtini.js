@@ -165,6 +165,10 @@ import { markdown_to_html, summarize_markdown } from './text.js'
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
+
+const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
+
+
 const state = {
   tags: {},
   cats: {},
@@ -172,9 +176,10 @@ const state = {
   use_github_api_for_files: null,
   try_github_api_tree: false,
   num_posts: 0,
-  pathrel: '',
   filedev: location.protocol === 'file:',
+  pathrel: '',
   is_homepage: document.getElementsByTagName('body')[0].classList.contains('homepage'),
+  base: my_frontmatter && typeof my_frontmatter === 'object' ? my_frontmatter.base : undefined,
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
@@ -394,7 +399,8 @@ async function storage_create() {
 async function find_posts() {
   const FILES = []
 
-  const sitemap_urls = (await fetcher(`${state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
+  const sitemap_urls =
+    (await fetcher(`${state.base ?? state.pathrel}sitemap.xml`))?.split('<loc>').slice(1)
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     // eslint-disable-next-line no-confusing-arrow
     .map((e) => e.replace(/^https:\/\/[^.]+\.github\.io\/[^/]+\//, '').replace(/^https:\/\/[^/]+\//, ''))
@@ -445,20 +451,27 @@ async function find_posts_from_github_api_tree() {
 }
 
 
-function markdown_to_post(markdown, url = location.pathname) {
+function markdown_parse(markdown) {
   const chunks = markdown.split('\n---')
   const front_matter = chunks.shift()
   const body_raw = chunks.join('\n---')
 
-  let parsed
   try {
-    parsed = yml.load(front_matter)
-  } catch {
+    const parsed = yml.load(front_matter)
+    return [parsed, body_raw]
+  } catch {}
+
+  return [undefined, undefined]
+}
+
+
+function markdown_to_post(markdown, url = location.pathname) {
+  const [json, body_raw] = markdown_parse(markdown)
+  if (!json) {
     // no front-matter or not parseable -- skip
-    log('not parseable', { url, front_matter })
-    return undefined
+    log('not parseable', { url, markdown })
   }
-  const json = parsed
+
   log({ json })
 
   const title      = json.title?.trim() ?? ''
@@ -467,7 +480,7 @@ function markdown_to_post(markdown, url = location.pathname) {
   const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
   if (!date) {
-    log('no date', { url, front_matter })
+    log('no date', { url, json })
     return undefined
   }
 
