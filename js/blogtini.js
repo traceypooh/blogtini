@@ -223,7 +223,7 @@ function PR(str, val) {
 
 function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
   // eslint-disable-next-line no-param-reassign
-  url = url.replace(/\/index\.html$/, '').replace(/\/+$/, '') // xxx remove trail / ??
+  url = url.replace(/\/index\.html$/, '')
 
   if (state.filedev && STORAGE.base && url.startsWith('https://'))
     // eslint-disable-next-line no-param-reassign
