@@ -234,6 +234,7 @@ function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
 
   const cgi = url.startsWith('?')
   if (state.filedev) {
+    url = url.replace(/\/+$/, '')
     if (state.is_homepage)
       return (cgi ? `./index.html${url}` : `${url}/index.html`)
     return (cgi ? `../index.html${url}` : `../${url}/index.html`)
@@ -273,10 +274,14 @@ async function fetcher(url)  {
 
 async function main() {
   let tmp
-  state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
-  state.toprel = state.pathrel.concat(state.filedev ? 'index.html' : '')
 
+  // see if this is an (atypical) "off site" page/post, compared to the main site
   const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
+  const base = my_frontmatter?.base
+
+  state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
+  state.top_dir = base ?? state.pathrel
+  state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '')
 
   // eslint-disable-next-line no-use-before-define
   dark_mode()
@@ -300,16 +305,16 @@ async function main() {
   // default expect github pages hostname - user can override via their own `config.yml` file
   [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
 
-  tmp = yml.load(await fetcher(`${state.pathrel}config.yml`))
+
+  if (!STORAGE.base)
+    STORAGE.base = base
+
+  tmp = yml.load(await fetcher(`${state.top_dir}config.yml`))
   if (tmp)
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
-  if (!STORAGE.base && cfg.base)
-    STORAGE.base = cfg.base
-  if (!STORAGE.base && my_frontmatter && typeof my_frontmatter === 'object')
-    STORAGE.base = my_frontmatter.base
-  log({ filter_post, base: STORAGE.base })
 
+  log({ filter_post, base: STORAGE.base, cfg, state })
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -402,7 +407,7 @@ async function storage_create() { // xxx
 }
 
 
-function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/toprel
+function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/top_page
   for (const url of urls) {
     const mat = url.match(/^https:\/\/[^.]+\.(github|gitlab)\.io\/[^/]+\//) ||
       url.match(/^https:\/\/blogtini\.com\//)
@@ -419,7 +424,7 @@ function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all
 async function find_posts() {
   const FILES = []
 
-  const sitemap_urls = (await fetcher(`${STORAGE.base ?? state.pathrel}sitemap.xml`))?.split('<loc>')
+  const sitemap_urls = (await fetcher(`${state.top_dir}sitemap.xml`))?.split('<loc>')
     .slice(1)
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     .filter((e) => e !== '')
@@ -714,18 +719,18 @@ function post_featured(post) {
   if (post.featured) {
     // eslint-disable-next-line max-len
     // xxx original: {{- $src = (path.Join "img" (cond (eq .Params.featuredpath "date") (.Page.Date.Format "2006/01") (.Params.featuredpath)) .Params.featured) | relURL -}}
-    src = post.featured?.match(/\//) ? post.featured : `${state.pathrel}img/${post.featured}` // xxx img/ parameterize
+    src = post.featured?.match(/\//) ? post.featured : `${state.top_dir}img/${post.featured}` // xxx img/ parameterize
 
     alt = post.featuredalt
     stretch = (post.featuredstretch ?? '').toLowerCase()
     blur = post.removeBlur ?? (cfg.remove_blur ?? '')
   } else if (post.images) {
-    src = `${state.pathrel}${post.images[0].src}`
+    src = `${state.top_dir}${post.images[0].src}`
     alt = post.images[0].alt
     stretch = (post.images[0].stretch ?? '').toLowerCase()
     blur = post.images[0].removeBlur ?? (cfg.remove_blur ?? '')
   } else if (cfg.img_site) {
-    src = `${state.pathrel}${cfg.img_site}`
+    src = `${state.top_dir}${cfg.img_site}`
     blur = post.removeBlur ?? (cfg.remove_blur ?? '')
   } else {
     return ''
@@ -751,8 +756,8 @@ function post_featured(post) {
 
 
 function post_stats(post) {
-  const taglinks =       post.tags.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
-  const catlinks = post.categories.map((e) => `<li><a class="article-terms-link" href="${state.toprel}?categories/${e}">${e}</a></li>`).join(' ').trim()
+  const taglinks =       post.tags.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
+  const catlinks = post.categories.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?categories/${e}">${e}</a></li>`).join(' ').trim()
 
   return `
   <div class="stats">
@@ -826,19 +831,19 @@ ${SOC`href="https://researchgate.net/profile/${'researchgate'}" title="Research 
 }
 
 function rss_icon() {
-  return SOC2`href="${state.pathrel}${'rss'}" type="application/rss+xml" title="RSS" class="fas fa-rss"`
+  return SOC2`href="${state.top_dir}${'rss'}" type="application/rss+xml" title="RSS" class="fas fa-rss"`
 }
 
 
 async function comments_markup(path) {
   let posts_with_comments
   try {
-    posts_with_comments = (await fetcher(`${state.pathrel}comments/index.txt`))?.split('\n')
+    posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
     // eslint-disable-next-line no-empty
   } catch {}
   if (!posts_with_comments?.includes(path)) return null
 
-  const comments = (await fetcher(`${state.pathrel}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length)
+  const comments = (await fetcher(`${state.top_dir}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length)
 
   const refId = 'xxx'
 
@@ -971,7 +976,7 @@ function site_header() {
 <header id="site-header">
   <nav id="site-nav">
     <h1 class="nav-title">
-      <a href="${state.pathrel}/" class="nav">
+      <a href="${state.top_page}" class="nav">
         <!-- {{ if or .IsHome (not .Site.Params.header.dynamicTitles) }}
           {{ .Site.Params.header.navbarTitle  | safeHTML }}
         {{ else }} -->
@@ -979,7 +984,7 @@ function site_header() {
       </a>
     </h1>
     <menu id="site-nav-menu" class="flyout-menu menu">
-      ${cfg.menu.main.map((e) => `<a href="${state.pathrel}${e.url}" class="nav link">${e.pre} ${e.name}</a>`).join('')}
+      ${cfg.menu.main.map((e) => `<a href="${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}" class="nav link">${e.pre} ${e.name}</a>`).join('')}
       ${cfg.header.share ? '<a href="#share-menu" class="nav link share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>' : ''}
       ${cfg.header.search ? '<a href="#search-input" class="nav link search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>' : ''}
     </menu>
@@ -1012,8 +1017,8 @@ function site_start() {
       <header>
         <img id="blogtini" src="${cfg.site_header}">
         <h1>
-          <a href="${state.toprel}">
-            ${cfg.img_site ? `<img src="${state.pathrel}${cfg.img_site}">` : ''}<br>
+          <a href="${state.top_page}">
+            ${cfg.img_site ? `<img src="${state.top_dir}${cfg.img_site}">` : ''}<br>
             ${cfg.title}
           </a>
         </h1>
@@ -1071,7 +1076,7 @@ function site_sidebar() {
       ${'' /* eslint-disable-next-line no-use-before-define */}
       <p> ${safeHTML(cfg.sidebar.about)}</p>
       <footer>
-        <a href="${state.toprel}about" class="button">Learn More</a>
+        <a href="${state.top_dir}about" class="button">Learn More</a>
       </footer>
     </section>` : ''}
 </section>`
@@ -1149,12 +1154,12 @@ function finish() {
   if (cfg.sidebar.categories) { // xxx could support cfg.sidebar.categories_by_count option..
     htm = `
     <header>
-      <h1><a href="${state.toprel}?categories">Categories</a></h1>
+      <h1><a href="${state.top_page}?categories">Categories</a></h1>
     </header>
     <ul>`
 
     for (const cat of Object.keys(state.cats).sort())
-      htm += `<li><a href="${state.toprel}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${state.cats[cat].length}</span></li>`
+      htm += `<li><a href="${state.top_page}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${state.cats[cat].length}</span></li>`
     htm += '</ul>'
     document.getElementById('categories')?.insertAdjacentHTML('beforeend', htm)
   }
@@ -1162,7 +1167,7 @@ function finish() {
 
   htm = `
   <header>
-    <h1><a href="${state.toprel}?tags">Tags</a></h1>
+    <h1><a href="${state.top_page}?tags">Tags</a></h1>
   </header>`
   const rem_min = 1
   const rem_max = 2.5
@@ -1175,7 +1180,7 @@ function finish() {
     const count = state.tags[tag].length
     const weight = (Math.log(count) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
     const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
-    htm += `<a href="${state.toprel}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
+    htm += `<a href="${state.top_page}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
   }
   document.getElementById('tags')?.insertAdjacentHTML('beforeend', htm)
 
