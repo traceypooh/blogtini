@@ -182,6 +182,7 @@ const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (state.is_homepage ? '' :
   `${location.origin}${location.pathname}`.replace(/\/index\.html$/, '/'))
 
+// eslint-disable-next-line no-use-before-define
 const STORAGE_KEY = url_to_base(location.href) ?? 'blogtini'
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
@@ -236,6 +237,7 @@ function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
 
   const cgi = url.startsWith('?')
   if (state.filedev) {
+    // eslint-disable-next-line no-param-reassign
     url = url.replace(/\/+$/, '')
     if (state.is_homepage)
       return (cgi ? `./index.html${url}` : `${url}/index.html`)
@@ -278,6 +280,7 @@ async function main() {
   let tmp
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
+  // eslint-disable-next-line no-use-before-define
   const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
   const base = my_frontmatter?.base
 
@@ -316,7 +319,9 @@ async function main() {
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
 
-  log({ filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state })
+  log({
+    filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
+  })
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -494,6 +499,7 @@ function markdown_parse(markdown) {
   try {
     const parsed = yml.load(front_matter)
     return [parsed, body_raw]
+    // eslint-disable-next-line no-empty
   } catch {}
 
   return [undefined, undefined]
@@ -579,6 +585,10 @@ async function storage_loop() {
       const match = (
         url_no_args === filter_post ||
         url_no_args === `${filter_post}/` ||
+        // deal with IPFS immutable (and unknowable a priori) CID
+        (filter_post.startsWith('https://ipfs.io/ipfs/') && url_no_args.startsWith('/') &&
+         filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
+        // local file:// dev
         (state.filedev && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
       if (!match && STORAGE.docs.length !== 1)
