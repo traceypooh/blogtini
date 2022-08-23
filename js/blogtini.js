@@ -586,7 +586,7 @@ async function storage_loop() {
         url_no_args === filter_post ||
         url_no_args === `${filter_post}/` ||
         // deal with IPFS immutable (and unknowable a priori) CID
-        (filter_post.startsWith('https://ipfs.io/ipfs/') && url_no_args.startsWith('/') &&
+        (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
          filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
         // local file:// dev
         (state.filedev && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
