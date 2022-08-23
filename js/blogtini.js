@@ -182,8 +182,10 @@ const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (state.is_homepage ? '' :
   `${location.origin}${location.pathname}`.replace(/\/index\.html$/, '/'))
 
+const STORAGE_KEY = url_to_base(location.href) ?? 'blogtini'
+
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
-  JSON.parse(localStorage.getItem('blogtini')) ?? {}
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
 // defaults
 let cfg = {
@@ -314,7 +316,7 @@ async function main() {
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
 
-  log({ filter_post, base: STORAGE.base, cfg, state })
+  log({ filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state })
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -403,17 +405,26 @@ async function storage_create() { // xxx
 
   STORAGE.docs = Object.values(krsort(STORAGE.docs))
 
-  localStorage.setItem('blogtini', JSON.stringify(STORAGE))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(STORAGE))
+}
+
+
+function url_to_base(url) {
+  // eg: https://traceypooh.github.io/dwebtini/
+  // eg: https://ipfs.io/ipfs/QmZ2AkWMBq3eqr34GtFV2ut62TM6iQe5DRQHwr1XNhY2M6/
+  const mat =
+    url.match(/^https:\/\/[^.]+\.(github|gitlab)\.io\/[^/]+\//) ||
+    url.match(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//) ||
+    url.match(/^https:\/\/blogtini\.com\//)
+  return (mat ? mat[0] : undefined)
 }
 
 
 function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/top_page
   for (const url of urls) {
-    const mat = url.match(/^https:\/\/[^.]+\.(github|gitlab)\.io\/[^/]+\//) ||
-      url.match(/^https:\/\/blogtini\.com\//)
-    if (mat) {
-      // eslint-disable-next-line prefer-destructuring
-      STORAGE.base = mat[0] // eg: https://traceypooh.github.io/dwebtini/
+    const base = url_to_base(url)
+    if (base) {
+      STORAGE.base = base
       log('BASE', STORAGE.base)
       return
     }
