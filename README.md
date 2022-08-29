@@ -1,6 +1,9 @@
 # blogtini
 
-live at:
+Slides / presentation (tracey talk at https://dwebcamp.org)
+https://traceypooh.github.io/slides/dweb-2022
+
+Site live at:
 - https://blogtini.com
 - https://traceypooh.github.io/blogtini/
 
