@@ -67,7 +67,7 @@ footer:
 social:
   rss: index.xml
   twitter: tracey_pooh
-  youtube: channel/UCBcfKCrYjtWcuTk5LLT-7xg
+  youtube: '@traceypooh'
   linkedin: tracey-jaquith-929432
   pinterest: poohbot
   github: traceypooh
@@ -77,6 +77,7 @@ social:
   flickr: 46222920@N05
   tumblr: traceypooh
   strava: traceypooh
+  mastodon: 'mastodon.social/@traceypooh'
 
 social_share: ['twitter', 'facebook', 'pinterest', 'email', 'linkedin', 'reddit']
 

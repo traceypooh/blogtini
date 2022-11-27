@@ -797,6 +797,12 @@ function SOC(str, svc) {
   return (val === '' || val === undefined || val === null ? '' :
     `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="noopener"></a></li>`)
 }
+function SOCME(str, svc) {
+  // like `SOC()` but with `rel="me"`
+  const val = cfg.social[svc]
+  return (val === '' || val === undefined || val === null ? '' :
+    `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="me"></a></li>`)
+}
 function SOC2(str, arg, svc) {
   const val = cfg.social[svc]
   return (val === '' || val === undefined || val === null ? '' :
@@ -842,7 +848,7 @@ ${SOC`href="https://www.pinterest.com/${'pinterest'}" title="Pinterest" class="f
 ${SOC`href="https://telegram.me/${'telegram'}" title="telegram" class="fab fa-telegram"`}
 ${SOC`href="https://vine.co/${'vine'}" title="Vine" class="fab fa-vine"`}
 ${SOC`href="https://keybase.io/${'keybase'}" title="keybase" class="fab fa-keybase"`}
-${SOC`href="https://${'mastodon'}" title="mastodon" class="fab fa-mastodon"`}
+${SOCME`href="https://${'mastodon'}" title="mastodon" class="fab fa-mastodon"`}
 ${SOC`href="mailto:${'email'}" target="_blank" title="Email" class="far fa-envelope"`}
 
 ${SOC`href="https://scholar.google.com/citations?user=${'googlescholar'}" title="Google Scholar"`}
