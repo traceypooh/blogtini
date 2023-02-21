@@ -130,7 +130,7 @@ function datef() {
   else
     YMD=$1
     # macos else linux
-    date -j -f '%Y-%m-%d 00:00:00' "$YMD 00:00:00" "$FMT" 2> /dev/null  ||  date -d "$YMD 00:00:0" "$FMT"
+    date -j -f '%Y-%m-%d 00:00:00' "$YMD 00:00:00" "$FMT" 2> /dev/null  ||  date -d "$YMD 00:00:00" "$FMT"
   fi
 }
 
