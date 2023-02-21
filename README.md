@@ -1,6 +1,6 @@
 # blogtini
 
-Slides / presentation 
+Slides / presentation
 https://traceypooh.github.io/slides/dweb-2022
 (tracey talk at https://dwebcamp.org)
 
@@ -16,6 +16,13 @@ Thus, we suggest you use our "pre commit" and "post merge" `git` 'hooks' to auto
 ```sh
 git config --local core.hooksPath bin/
 ```
+
+### RSS
+If you'd like a RSS `index.xml` file generated with the [bin/sitemap](bin/sitemap) script,
+during each "pre commit" hook (above), you'll need to have the
+[yq](https://github.com/mikefarah/yq#install) script installed on your machine.
+
+
 
 ## Best two website/blog setup options
 ### Blog source repository that uses markdown inside html markup files

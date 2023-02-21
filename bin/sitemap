@@ -5,18 +5,19 @@ cd $mydir/..
 
 NAME=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f1)
 REPO=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f2)
-OUTFILE=sitemap.xml
 
 PREFIX=https://$NAME.github.io/$REPO
 [ -e CNAME ]  &&  PREFIX=https://$(cat CNAME)
 
 function sitemap() {
-  echo -n Verifying sitemap
+  OUTFILE=sitemap.xml
+
+  echo -n Updating sitemap
   echo '
   <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   ' >| $OUTFILE
 
-  for htm in $(find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r); do
+  for htm in $(list-posts); do
       echo -n .
       dir=$(dirname -- "$htm")
       lastmod=$(git log -1 --format='%cI' -- "$htm")
@@ -34,6 +35,57 @@ function sitemap() {
   echo
 }
 
+
+function rss() { # xxx <description> using snippet??
+  # If `yq` is not installed locally, we won't make RSS `index.xml`
+  ( which -a yq >/dev/null )  ||  return
+
+  OUTFILE=index.xml
+
+  SITE_TITLE=$(yq -r .title config.yml  ||  echo blogtini.com)
+  BUILD_DATE=$(pubDate)
+
+  echo -n Updating RSS
+  echo '
+  <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>'"$SITE_TITLE"'</title>
+      <link>'$PREFIX'/</link>
+      <description>Recent content in '"$SITE_TITLE"'</description>
+      <lastBuildDate>'$BUILD_DATE'</lastBuildDate>
+      <atom:link href="'"$PREFIX"'/index.xml" rel="self" type="application/rss+xml"/>
+      <generator>blogtini.com</generator>' >| $OUTFILE
+
+  for htm in $(list-posts); do
+    echo -n .
+    grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- >| .yml
+    YMD=$(yq -r .date .yml | cut -b1-10)
+    PUBDATE=$(pubDate $YMD)
+    # echo YMD=$YMD PUBDATE=$PUBDATE
+    dir=$(dirname -- "$htm")
+    predir="$PREFIX/$dir"
+    (
+      echo -n '
+        <item>
+          <title>'
+      ( yq -r .title .yml 2>/dev/null  ||  echo -n untitled )
+      echo '</title>
+          <link>'$predir'/</link>
+          <guid>'$predir'/</guid>
+          <pubDate>'$PUBDATE'</pubDate>
+          <description></description>
+        </item>'
+    ) >> $OUTFILE
+  done
+  rm -f .yml
+
+  echo '
+    </channel>
+  </rss>' >> $OUTFILE
+  echo
+}
+
+
 function comments() {
   (
     mkdir -p comments
@@ -42,7 +94,7 @@ function comments() {
     for DIR in $(cat index.txt); do
       OUT=$DIR/index.json
       echo '[' >| $OUT
-      for JSON in $(ls $DIR |egrep -v '^index.json$'); do
+      for JSON in $(ls $DIR | grep -Ev '^index.json$'); do
         cat "$DIR/$JSON" >> $OUT
         echo ",\n" >> $OUT
       done
@@ -51,5 +103,37 @@ function comments() {
   )
 }
 
+
+function list-posts() {
+  find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r
+}
+
+
+function pubDate() {
+  # RSS pubDate format, eg: Wed, 09 Aug 2017 13:25:47 +0530
+       TZ=$(datef +"%z" $@)
+     TIME=$(datef +"%H:%M:%S" $@)
+  WEEKDAY=$(datef +"%a" $@)
+     DATE=$(datef +"%d" $@)
+    MONTH=$(datef +"%b" $@)
+     YEAR=$(datef +"%Y" $@)
+  echo "$WEEKDAY, $DATE $MONTH $YEAR $TIME $TZ"
+}
+
+
+function datef() {
+  FMT=$1
+  shift
+  if [ $# -eq 0 ]; then
+    # (current time as input)
+    date "$FMT"
+  else
+    YMD=$1
+    # macos else linux
+    date -j -f '%Y-%m-%d 00:00:00' "$YMD 00:00:00" "$FMT" 2> /dev/null  ||  date -d "$YMD 00:00:0" "$FMT"
+  fi
+}
+
 sitemap
+rss
 comments
