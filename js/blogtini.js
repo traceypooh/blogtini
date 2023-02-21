@@ -151,22 +151,33 @@ jekyll (GitHub Pages) plugins:
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
 import dayjs from 'https://esm.archive.org/dayjs'
-import showdown from 'https://esm.archive.org/showdown'
 import hljs from 'https://esm.archive.org/highlightjs'
 
 import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
-import search_setup from './future-imperfect.js'
 import { markdown_to_html, summarize_markdown } from './text.js'
 
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
+import {
+  assertBaseUrlWithEndingSlash,
+  cleanUpInitialPayloadMarkup,
+  createBlogtiniStuffWrapper,
+} from './utils.mjs'
 
+const SITE_ROOT_BASE_URL = new URL(import.meta.url).searchParams.get("SITE_ROOT_BASE_URL")
+const PRODUCTION_SITE_ROOT_BASE_URL = new URL(import.meta.url).searchParams.get("PRODUCTION_SITE_ROOT_BASE_URL")
+const FILE_SLASH_SLASH_SLASH_SITE_ROOT_BASE_URL = /^file\:\//.test(SITE_ROOT_BASE_URL)
 
+assertBaseUrlWithEndingSlash(PRODUCTION_SITE_ROOT_BASE_URL)
+assertBaseUrlWithEndingSlash(SITE_ROOT_BASE_URL)
+
+const dayJsHelper = dayjs()
 const state = {
+  top_dir: SITE_ROOT_BASE_URL,
   tags: {},
   cats: {},
   use_github_api_for_files: null,
@@ -279,12 +290,28 @@ async function fetcher(url)  {
 async function main() {
   let tmp
 
-  // see if this is an (atypical) "off site" page/post, compared to the main site
-  // eslint-disable-next-line no-use-before-define
-  const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
-  const base = my_frontmatter?.base
+  /**
+   * Pick all content of the page, let's figure out what to do with it.
+   * Beware, if we use innerHTML and want the front-matter not to be with escaped entities
+   * we got to use textContent instead.
+   */
+  const textContent = document.getElementsByTagName('body')[0].textContent
+  const [raw_fm] = splitFrontMatterAndMarkdown(textContent)
 
-  state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
+  let my_frontmatter = {}
+  try {
+    const loaded = yml.load(raw_fm)
+    my_frontmatter = loaded
+  } catch (e) {
+    console.error('blogtini main ERROR loading YAML', e)
+    my_frontmatter = {}
+  }
+
+  const base = my_frontmatter?.base ?? SITE_ROOT_BASE_URL
+  const href = window.location.href
+  const maybe = href.replace(base ?? '', '')
+
+  state.pathrel = state.is_homepage ? '' : maybe // xxxx generalize
   state.top_dir = base ?? state.pathrel
   state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '')
 
@@ -314,21 +341,24 @@ async function main() {
   if (!STORAGE.base)
     STORAGE.base = base
 
-  tmp = yml.load(await fetcher(`${state.top_dir}config.yml`))
-  if (tmp)
+  const configYamlUrl = `${SITE_ROOT_BASE_URL}config.yml`
+  tmp = yml.load(await fetcher(configYamlUrl))
+  if (tmp) {
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
+  }
 
 
   log({
     filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
   })
 
-  const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
-  // eslint-disable-next-line no-use-before-define
-  add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
+  add_css(`${SITE_ROOT_BASE_URL}css/blogtini.css`) // xxxx theme.css
 
+  cleanUpInitialPayloadMarkup(document)
 
   document.getElementsByTagName('body')[0].innerHTML = `
+  const blogtiniMain = createBlogtiniStuffWrapper(document, 'blogtini-main')
+  blogtiniMain.innerHTML = `<!-- RBx htmlString main BEGIN -->
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_start()}
 
@@ -343,6 +373,9 @@ cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
 log('xxxx testitos', await find_posts_from_github_api_tree()); return
 */
 
+
+  document.getElementsByTagName('body')[0].prepend(blogtiniMain)
+
   if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
     // eslint-disable-next-line no-use-before-define
     await storage_create()
@@ -356,7 +389,9 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
 
 async function storage_create() { // xxx
-  STORAGE.created = dayjs().format('MMM D, YYYY')
+  const created = dayJsHelper.format('MMM D, YYYY')
+
+  STORAGE.created = created
   STORAGE.docs = STORAGE.docs || {}
 
   for (const pass of [1, 0]) {
@@ -395,10 +430,17 @@ async function storage_create() { // xxx
 
       // now make the requests in parallel and wait for them all to answer.
       const vals = await Promise.all(proms)
-      const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
+
+      /**
+       * documentResponseObjects: They're a collection of HTTP Response objects.
+       *
+       * That's where we can get the HTTP Response of files,
+       * maybe we should keep the response headers and use in storage.
+       */
+      const documentResponseObjects = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
 
       // eslint-disable-next-line no-use-before-define
-      await parse_posts(file2markdown)
+      await parse_posts(documentResponseObjects)
 
       files = []
       proms = []
@@ -439,11 +481,25 @@ function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all
 
 async function find_posts() {
   const FILES = []
+  const sitemapUrl = `${state.top_dir}sitemap.xml`
 
-  const sitemap_urls = (await fetcher(`${state.top_dir}sitemap.xml`))?.split('<loc>')
+
+  const sitemap_urls = (await fetcher(sitemapUrl))?.split('<loc>')
     .slice(1)
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     .filter((e) => e !== '')
+    .map((locUrl) => {
+      let locUrlOut = locUrl
+      // Fetching content here wouldn't work when is file:///
+      if (FILE_SLASH_SLASH_SLASH_SITE_ROOT_BASE_URL === false) {
+        const rewrittenLocUrl = locUrl.replace(
+          new RegExp('^' + PRODUCTION_SITE_ROOT_BASE_URL),
+          SITE_ROOT_BASE_URL,
+        )
+        locUrlOut = rewrittenLocUrl
+      }
+      return locUrlOut;
+    })
 
   state.try_github_api_tree = false
   state.use_github_api_for_files = false
@@ -456,7 +512,7 @@ async function find_posts() {
       setup_base(sitemap_urls)
   } else {
     // handles the "i'm just trying it out" / no sitemap case
-    FILES.push(location.pathname) // xxx
+    FILES.push(state.top_dir) // xxx
     state.sitemap_htm = false
   }
   log({ cfg, state })
@@ -549,13 +605,13 @@ function markdown_to_post(markdown, url = location.pathname) {
 
 
 async function parse_posts(markdowns) {
-  for (const [file, markdown] of Object.entries(markdowns)) {
-    const url = file.replace(/\.md$/, '')
+  for (const [resourceUri, response] of Object.entries(responses)) {
+    const url = resourceUri.replace(/\.md$/, '')
 
     // the very first post might have been loaded into text if the webserver served the markdown
     // file directly.  the rest are fetch() results.
     const post = markdown_to_post(
-      typeof markdown === 'string' ? markdown : await markdown.text(),
+      typeof response === 'string' ? response : await response.text(),
       url,
     )
     if (post)
@@ -565,7 +621,6 @@ async function parse_posts(markdowns) {
 }
 
 async function storage_loop() {
-  showdown.setFlavor('github') // xxx?
 
   let htm = ''
   for (const post of STORAGE.docs) {
@@ -611,9 +666,12 @@ async function storage_loop() {
     // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
 
     if (filter_post) {
-      document.getElementsByTagName('body')[0].innerHTML =
-        // eslint-disable-next-line no-use-before-define
-        await post_full(post)
+      const postFullHtml = await post_full(post)
+
+      // TODO: Why always trashing the full body?
+      document.getElementsByTagName('body')[0].innerHTML = `
+        ${postFullHtml}
+      `
 
       // copy sharing buttons to the fly-out menu
       document.getElementById('share-menu').insertAdjacentHTML(
@@ -1215,7 +1273,10 @@ function finish() {
 
   import('./staticman.js')
 
-  search_setup(STORAGE.docs, cfg)
+  import('./future-imperfect.js').then((searchSetup) => {
+    const { default: search_setup } = searchSetup
+    search_setup(STORAGE.docs, cfg)
+  })
 }
 
 
