@@ -17,7 +17,7 @@ Your posts or directories of posts, should ideally natural sort in time order, e
 
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
 
-wgeto 'https://api.github.com/repos/traceypooh/blogtini/git/trees/main?recursive=true'
+wget -qO- 'https://api.github.com/repos/traceypooh/blogtini/git/trees/main?recursive=true'
 
 tech terminal try-out:
   wget https://raw.githubusercontent.com/traceypooh/test1/main/index.html
