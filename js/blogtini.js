@@ -174,7 +174,7 @@ const state = {
   num_posts: 0,
   filedev: location.protocol === 'file:',
   pathrel: '',
-  is_homepage: document.getElementsByTagName('body')[0].classList.contains('homepage'),
+  is_homepage: document.querySelector('body').classList.contains('homepage'),
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
@@ -280,8 +280,9 @@ async function main() {
   let tmp
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
+  const body_contents = document.querySelector('body').innerHTML
   // eslint-disable-next-line no-use-before-define
-  const [my_frontmatter] = markdown_parse(document.getElementsByTagName('body')[0].innerHTML)
+  const [my_frontmatter] = markdown_parse(body_contents)
   const base = my_frontmatter?.base
 
   state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
@@ -328,9 +329,11 @@ async function main() {
   add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
 
 
-  document.getElementsByTagName('body')[0].innerHTML = `
+  document.querySelector('body').innerHTML = `
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_start()}
+
+    ${state.is_homepage ? markdown_to_html(body_contents) : ''}
 
     <div id="posts"></div>
 
@@ -611,7 +614,7 @@ async function storage_loop() {
     // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
 
     if (filter_post) {
-      document.getElementsByTagName('body')[0].innerHTML =
+      document.querySelector('body').innerHTML =
         // eslint-disable-next-line no-use-before-define
         await post_full(post)
 
@@ -946,7 +949,7 @@ async function create_comment_form(entryId, comments) {
 function share_buttons(post) {
   if (!post) {
     // if no post, parse url for ?tags etc and fake
-    // post = markdown_to_post(document.getElementsByTagName('body')[0].innerHTML, 'xxx')
+    // post = markdown_to_post(document.querySelector('body').innerHTML, 'xxx')
   }
   if (!post)
     return ''
@@ -1146,7 +1149,7 @@ function dark_mode() {
     const hour = new Date().getHours()
     if (hour >= 7  &&  hour < 17) { // override [7am .. 5pm] localtime
       log('.. but its vampire sleep time')
-      document.getElementsByTagName('body')[0].classList.add('lite')
+      document.querySelector('body').classList.add('lite')
     }
     // macOS can force chrome to always use light mode (since it's slaved to mac sys pref otherwise)
     //   defaults write com.google.Chrome NSRequiresAquaSystemAppearance -bool yesa

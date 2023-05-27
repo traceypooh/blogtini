@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <xxxtitle>Tracey Jaquith - blogtini</xxxtitle>
+  <title>Tracey Jaquith - blogtini</title><!-- xxx -->
 
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -27,6 +27,56 @@
   <link href="css/blogtini.css" rel="stylesheet" type="text/css"/>
   </style>
 </head>
-<body class="homepage"></body>
+<body class="homepage">
+
+# Welcome to Blogtini!
+
+Here's why you'll love this:
+- All your pages and blog posts are in [markdown](https://en.wikipedia.org/wiki/Markdown#Examples) -- this means your content is clean and **just** content.  No formatting mixed into your content.
+- A single line of javascript in each post or page is used to load the page contents and process it.  eg:
+```html
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+```
+In turn, the single `theme.js` at the top of your website, is _itself_ a simple single `import` to whatever theme you'd like to use for your site.
+- To change your theme, all you have to do is change one line in your `theme.js` file to another theme.
+
+
+## Features
+- no build step
+- static pages
+- comments can still be integrated
+- sitewide quick search in nav
+
+## Example page
+```markdown
+---
+title: Blogtini Overview
+date: 2022-07-25
+categories:
+  - website
+tags:
+  - markdown
+  - javascript
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+# Blogtini!
+
+An entire website, blog, or mixed setup which is entirely `markdown` and one line of `javascript`.
+
+This is a new paragraph.
+
+## This is a 2nd level heading
+Here is a list:
+- blogtini is _exciting in italics_!
+- blogtini boldly **loves** you
+
+
+
+```
+
+## More info
+- https://traceypooh.github.io/slides/dweb-2022 (tracey talk at https://dwebcamp.org )
+
+</body>
 
 <script type="module" src="theme.js"></script>
