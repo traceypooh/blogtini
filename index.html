@@ -31,14 +31,16 @@
 
 # Welcome to Blogtini!
 
-Here's why you'll love this:
-- All your pages and blog posts are in [markdown](https://en.wikipedia.org/wiki/Markdown#Examples) -- this means your content is clean and **just** content.  No formatting mixed into your content.
-- A single line of javascript in each post or page is used to load the page contents and process it.  eg:
+A modern "content first" approach to blogs & websites made entirely from easy to write and human readable `markdown` text files.
+
+## Overview
+- All your pages and blog posts are in [markdown](https://en.wikipedia.org/wiki/Markdown#Examples) -- this means your content is clean and **just** content.  No formatting mixed into your files.
+- A single line of javascript in each post or page file is used to load the page contents and process it.  eg:
 ```html
 comment: <script src="../theme.js" type="module" charset="utf-8"></script>
 ```
-In turn, the single `theme.js` at the top of your website, is _itself_ a simple single `import` to whatever theme you'd like to use for your site.
-- To change your theme, all you have to do is change one line in your `theme.js` file to another theme.
+In turn, the single `theme.js` at the top of your website, is _itself_ a simple one line `import 'https://...'` file, pointing to whatever theme URL you'd like to use for your site.
+- To change your theme, all you have to do is change that one line in your `theme.js` file to use another theme URL.
 
 
 ## Features
@@ -84,14 +86,14 @@ For multiple posts & pages:
 - Create a `theme.js` file with `import 'https://blogtini.com/js/blogtini.js'`
 - Now you can change the `theme.js` contents to another theme anytime you like and your entire site will change with one line change :)
 - Create directory names that "sort in reverse order", to make a `sitemap.xml` file easier.
-- I like directory and filenames like:
+- We like directory and filenames like:
 ```
 2023-05-may-the-fourth-was-wild-this-year/index.html
 2022-12-christmas-with-family/index.html
 index.html
 theme.js
 ```
-You can add days in, too:
+You can add days into the filenames/urls, too:
 ```
 2023-05-04-may-the-fourth-was-wild-this-year/index.html
 2022-12-25-christmas-with-family/index.html
