@@ -304,7 +304,7 @@ async function main() {
     }
 
     // eslint-disable-next-line no-use-before-define
-    head_insert_titles('Tracey Jaquith - blogtini') // xxx
+    head_insert_titles('Blogtini') // xxx
   }
 
 

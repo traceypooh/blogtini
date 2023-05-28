@@ -1,9 +1,9 @@
 
   <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-      <title>Tracey Jaquith - blogtini</title>
+      <title>Blogtini</title>
       <link>https://blogtini.com/</link>
-      <description>Recent content in Tracey Jaquith - blogtini</description>
+      <description>Recent content in Blogtini</description>
       <lastBuildDate>Mon, 20 Feb 2023 18:27:28 -0800</lastBuildDate>
       <atom:link href="https://blogtini.com/index.xml" rel="self" type="application/rss+xml"/>
       <generator>blogtini.com</generator>
