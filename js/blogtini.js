@@ -280,7 +280,7 @@ async function main() {
   let tmp
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
-  const body_contents = document.querySelector('body').innerHTML
+  const body_contents = document.querySelector('body').innerHTML.trim()
   // eslint-disable-next-line no-use-before-define
   const [my_frontmatter] = markdown_parse(body_contents)
   const base = my_frontmatter?.base
@@ -333,7 +333,7 @@ async function main() {
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_start()}
 
-    ${state.is_homepage ? markdown_to_html(body_contents) : ''}
+    ${state.is_homepage && body_contents ? `${markdown_to_html(body_contents)} <hr>` : ''}
 
     <div id="posts"></div>
 
@@ -370,7 +370,8 @@ async function storage_create() { // xxx
     let files = []
     for (let n = 0; n < latest.length; n++) {
       const url = latest[n]
-      const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/)
+      // NOTE: the final match is for a demo single page named /index.html => /
+      const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(\/)$/)
       const file = state.sitemap_htm ? latest[n] : mat[2]
 
       // very first markdown file fetch -- let's autodetect if we can load markdown files directly
