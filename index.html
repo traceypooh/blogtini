@@ -44,8 +44,8 @@ In turn, the single `theme.js` at the top of your website, is _itself_ a simple 
 ## Features
 - no build step
 - static pages
-- comments can still be integrated
 - sitewide quick search in nav
+- comments can still be integrated
 
 ## Example page
 ```markdown
@@ -57,7 +57,7 @@ categories:
 tags:
   - markdown
   - javascript
-comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+comment:  <script src="https://blogtini.com/js/blogtini.js" type="module" charset="utf-8"></script>
 ---
 # Blogtini!
 
@@ -69,10 +69,50 @@ This is a new paragraph.
 Here is a list:
 - blogtini is _exciting in italics_!
 - blogtini boldly **loves** you
-
-
-
 ```
+
+## Get Started in seconds
+- Copy all the text in the "Example Page" box above
+- Paste it into a new file called `index.html` (change text if desired)
+- Run any simple static file server, eg: `python3 -m http.server` in a `terminal` in the same directory where `index.html` lives
+- Load the printed serving url in a browser, eg: http://localhost:8000/
+
+
+## Take it to the next level
+For multiple posts & pages:
+- Change the `https://blogtini.com/js/blogtini.js` in your markdown file(s) to `./theme.js`
+- Create a `theme.js` file with `import 'https://blogtini.com/js/blogtini.js'`
+- Now you can change the `theme.js` contents to another theme anytime you like and your entire site will change with one line change :)
+- Create directory names that "sort in reverse order", to make a `sitemap.xml` file easier.
+- I like directory and filenames like:
+```
+2023-05-may-the-fourth-was-wild-this-year/index.html
+2022-12-christmas-with-family/index.html
+index.html
+theme.js
+```
+You can add days in, too:
+```
+2023-05-04-may-the-fourth-was-wild-this-year/index.html
+2022-12-25-christmas-with-family/index.html
+index.html
+theme.js
+```
+- Create a `sitemap.xml`, with contents like:
+```xml
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <url><loc>/index.html</loc></url>
+
+  <url><loc>/2023-05-may-the-fourth-was-wild-this-year/</loc></url>
+  <url><loc>/2022-12-christmas-with-family/</loc></url>
+</urlset>
+- Reload your simple web server browser url to see the site
+- You can create a free https://github.com/ (new account if needed) and new repository and add your files there
+- xxx sitemap auto-generator setup
+```
+
+
 
 ## More info
 - https://traceypooh.github.io/slides/dweb-2022 (tracey talk at https://dwebcamp.org )
