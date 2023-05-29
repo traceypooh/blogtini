@@ -173,6 +173,7 @@ const state = {
   try_github_api_tree: false,
   num_posts: 0,
   filedev: location.protocol === 'file:',
+  localdev: location.hostname === 'localhost',
   pathrel: '',
   is_homepage: document.querySelector('body').classList.contains('homepage'),
 }
@@ -194,6 +195,7 @@ let cfg = {
   user: '',
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
+  theme: '../theme/future-imperfect.js',
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
@@ -225,8 +227,8 @@ function PR(str, val) {
   return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
 }
 
-function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
-  if (state.filedev && STORAGE.base && url.startsWith('https://'))
+function urlize(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
+  if ((state.filedev || state.localdev) && STORAGE.base && url.startsWith('https://'))
     // eslint-disable-next-line no-param-reassign
     url = url.replace(RegExp(`^${STORAGE.base}`), '')
 
@@ -255,6 +257,9 @@ function urlify(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
 
   xxx when in top page / tags / cats mode, change links like:  src="../"  href="../"  to  "./"
   */
+}
+function urlify(url) {
+  return urlize(url).replace(/\/+$/, '/')
 }
 
 
@@ -324,6 +329,7 @@ async function main() {
   log({
     filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
   })
+  // log('STORAGE', JSON.parse(localStorage.getItem(STORAGE_KEY)))
 
   const prefix = cfg.repo === 'blogtini' ? state.pathrel : 'https://blogtini.com/'
   // eslint-disable-next-line no-use-before-define
@@ -388,7 +394,7 @@ async function storage_create() { // xxx
       }
       files.push(file)
 
-      const url2 = state.filedev && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
+      const url2 = (state.filedev || state.localdev) && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
 
       const fetchee = // eslint-disable-next-line no-nested-ternary
       (state.use_github_api_for_files
@@ -598,7 +604,7 @@ async function storage_loop() {
         (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
          filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
         // local file:// dev
-        (state.filedev && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
+        ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
       if (!match && STORAGE.docs.length !== 1)
         continue
@@ -615,8 +621,6 @@ async function storage_loop() {
       head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
     }
 
-    if (!('type' in post))
-      post.type = 'post'
     // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
 
     if (filter_post) {
@@ -630,8 +634,7 @@ async function storage_loop() {
         document.getElementById('socnet-share').innerHTML,
       )
     } else {
-      // eslint-disable-next-line no-use-before-define
-      htm +=  post1(post)
+      htm += `<bt-post url="${urlify(post.url)}"></bt-post>`
     }
   }
 
@@ -645,6 +648,11 @@ async function storage_loop() {
 function storage_add(post) { // xxx use snippet
   const ts = Math.round(new Date(post.date) / 1000)
   const key = `p${isNaN(ts) ? '' : ts} ${post.url}`
+
+  if (!('type' in post))
+    // eslint-disable-next-line no-param-reassign
+    post.type = 'post'
+
   STORAGE.docs[key] = post
 
   state.num_posts += 1
@@ -701,32 +709,6 @@ async function post_full(post) {
     ${site_end()}`
 }
 
-
-function post1(post) {
-  if (cfg.theme) {
-    return `
-<bt-post url="${post.url}"></bt-post>`
-  }
-
-  const summary = summarize_markdown(post.body_raw, cfg.summary_length)
-
-  return `
-<article class="post">
-  ${'' /* eslint-disable-next-line no-use-before-define */}
-  ${post_header(post)}
-  <div class="content">
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${post_featured(post)}
-    ${summary}
-  </div>
-  <footer>
-    <a href="${urlify(post.url)}" class="button big">Read More</a>
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${post.type === 'post' ? post_stats(post) : ''}
-  </footer>
-</article>
-`
-}
 
 function post_header(post) {
   return `
@@ -1289,8 +1271,12 @@ function head_insert_specifics() {
 const url2post_map = {}
 function url2post(url) {
   if (!Object.keys(url2post_map).length) {
-    for (const [idx, post] of Object.entries(STORAGE.docs))
+    for (const [idx, post] of Object.entries(STORAGE.docs)) {
+      // in localdev/filedev mode, make so we can find post with "short" urls
+      url2post_map[urlify(post.url)] = idx
       url2post_map[post.url] = idx
+    }
+    // log({ url2post_map })
   }
   return STORAGE.docs[url2post_map[url]]
 }
@@ -1308,4 +1294,8 @@ export {
   state,
   url2post,
   summarize_markdown,
+  post_header,
+  post_featured,
+  post_stats,
+  urlify,
 }
