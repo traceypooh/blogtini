@@ -189,6 +189,7 @@ const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
 // defaults
+// eslint-disable-next-line import/no-mutable-exports
 let cfg = {
   user: '',
   repo: '',
@@ -328,12 +329,13 @@ async function main() {
   // eslint-disable-next-line no-use-before-define
   add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
 
+  const show_top_content = state.is_homepage && body_contents && !location.search
 
   document.querySelector('body').innerHTML = `
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_start()}
 
-    ${state.is_homepage && body_contents ? `${markdown_to_html(body_contents)} <hr>` : ''}
+    ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
 
     <div id="posts"></div>
 
@@ -355,6 +357,9 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   // eslint-disable-next-line no-use-before-define
   finish()
+
+  if (cfg.theme)
+    import(cfg.theme)
 }
 
 
@@ -571,7 +576,7 @@ async function parse_posts(markdowns) {
 async function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
-  let htm = ''
+  let htm = cfg.theme ? '<bt-posts><slot>' : ''
   for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
@@ -629,6 +634,8 @@ async function storage_loop() {
       htm +=  post1(post)
     }
   }
+
+  htm += cfg.theme ? '</slot></bt-posts>' : ''
 
   if (!filter_post)
     document.getElementById('posts').insertAdjacentHTML('beforeend', htm)
@@ -696,6 +703,11 @@ async function post_full(post) {
 
 
 function post1(post) {
+  if (cfg.theme) {
+    return `
+<bt-post url="${post.url}"></bt-post>`
+  }
+
   const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
   return `
@@ -1274,5 +1286,26 @@ function head_insert_specifics() {
 }
 
 
-// eslint-disable-next-line no-void
-void main()
+const url2post_map = {}
+function url2post(url) {
+  if (!Object.keys(url2post_map).length) {
+    for (const [idx, post] of Object.entries(STORAGE.docs))
+      url2post_map[post.url] = idx
+  }
+  return STORAGE.docs[url2post_map[url]]
+}
+
+
+if (!window.blogtini_imported) {
+  window.blogtini_imported = true // avoid any inadvertent double import
+  // eslint-disable-next-line no-void
+  void main()
+}
+
+
+export {
+  cfg,
+  state,
+  url2post,
+  summarize_markdown,
+}

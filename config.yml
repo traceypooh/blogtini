@@ -6,6 +6,9 @@ img_site: img/traceymonet-half.jpg
 posts_per_page: 10
 remove_blur: true
 
+# theme: https://blogtini.com/theme/grid.js
+# theme: ../theme/grid.js
+
 intro:
   rss: true
   social: true
