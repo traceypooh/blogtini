@@ -56,12 +56,15 @@ ${unsafeHTML(summary)}
   border: 1px solid gray;
   border-radius: 5px;
   overflow: hidden;
+  padding: 10px;
 }
 .date {
   float: right;
 }
 img {
-  width: 100%;
+  width: 320px;
+  margin-left: -10px;
+  margin-top: -10px;
 }
 `
   }
