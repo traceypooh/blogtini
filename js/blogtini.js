@@ -1,6 +1,11 @@
 /*
 
 xxx new dark theme issues w/ web components
+xxx make /?tags work
+xxx make /?categories work
+xxx nav uses /categories (which fails, too)
+xxx nav home link wrong
+
 
 add storj, codepen, etc.
 
