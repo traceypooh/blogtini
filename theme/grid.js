@@ -29,15 +29,12 @@ customElements.define('bt-post', class extends LitElement {
   static get properties() {
     return {
       url: { type: String },
-      matter: { type: String },
-      body: { type: String },
     }
   }
 
   render() {
     const post = url2post(this.url)
     // console.warn({ post })
-    if (this.matter && typeof this.matter === 'string') this.matter = JSON.parse(this.matter)
     const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
     const imgurl = post.featured ? `${state.top_dir}img/${post.featured}` : '' // xxx img/ parameterize

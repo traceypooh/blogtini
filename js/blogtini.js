@@ -1,5 +1,7 @@
 /*
 
+xxx new dark theme issues w/ web components
+
 add storj, codepen, etc.
 
 xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
@@ -210,6 +212,7 @@ let cfg = {
     share: true,
     search: true,
     language: false,
+    theme: true,
   },
   sidebar: {
     post_amount: 5,
@@ -364,8 +367,10 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   // eslint-disable-next-line no-use-before-define
   finish()
 
-  if (cfg.theme)
-    import(cfg.theme)
+  // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
+  await import('https://esm.archive.org/redefine-custom-elements')
+
+  import(cfg.theme)
 }
 
 
@@ -582,7 +587,7 @@ async function parse_posts(markdowns) {
 async function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
-  let htm = cfg.theme ? '<bt-posts><slot>' : ''
+  let htm = '<bt-posts><slot>'
   for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
@@ -638,10 +643,10 @@ async function storage_loop() {
     }
   }
 
-  htm += cfg.theme ? '</slot></bt-posts>' : ''
+  htm += '</slot></bt-posts>'
 
   if (!filter_post)
-    document.getElementById('posts').insertAdjacentHTML('beforeend', htm)
+    document.getElementById('posts').innerHTML = htm
 }
 
 
@@ -1010,10 +1015,16 @@ function site_header() {
     </h1>
     <menu id="site-nav-menu" class="flyout-menu menu">
       ${cfg.menu.main.map((e) => `<a href="${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}" class="nav link">${e.pre} ${e.name}</a>`).join('')}
+
       ${cfg.header.share ? '<a href="#share-menu" class="nav link share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>' : ''}
+
+      ${cfg.header.theme ? '<a href="#theme-menu" class="nav link theme-toggle"><i class="fas fa-palette">&nbsp;</i>Theme</a>' : ''}
+
       ${cfg.header.search ? '<a href="#search-input" class="nav link search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>' : ''}
+
     </menu>
     ${cfg.header.search ? '<a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>' : ''}
+    ${cfg.header.theme ? '<a href="#theme-menu" class="nav theme-toggle"><i class="fas fa-palette fa-2x">&nbsp;</i></a>' : ''}
     ${cfg.header.share ? '<a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>' : ''}
     ${cfg.header.language ? `<a href="#lang-menu" class="nav lang-toggle" lang="${cfg.language.lang}">${cfg.language.lang}</a>` : ''}
     <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
@@ -1024,6 +1035,12 @@ function site_header() {
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
       ${share_buttons()}
+    </menu>` : ''}
+  ${cfg.header.theme ? `
+    <menu id="theme-menu" class="flyout-menu menu">
+      <h1>Choose a theme</h1>
+      <a href="#"><p>  future imperfect    </a>
+      <a href="#"><p>  grid                </a>
     </menu>` : ''}
 </header>`
 }
@@ -1210,6 +1227,26 @@ function finish() {
   document.getElementById('tags')?.insertAdjacentHTML('beforeend', htm)
 
   document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
+
+  state.theme_change_number = 0
+  document.querySelectorAll('#theme-menu a').forEach((e) => {
+    e.addEventListener('click', async (evt) => {
+      const theme = evt.target.innerText.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
+      evt.preventDefault()
+      if (!theme)
+        return false
+
+      log({ theme })
+
+      state.theme_change_number += 1
+      await import(`../theme/${theme}.js?${state.theme_change_number}`)
+
+      // eslint-disable-next-line no-use-before-define
+      await storage_loop()
+
+      return false
+    })
+  })
 
   import('./staticman.js')
 

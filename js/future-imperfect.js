@@ -11,6 +11,7 @@ let toggles = {
   ".search-toggle": "#search-input",
   ".lang-toggle": "#lang-menu",
   ".share-toggle": "#share-menu",
+  ".theme-toggle": "#theme-menu",
   ".nav-toggle": "#site-nav-menu"
 };
 
@@ -42,7 +43,7 @@ function search_setup(docs, cfg) {
 
   // Click anywhere outside a flyout to close
   $(document).on("click", function(e) {
-    if ($(e.target).is(".lang-toggle, .lang-toggle span, #lang-menu, .share-toggle, .share-toggle i, #share-menu, .search-toggle, .search-toggle i, #search-input, #search-results .mini-post, .nav-toggle, .nav-toggle i, #site-nav") === false) {
+    if ($(e.target).is(".lang-toggle, .lang-toggle span, #lang-menu, .share-toggle, .share-toggle i, .theme-toggle, .theme-toggle i, #share-menu, #theme-menu, .search-toggle, .search-toggle i, #search-input, #search-results .mini-post, .nav-toggle, .nav-toggle i, #site-nav") === false) {
       $(".menu").removeClass("active");
       $("#wrapper").removeClass('overlay');
     }

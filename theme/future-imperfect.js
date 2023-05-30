@@ -7,13 +7,6 @@ import {
 
 
 customElements.define('bt-posts', class extends LitElement {
-  static get styles() {
-    return css`
-:host {
-}
-`
-  }
-
   // eslint-disable-next-line class-methods-use-this
   render() {
     return html`<slot></slot>`
@@ -25,8 +18,6 @@ customElements.define('bt-post', class extends LitElement {
   static get properties() {
     return {
       url: { type: String },
-      matter: { type: String },
-      body: { type: String },
     }
   }
 

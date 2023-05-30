@@ -11,6 +11,64 @@
 @import 'future-imperfect.css';
 
 
+/* copied from `css/future-imperfect.css` for `#share-menu` */
+#theme-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+}
+#theme-menu.flyout-menu {
+  width: 177px;
+  right: -177px;
+  padding: 1em;
+}
+#theme-menu.flyout-menu h1 {
+  font-size: 0.9em;
+}
+#theme-menu.flyout-menu h1,
+#theme-menu.flyout-menu a {
+  margin: 0.25em 0.25em;
+}
+@media (min-height: 600px) {
+  #theme-menu.flyout-menu h1,
+  #theme-menu.flyout-menu a {
+    margin: 0 0.25em 0.75em 0;
+  }
+}
+#theme-menu.flyout-menu a p {
+  visibility: hidden;
+}
+
+/* copied from `css/future-imperfect.css` for `.share-toggle` */
+.theme-toggle {
+  display: none;
+}
+@media (min-width: 425px) {
+  .theme-toggle {
+    display: block;
+    text-align: center;
+    width: 61px;
+  }
+  .theme-toggle i {
+    vertical-align: middle;
+  }
+}
+
+#site-nav .flyout-menu .theme-toggle {
+  display: block;
+  flex-basis: 100%;
+  order: 3; /* xxx */
+}
+@media (min-width: 425px) {
+  #site-nav .flyout-menu .theme-toggle {
+    display: none;
+  }
+}
+
 
 /* MAIN THEME OVERRIDES */ /* chexxx */
 
