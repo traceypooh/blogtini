@@ -13,7 +13,7 @@ customElements.define('bt-page', class extends LitElement {
     "bt-header   bt-header"
     "bt-sidebar  bt-posts"
     "bt-sidebar  bt-footer";
-  grid-template-rows: 50px 1fr 30px;
+  grid-template-rows: 60px 1fr 40px;
   grid-template-columns: 150px 1fr;
 }
 `
@@ -94,7 +94,7 @@ customElements.define('bt-post', class extends LitElement {
 
   // eslint-disable-next-line class-methods-use-this
   render() {
-    return html`<slot></slot>`
+    return html`blahg: <slot></slot>`
   }
 })
 
@@ -105,7 +105,7 @@ customElements.define('bt-footer', class extends LitElement {
 :host {
   grid-area: bt-footer;
   background-color: #8cffa0;
-  overflow: hidden;
+  text-align: center;
 }
 `
   }
