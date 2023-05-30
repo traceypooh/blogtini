@@ -112,11 +112,15 @@ function list-posts() {
 function pubDate() {
   # RSS pubDate format, eg: Wed, 09 Aug 2017 13:25:47 +0530
        TZ=$(datef +"%z" $@)
-     TIME=$(datef +"%H:%M:%S" $@)
   WEEKDAY=$(datef +"%a" $@)
      DATE=$(datef +"%d" $@)
     MONTH=$(datef +"%b" $@)
      YEAR=$(datef +"%Y" $@)
+  if [ $# -eq 0 ]; then
+    TIME=$(datef +"%H:%M:%S")
+  else
+    TIME="00:00:00"
+  fi
   echo "$WEEKDAY, $DATE $MONTH $YEAR $TIME $TZ"
 }
 
