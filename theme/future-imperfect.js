@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+/* eslint-disable max-classes-per-file, no-use-before-define */
 import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
 import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
 import {
@@ -46,7 +46,11 @@ customElements.define('bt-post', class extends LitElement {
   }
 
   static get styles() {
-    return css`
+    return [
+      css_header(),
+      css_image(),
+      css_stats(),
+      css`
 @charset "UTF-8";
 
 .post {
@@ -55,6 +59,78 @@ customElements.define('bt-post', class extends LitElement {
   padding: 1em;
   max-width: 55em;
 }
+
+.post > div > p,
+.post > p {
+  text-align: justify;
+}
+footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+}
+footer .button {
+  margin: 1em auto;
+  width: 100%;
+}
+
+.title {
+  font-size: 1.1em;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .title {
+    width: 75%;
+  }
+}
+.meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.6em;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .meta {
+    border-left: 1px solid rgba(161, 161, 161, 0.3);
+    text-align: right;
+    width: 25%;
+  }
+}
+.meta time {
+  font-size: 1.2em;
+  font-weight: 800;
+}
+
+
+/* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
+
+
+/* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
+.post .content {
+  /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */
+  word-break: initial;    /* first, try to break up *in between* words if we gonna overflow... (this needed for firefox, since will toss next line) */
+  word-break: break-word; /* first, try to break up *in between* words if we gonna overflow... (works better in chrome) */
+  word-wrap:  break-word; /* ... and if still overflowing, *then* split indiv. words up ... */
+  -webkit-hyphens: auto;  /* safari, you just rock! (and copy/paste works nicely too!) */
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+`]
+  }
+})
+
+
+function css_header() {
+  return css`
 header {
   border-bottom: 1px solid rgba(161, 161, 161, 0.3);
   margin: -1em -1em 0 -1em;
@@ -83,22 +159,12 @@ header div {
 header p {
   margin: -1em 0 0 0;
 }
-.post > div > p,
-.post > p {
-  text-align: justify;
-}
-footer {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-}
-footer .button {
-  margin: 1em auto;
-  width: 100%;
+`
 }
 
+
+function css_image() {
+  return css`
 .image {
   border: 0;
   display: grid;
@@ -144,40 +210,55 @@ footer .button {
   transform: scale(1.05);
 }
 
-.title {
-  font-size: 1.1em;
+/* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
+
+/* https://codepen.io/burtclan/pen/mLqxC */
+.image.featured {
+  box-shadow: inset 0 0 10px 5px;
+  position: relative;
+  color: #666; /*xxx*/
+  padding-bottom: 0; /* override 33% from future imperfect 2022 update */
+}
+.image.featured:before {
+  content: "";
+  display: block;
+  padding-bottom: calc(100% / 2.35); /* enforce a styley 2.35:1 cinematic aspect ratio */
+}
+.image.featured:after {
+  /* gray blur on edges */
+  box-shadow: inset 0 0 10px 5px;
+  content: "";
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  border-collapse: separate;
 }
-@media (min-width: 768px) {
-  .title {
-    width: 75%;
-  }
-}
-.meta {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  flex-direction: column;
-  justify-content: center;
+.image.featured img {
+  height: auto;
   width: 100%;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
 }
-@media (min-width: 768px) {
-  .meta {
-    border-left: 1px solid rgba(161, 161, 161, 0.3);
-    text-align: right;
-    width: 25%;
-  }
+.image.featured.featured-top img {
+  object-position: top;
 }
-.meta time {
-  font-size: 1.2em;
-  font-weight: 800;
+.image.featured.featured-bottom img {
+  object-position: bottom;
+}
+`
 }
 
+
+function css_stats() {
+  return css`
 .stats {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -249,66 +330,5 @@ footer .button {
 .tags::before {
   content: "\\f02c";
 }
-
-
-
-/* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
-
-
-
-/* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
-.post .content {
-  /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */
-  word-break: initial;    /* first, try to break up *in between* words if we gonna overflow... (this needed for firefox, since will toss next line) */
-  word-break: break-word; /* first, try to break up *in between* words if we gonna overflow... (works better in chrome) */
-  word-wrap:  break-word; /* ... and if still overflowing, *then* split indiv. words up ... */
-  -webkit-hyphens: auto;  /* safari, you just rock! (and copy/paste works nicely too!) */
-  -moz-hyphens: auto;
-  hyphens: auto;
-}
-
-
-/* https://codepen.io/burtclan/pen/mLqxC */
-.image.featured {
-  box-shadow: inset 0 0 10px 5px;
-  position: relative;
-  color: #666; /*xxx*/
-  padding-bottom: 0; /* override 33% from future imperfect 2022 update */
-}
-.image.featured:before {
-  content: "";
-  display: block;
-  padding-bottom: calc(100% / 2.35); /* enforce a styley 2.35:1 cinematic aspect ratio */
-}
-.image.featured:after {
-  /* gray blur on edges */
-  box-shadow: inset 0 0 10px 5px;
-  content: "";
-  position: absolute;
-  display: block;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-collapse: separate;
-}
-.image.featured img {
-  height: auto;
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-}
-.image.featured.featured-top img {
-  object-position: top;
-}
-.image.featured.featured-bottom img {
-  object-position: bottom;
-}
 `
-  }
-})
+}
