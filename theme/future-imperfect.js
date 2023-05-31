@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
 import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
 import {
-  summarize_markdown, url2post, cfg, post_header, post_featured, post_stats, urlify,
+  summarize_markdown, url2post, cfg, post_header, post_featured_image, post_stats, urlify,
 } from '../js/blogtini.js'
 
 
@@ -28,11 +28,12 @@ customElements.define('bt-post', class extends LitElement {
 
     return html`
 <link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="../css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="post">
     ${unsafeHTML(post_header(post))}
     <div class="content">
-      ${unsafeHTML(post_featured(post))}
+      ${unsafeHTML(post_featured_image(post))}
       ${unsafeHTML(summary)}
     </div>
     <footer>

@@ -1,0 +1,81 @@
+/* DARK MODE! */
+@media (prefers-color-scheme: dark) {
+  body,
+  #site-header,
+  #site-header .flyout-menu,
+  #site-nav-menu,
+  article.mini-post header,
+  .content table,
+  .button {
+    color: #ddd;
+    background-color: #111;
+  }
+  .content table th, .content table tr:nth-child(even) {
+    color: #ddd;
+    background-color: #222;
+  }
+  .content table tbody tr td {
+    background-color: transparent;
+  }
+
+  article.post,
+  article .post,
+  article.mini-post,
+  article.comment header {
+    color: #ddd;
+    background-color: #222;
+  }
+  h1, h2, h3, h4, h5, h6,
+  .pagination a,
+  .asciiover pre,
+  #comment-form input,
+  #comment-form textarea,
+  #contact input,
+  #contact textarea {
+      color: #ddd;
+  }
+  img {
+    filter: grayscale(50%);
+  }
+
+
+  a {
+    color: inherit;
+  }
+}
+
+
+/* DARK MODE revert! (enabled by JS preference check + localtime..) */
+body.lite,
+body.lite #site-header,
+body.lite #site-header .flyout-menu,
+body.lite #site-nav-menu,
+body.lite article.mini-post header,
+body.lite .button {
+  color: #333;
+  background-color: #f4f4f4;
+}
+body.lite article.post,
+body.lite article .post,
+body.lite article.comment header,
+body.lite article.mini-post {
+  color: #333;
+  background-color: #fff;
+}
+body.lite h1,
+body.lite h2,
+body.lite h3,
+body.lite h4,
+body.lite h5,
+body.lite h6,
+body.lite .pagination a,
+body.lite .asciiover pre,
+body.lite #comment-form input,
+body.lite #comment-form textarea,
+body.lite #contact input,
+body.lite #contact textarea {
+  color: #333;
+}
+body.lite img {
+  filter: grayscale(0%);
+}

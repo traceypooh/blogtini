@@ -698,7 +698,7 @@ async function post_full(post) {
           ${share_buttons(post)}
         </div>
         ${'' /* eslint-disable-next-line no-use-before-define */}
-        ${post_featured(post)}
+        ${post_featured_image(post)}
 
         <div>
           ${body}
@@ -739,7 +739,7 @@ function post_header(post) {
 `
 }
 
-function post_featured(post) {
+function post_featured_image(post) {
   let src = ''
   let alt = ''
   let blur
@@ -1185,7 +1185,7 @@ function finish() {
   </header>
   ${STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((post) => `
   <article class="mini-post">
-    ${post_featured(post)}
+    ${post_featured_image(post)}
     <header>
       <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
       <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
@@ -1337,7 +1337,7 @@ export {
   url2post,
   summarize_markdown,
   post_header,
-  post_featured,
+  post_featured_image,
   post_stats,
   urlify,
 }
