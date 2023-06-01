@@ -148,8 +148,8 @@ customElements.define('bt-post-mini', class extends LitElement {
     const post = url2post(this.url)
 
     return html`
-<link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${urlify('../css/dark.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
 
   <article class="mini-post">
