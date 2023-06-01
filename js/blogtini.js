@@ -368,7 +368,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
     await storage_create()
 
   // eslint-disable-next-line no-use-before-define
-  await storage_loop()
+  storage_loop()
 
   // eslint-disable-next-line no-use-before-define
   finish()
@@ -525,7 +525,7 @@ function markdown_parse(markdown) {
   try {
     const parsed = yml.load(front_matter)
     return [parsed, body_raw]
-    // eslint-disable-next-line no-empty
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
   } catch {}
 
   return [undefined, undefined]
@@ -590,7 +590,7 @@ async function parse_posts(markdowns) {
   }
 }
 
-async function storage_loop() {
+function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
   let htm = '<bt-posts><slot>'
@@ -835,7 +835,7 @@ async function comments_markup(path) {
   let posts_with_comments
   try {
     posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
-    // eslint-disable-next-line no-empty
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
   } catch {}
   if (!posts_with_comments?.includes(path)) return null
 
@@ -865,7 +865,7 @@ async function comments_markup(path) {
 }
 
 
-async function create_comment_form(entryId, comments) {
+function create_comment_form(entryId, comments) {
   if (!cfg.staticman?.enabled)
     return ''
 
@@ -875,7 +875,7 @@ async function create_comment_form(entryId, comments) {
   return `
   <div class="post">
     <div>
-      <h2 id="say-something">Say Something</h2>
+      <h2 id="say-something">Say Something (* THIS IS NOT WORKING YET *)</h2>
       <form id="comment-form" class="new-comment" method="POST">
         <h3 class="reply-notice hidden">
           <span class="reply-name"></span>
@@ -1092,6 +1092,7 @@ function site_sidebar() {
 
 function safeHTML(str) { return str } // xxx
 
+// deno-lint-ignore no-unused-vars
 function slugify(str) {
   return str.toLowerCase()
     .replace(/'s/g, 's')
@@ -1202,7 +1203,7 @@ function finish() {
       await import(`../theme/${theme}.js?${state.theme_change_number}`)
 
       // eslint-disable-next-line no-use-before-define
-      await storage_loop()
+      storage_loop()
 
       return false
     })
@@ -1259,6 +1260,7 @@ function head_insert_titles(title) {
   }
 }
 
+// deno-lint-ignore no-unused-vars
 function head_insert_specifics() {
   // document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
   // document.getElementsByTagName('meta')['description'].content = 'updated description xxx'

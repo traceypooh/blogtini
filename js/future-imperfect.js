@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 /* eslint-disable */
 import $ from 'https://esm.archive.org/jquery'
 import lunr from 'https://esm.archive.org/lunr'

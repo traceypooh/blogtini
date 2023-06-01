@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 /* eslint-disable */
 (function() {
   let form = document.querySelector('.new-comment');

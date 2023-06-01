@@ -74,13 +74,13 @@ customElements.define('bt-post-full', class extends LitElement {
     const body = markdown_to_html(post.body_raw)
 
     const key = new URL(post.url).pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
-    console.error({key})
+    // console.error({key})
 
     if (post.type === 'post') {
       comments_markup(key).then(
-        (comments_htm) => create_comment_form(post.url, comments_htm).then(
-          (comments_form) => { this.comments_form = comments_form },
-        ),
+        (comments_htm) => {
+          this.comments_form = create_comment_form(post.url, comments_htm)
+        },
       )
     }
 
