@@ -21,6 +21,7 @@
   article.post,
   article .post,
   article.mini-post,
+  bt-post-mini,
   article.comment header {
     color: #ddd;
     background-color: #222;
@@ -58,7 +59,8 @@ body.lite .button {
 body.lite article.post,
 body.lite article .post,
 body.lite article.comment header,
-body.lite article.mini-post {
+body.lite article.mini-post,
+body.lite bt-post-mini {
   color: #333;
   background-color: #fff;
 }

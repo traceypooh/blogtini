@@ -5,6 +5,7 @@ import {
   summarize_markdown, url2post, cfg, post_header, post_featured_image, post_stats, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
+  datetime,
 } from '../js/blogtini.js'
 
 
@@ -136,6 +137,96 @@ customElements.define('bt-post-full', class extends LitElement {
 })
 
 
+customElements.define('bt-post-mini', class extends LitElement {
+  static get properties() {
+    return {
+      url: { type: String },
+    }
+  }
+
+  render() {
+    const post = url2post(this.url)
+
+    return html`
+<link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
+
+
+  <article class="mini-post">
+    ${unsafeHTML(post_featured_image(post))}
+    <header>
+      <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
+      <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
+    </header>
+  </article>`
+  }
+
+  static get styles() {
+    return [
+      css_header(),
+      css_image(),
+      css`
+:host {
+  background: white;
+  border: 1px solid rgba(161, 161, 161, 0.3);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  :host {
+    width: 49%;
+  }
+}
+@media (min-width: 1024px) {
+  :host {
+    width: 100%;
+  }
+}
+header {
+  min-height: 4em;
+  padding: 0.5em 1.25em;
+  position: relative;
+}
+@media (min-width: 768px) {
+  header {
+    border-top: 1px solid rgba(161, 161, 161, 0.3);
+  }
+}
+@media (min-width: 1024px) {
+  header {
+    border: 0;
+  }
+}
+header h2 {
+  font-size: 0.7em;
+}
+header time {
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.6em;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.image {
+  margin: 0;
+}
+
+a.image.featured {
+  /* these magic missing pieces poached from default theme's '.post' class rules */
+  border: 0;
+  display: block;
+}
+
+`,
+    ]
+  }
+})
+
+
 function css_post() {
   return css`
 .post {
@@ -168,7 +259,7 @@ function css_post() {
 
 function css_header() {
   return css`
-header {
+.post header {
   border-bottom: 1px solid rgba(161, 161, 161, 0.3);
   margin: -1em -1em 0 -1em;
   text-align: center;
@@ -176,7 +267,7 @@ header {
   word-break: break-word;
 }
 @media (min-width: 768px) {
-  header {
+  .post header {
     display: -webkit-box;
     display: -ms-flexbox;
     display: -webkit-flex;
@@ -185,15 +276,15 @@ header {
     text-align: left;
   }
 }
-header div {
+.post header div {
   padding-bottom: 1em;
 }
 @media (min-width: 768px) {
-  header div {
+  .post header div {
     padding: 1.5em;
   }
 }
-header p {
+.post header p {
   margin: -1em 0 0 0;
 }
 

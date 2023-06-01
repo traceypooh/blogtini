@@ -1145,13 +1145,7 @@ function finish() {
     <h1>Recent Posts</h1>
   </header>
   ${STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((post) => `
-  <article class="mini-post">
-    ${post_featured_image(post)}
-    <header>
-      <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
-      <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
-    </header>
-  </article>`).join('')}
+    <bt-post-mini url="${urlify(post.url)}"></bt-post-mini>`).join('')}
   ${more ? `
   <footer>
     <a href="${cfg.view_more_posts_link}" class="button">See More</a>
@@ -1301,6 +1295,7 @@ export {
   post_featured_image,
   post_stats,
   urlify,
+  datetime,
   markdown_to_html,
   comments_markup,
   create_comment_form,
