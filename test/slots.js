@@ -7,7 +7,6 @@ customElements.define('bt-page', class extends LitElement {
 :host {
   display: grid;
   width: 100%;
-  height: 250px;
   height: 100%;
   grid-template-areas:
     "bt-header   bt-header"
@@ -15,6 +14,18 @@ customElements.define('bt-page', class extends LitElement {
     "bt-sidebar  bt-footer";
   grid-template-rows: 60px 1fr 40px;
   grid-template-columns: 150px 1fr;
+}
+
+@media (max-width: 768px) {
+  :host {
+    grid-template-areas:
+      "bt-header"
+      "bt-posts"
+      "bt-sidebar"
+      "bt-footer";
+    grid-template-rows: 60px auto auto 40px;
+    grid-template-columns: 1fr;
+  }
 }
 `
   }
