@@ -266,8 +266,9 @@ function urlize(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
   xxx when in top page / tags / cats mode, change links like:  src="../"  href="../"  to  "./"
   */
 }
-function urlify(url) {
-  return urlize(url).replace(/\/+$/, '/')
+
+function urlify(url, no_trail_slashes = false) {
+  return urlize(url).replace(/\/+$/, no_trail_slashes ? '' : '/')
 }
 
 
@@ -636,13 +637,7 @@ async function storage_loop() {
     if (filter_post) {
       document.querySelector('body').innerHTML =
         // eslint-disable-next-line no-use-before-define
-        await post_full(post)
-
-      // copy sharing buttons to the fly-out menu
-      document.getElementById('share-menu').insertAdjacentHTML(
-        'beforeend',
-        document.getElementById('socnet-share').innerHTML,
-      )
+        post_full(post)
     } else {
       htm += `<bt-post url="${urlify(post.url)}"></bt-post>`
     }
@@ -674,46 +669,12 @@ function storage_add(post) { // xxx use snippet
 }
 
 
-async function post_full(post) {
-  const body = markdown_to_html(post.body_raw)
-
-  let comments_form = ''
-  if (post.type === 'post') {
-    // eslint-disable-next-line no-use-before-define
-    const comments_htm = await comments_markup(post.url)
-    // eslint-disable-next-line no-use-before-define
-    comments_form = await create_comment_form(post.url, comments_htm)
-  }
-
+function post_full(post) {
   return `
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_start()}
 
-    <article>
-      <div class="post single">
-        ${'' /* eslint-disable-next-line no-use-before-define */}
-        ${post_header(post)}
-        <div id="socnet-share">
-          ${'' /* eslint-disable-next-line no-use-before-define */}
-          ${share_buttons(post)}
-        </div>
-        ${'' /* eslint-disable-next-line no-use-before-define */}
-        ${post_featured_image(post)}
-
-        <div>
-          ${body}
-        </div>
-
-        ${post.type === 'post' ? `
-        <footer>
-          ${'' /* eslint-disable-next-line no-use-before-define */}
-          ${post_stats(post)}
-        </footer>` : ''}
-
-      </div>
-
-      ${comments_form}
-    </article>
+    <bt-post-full url="${urlify(post.url)}"></bt-post-full>
 
     ${'' /* eslint-disable-next-line no-use-before-define */}
     ${site_end()}`
@@ -1340,4 +1301,8 @@ export {
   post_featured_image,
   post_stats,
   urlify,
+  markdown_to_html,
+  comments_markup,
+  create_comment_form,
+  share_buttons,
 }

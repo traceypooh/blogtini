@@ -3,6 +3,8 @@ import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
 import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
 import {
   summarize_markdown, url2post, cfg, post_header, post_featured_image, post_stats, urlify,
+  markdown_to_html, comments_markup, create_comment_form,
+  share_buttons,
 } from '../js/blogtini.js'
 
 
@@ -28,7 +30,7 @@ customElements.define('bt-post', class extends LitElement {
 
     return html`
 <link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="../css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="post">
     ${unsafeHTML(post_header(post))}
@@ -47,12 +49,95 @@ customElements.define('bt-post', class extends LitElement {
 
   static get styles() {
     return [
+      css_post(),
       css_header(),
+      css_title(),
       css_image(),
+      css_footer(),
       css_stats(),
-      css`
-@charset "UTF-8";
+    ]
+  }
+})
 
+
+customElements.define('bt-post-full', class extends LitElement {
+  static get properties() {
+    return {
+      url: { type: String },
+      comments_form: { type: String },
+    }
+  }
+
+  render() {
+    const post = url2post(this.url)
+    const body = markdown_to_html(post.body_raw)
+
+    const key = new URL(post.url).pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
+    console.error({key})
+
+    if (post.type === 'post') {
+      comments_markup(key).then(
+        (comments_htm) => create_comment_form(post.url, comments_htm).then(
+          (comments_form) => { this.comments_form = comments_form },
+        ),
+      )
+    }
+
+    const socnet_share = share_buttons(post)
+
+    if (!this.flyout_shared) {
+      // copy sharing buttons to the fly-out menu
+      this.flyout_shared = true // ensure this is only done once
+      document.getElementById('share-menu').insertAdjacentHTML(
+        'beforeend',
+        socnet_share,
+      )
+    }
+
+
+    return html`
+<link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${urlify('../css/dark.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
+
+    <article>
+      <div class="post single">
+        ${unsafeHTML(post_header(post))}
+        <div id="socnet-share">
+          ${unsafeHTML(socnet_share)}
+        </div>
+        ${unsafeHTML(post_featured_image(post))}
+
+        <div>
+          ${unsafeHTML(body)}
+        </div>
+
+        ${post.type === 'post' ? html`
+        <footer>
+          ${unsafeHTML(post_stats(post))}
+        </footer>` : ''}
+
+      </div>
+
+      ${unsafeHTML(this.comments_form)}
+    </article>
+  `
+  }
+
+  static get styles() {
+    return [
+      css_post(),
+      css_header(),
+      css_title(),
+      css_image(),
+      css_footer(),
+      css_stats(),
+    ]
+  }
+})
+
+
+function css_post() {
+  return css`
 .post {
   background: white;
   margin: 1.5em auto;
@@ -64,55 +149,8 @@ customElements.define('bt-post', class extends LitElement {
 .post > p {
   text-align: justify;
 }
-footer {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-}
-footer .button {
-  margin: 1em auto;
-  width: 100%;
-}
-
-.title {
-  font-size: 1.1em;
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .title {
-    width: 75%;
-  }
-}
-.meta {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .meta {
-    border-left: 1px solid rgba(161, 161, 161, 0.3);
-    text-align: right;
-    width: 25%;
-  }
-}
-.meta time {
-  font-size: 1.2em;
-  font-weight: 800;
-}
-
 
 /* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
-
 
 /* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
 .post .content {
@@ -124,9 +162,8 @@ footer .button {
   -moz-hyphens: auto;
   hyphens: auto;
 }
-`]
-  }
-})
+`
+}
 
 
 function css_header() {
@@ -159,7 +196,47 @@ header div {
 header p {
   margin: -1em 0 0 0;
 }
+
+.meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.6em;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .meta {
+    border-left: 1px solid rgba(161, 161, 161, 0.3);
+    text-align: right;
+    width: 25%;
+  }
+}
+.meta time {
+  font-size: 1.2em;
+  font-weight: 800;
+}
 `
+}
+
+
+function css_title() {
+  return css`
+  .title {
+    font-size: 1.1em;
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .title {
+      width: 75%;
+    }
+  }
+  `
 }
 
 
@@ -253,12 +330,27 @@ function css_image() {
 .image.featured.featured-bottom img {
   object-position: bottom;
 }
+
+/* OK now when we're showing a full single post, let the image height be fully natural */
+/* ie: reverse our customizations above.  Also don't do the edge blurring. */
+.post.single a.image.featured {
+  box-shadow: none;
+  height: auto;
+}
+.post.single a.image.featured img {
+  position: relative;
+}
+.post.single a.image.featured:after, .post.single a.image.featured:before {
+  display: none;
+}
 `
 }
 
 
 function css_stats() {
   return css`
+@charset "UTF-8";
+
 .stats {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -329,6 +421,23 @@ function css_stats() {
 
 .tags::before {
   content: "\\f02c";
+}
+`
+}
+
+
+function css_footer() {
+  return css`
+footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+}
+footer .button {
+  margin: 1em auto;
+  width: 100%;
 }
 `
 }
