@@ -42,6 +42,8 @@ customElements.define('bt-header', class extends LitElement {
     return css`
 :host {
   grid-area: bt-header;
+  position: fixed;
+  width: 100%;
   text-align: center;
   background-color: #8ca0ff;
 }
