@@ -1,11 +1,14 @@
 /* eslint-disable max-classes-per-file, no-use-before-define */
-import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
 import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
+import {
+  LitElement, html, css, unsafeCSS,
+} from 'https://offshoot.prod.archive.org/lit.js'
 import {
   summarize_markdown, url2post, cfg, post_header, post_featured_image, post_stats, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
   datetime,
+  dark_mode,
 } from '../js/blogtini.js'
 
 
@@ -31,7 +34,6 @@ customElements.define('bt-post', class extends LitElement {
 
     return html`
 <link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="css/dark.css" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="post">
     ${unsafeHTML(post_header(post))}
@@ -56,6 +58,7 @@ customElements.define('bt-post', class extends LitElement {
       css_image(),
       css_footer(),
       css_stats(),
+      css_dark(),
     ]
   }
 })
@@ -98,7 +101,6 @@ customElements.define('bt-post-full', class extends LitElement {
 
     return html`
 <link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="${urlify('../css/dark.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
     <article>
       <div class="post single">
@@ -132,6 +134,7 @@ customElements.define('bt-post-full', class extends LitElement {
       css_image(),
       css_footer(),
       css_stats(),
+      css_dark(),
     ]
   }
 })
@@ -149,8 +152,6 @@ customElements.define('bt-post-mini', class extends LitElement {
 
     return html`
 <link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="${urlify('../css/dark.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
-
 
   <article class="mini-post">
     ${unsafeHTML(post_featured_image(post))}
@@ -162,12 +163,14 @@ customElements.define('bt-post-mini', class extends LitElement {
   }
 
   static get styles() {
+    const xxx = dark_mode() ? 'background-color: #222;' : '' // for dark mode border color
     return [
       css_header(),
       css_image(),
       css`
 :host {
   background: white;
+  ${unsafeCSS(xxx)}
   border: 1px solid rgba(161, 161, 161, 0.3);
   display: -webkit-box;
   display: -ms-flexbox;
@@ -222,6 +225,7 @@ a.image.featured {
 }
 
 `,
+      css_dark(),
     ]
   }
 })
@@ -529,6 +533,61 @@ footer {
 footer .button {
   margin: 1em auto;
   width: 100%;
+}
+`
+}
+
+
+function css_dark() {
+  if (!dark_mode())
+    return css``
+
+  return css`
+#site-header,
+#site-header .flyout-menu,
+#site-nav-menu,
+.mini-post header,
+.content table,
+.button {
+  color: #ddd;
+  background-color: #111;
+}
+.content table th,
+.content table tr:nth-child(even) {
+  color: #ddd;
+  background-color: #222;
+}
+.content table tbody tr td {
+  background-color: transparent;
+}
+
+article.post,
+article .post,
+.mini-post,
+article.comment header {
+  color: #ddd;
+  background-color: #222;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.pagination a,
+.asciiover pre,
+#comment-form input,
+#comment-form textarea,
+#contact input,
+#contact textarea {
+  color: #ddd;
+}
+img {
+  filter: grayscale(50%);
+}
+
+a {
+  color: inherit;
 }
 `
 }

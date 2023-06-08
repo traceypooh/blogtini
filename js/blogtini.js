@@ -1,6 +1,5 @@
 /*
 
-xxx new dark theme issues w/ web components
 xxx make /?tags work
 xxx make /?categories work
 xxx nav uses /categories (which fails, too)
@@ -1122,17 +1121,15 @@ function wordcount(str) {
   return str?.match(/(\w+)/g).length ?? 0
 }
 
+/**
+ * Sets dark theme if [7am .. 5pm] localtime and prefers dark mode
+ */
 function dark_mode() {
-  if (window.matchMedia  &&  window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    log('bring on the darkness!')
-    const hour = new Date().getHours()
-    if (hour >= 7  &&  hour < 17) { // override [7am .. 5pm] localtime
-      log('.. but its vampire sleep time')
-      document.querySelector('body').classList.add('lite')
-    }
-    // macOS can force chrome to always use light mode (since it's slaved to mac sys pref otherwise)
-    //   defaults write com.google.Chrome NSRequiresAquaSystemAppearance -bool yesa
-  }
+  const hour = new Date().getHours()
+  const dark = (hour < 7 || hour > 17) && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  if (dark)
+    document.querySelector('body').classList.add('dark')
+  return dark
 }
 
 function finish() {
@@ -1302,4 +1299,5 @@ export {
   comments_markup,
   create_comment_form,
   share_buttons,
+  dark_mode,
 }
