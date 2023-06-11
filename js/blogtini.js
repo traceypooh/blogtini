@@ -680,25 +680,6 @@ function post_full(post) {
 }
 
 
-function post_header(post) {
-  return `
-<header>
-  <div class="title">
-    <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
-    ${PR`<p>${post.description}</p>` /* chexxx */}
-  </div>
-  ${post.type === 'post' ? `
-    <div class="meta">
-      ${'' /* eslint-disable-next-line no-use-before-define */}
-      <time datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
-      ${PR`<p>${post.author}</p>` /* chexxx */}
-      ${'' /* eslint-disable-next-line no-use-before-define */}
-      ${cfg.reading_time ? `<p>${Math.round((212 + wordcount(post.body_raw)) / 213)}-Minute Read</p>` : ''}
-    </div>` : ''}
-</header>
-`
-}
-
 function post_featured_image(post) {
   let src = ''
   let alt = ''
@@ -1117,10 +1098,6 @@ function datetime(date) {
   return dayjs(date).format(fmt)
 }
 
-function wordcount(str) {
-  return str?.match(/(\w+)/g).length ?? 0
-}
-
 /**
  * Sets dark theme if [7am .. 5pm] localtime and prefers dark mode
  */
@@ -1290,7 +1267,6 @@ export {
   state,
   url2post,
   summarize_markdown,
-  post_header,
   post_featured_image,
   post_stats,
   urlify,
@@ -1300,4 +1276,5 @@ export {
   create_comment_form,
   share_buttons,
   dark_mode,
+  PR,
 }

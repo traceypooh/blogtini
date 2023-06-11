@@ -4,11 +4,10 @@ import {
   LitElement, html, css, unsafeCSS,
 } from 'https://offshoot.prod.archive.org/lit.js'
 import {
-  summarize_markdown, url2post, cfg, post_header, post_featured_image, post_stats, urlify,
+  summarize_markdown, url2post, cfg, post_featured_image, post_stats, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
-  datetime,
-  dark_mode,
+  datetime, dark_mode, PR,
 } from '../js/blogtini.js'
 
 
@@ -36,7 +35,7 @@ customElements.define('bt-post', class extends LitElement {
 <link href="theme/future-imperfect.css" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="post">
-    ${unsafeHTML(post_header(post))}
+    <bt-post-header .post=${post}></bt-post-header>
     <div class="content">
       ${unsafeHTML(post_featured_image(post))}
       ${unsafeHTML(summary)}
@@ -53,7 +52,6 @@ customElements.define('bt-post', class extends LitElement {
   static get styles() {
     return [
       css_post(),
-      css_header(),
       css_title(),
       css_image(),
       css_footer(),
@@ -104,7 +102,7 @@ customElements.define('bt-post-full', class extends LitElement {
 
     <article>
       <div class="post single">
-        ${unsafeHTML(post_header(post))}
+        <bt-post-header .post=${post}></bt-post-header>
         <div id="socnet-share">
           ${unsafeHTML(socnet_share)}
         </div>
@@ -129,7 +127,6 @@ customElements.define('bt-post-full', class extends LitElement {
   static get styles() {
     return [
       css_post(),
-      css_header(),
       css_title(),
       css_image(),
       css_footer(),
@@ -139,6 +136,102 @@ customElements.define('bt-post-full', class extends LitElement {
   }
 })
 
+
+customElements.define('bt-post-header', class extends LitElement {
+  static get properties() {
+    return {
+      post: { type: Object },
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  wordcount(str) {
+    return str?.match(/(\w+)/g).length ?? 0
+  }
+
+  render() {
+    return html`
+  <header>
+    <div class="title">
+      <h2><a href="${urlify(this.post.url)}">${this.post.title}</a></h2>
+      ${PR`<p>${this.post.description}</p>` /* chexxx */}
+    </div>
+    ${this.post.type === 'post' ? html`
+      <div class="meta">
+        <time datetime="${this.post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.post.date)}</time>
+        ${PR`<p>${this.post.author}</p>` /* chexxx */}
+        ${cfg.reading_time ? html`<p>${Math.round((212 + this.wordcount(this.post.body_raw)) / 213)}-Minute Read</p>` : ''}
+      </div>` : ''}
+  </header>
+  `
+  }
+
+  static get styles() {
+    return [
+      css_headers(),
+      css_title(),
+      css`
+*, *::before, *::after { /* xxx */
+  box-sizing: border-box;
+}
+header {
+  border-bottom: 1px solid rgba(161, 161, 161, 0.3);
+  margin: -1em -1em 0 -1em;
+  text-align: center;
+  -ms-word-break: break-word;
+  word-break: break-word;
+}
+@media (min-width: 768px) {
+  header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+header div {
+  padding-bottom: 1em;
+}
+@media (min-width: 768px) {
+  header div {
+    padding: 1.5em;
+  }
+}
+header p {
+  margin: -1em 0 0 0;
+}
+
+.meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.6em;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .meta {
+    border-left: 1px solid rgba(161, 161, 161, 0.3);
+    text-align: right;
+    width: 25%;
+  }
+}
+.meta time {
+  font-size: 1.2em;
+  font-weight: 800;
+}
+      `,
+      css_dark(),
+    ]
+  }
+})
 
 customElements.define('bt-post-mini', class extends LitElement {
   static get properties() {
@@ -165,7 +258,6 @@ customElements.define('bt-post-mini', class extends LitElement {
   static get styles() {
     const xxx = dark_mode() ? 'background-color: #222;' : '' // for dark mode border color
     return [
-      css_header(),
       css_image(),
       css`
 :host {
@@ -231,6 +323,52 @@ a.image.featured {
 })
 
 
+function css_headers() {
+  return css`
+a {
+  border-bottom: 1px dotted rgba(161, 161, 161, 0.7);
+  color: inherit;
+  text-decoration: none;
+  transition: border-bottom-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+a:hover {
+  border-bottom-color: transparent;
+  color: #2eb8ac;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #3b3a3a;
+  font-family: "Raleway", Helvetica, sans-serif;
+  letter-spacing: 0.25em;
+  line-height: 1.65;
+  text-transform: uppercase;
+}
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+  border-bottom: 0;
+}
+p,
+h2,
+h3 {
+  orphans: 3;
+  widows: 3;
+}
+h2,
+h3 {
+  page-break-after: avoid;
+}
+
+`
+}
+
 function css_post() {
   return css`
 .post {
@@ -256,65 +394,6 @@ function css_post() {
   -webkit-hyphens: auto;  /* safari, you just rock! (and copy/paste works nicely too!) */
   -moz-hyphens: auto;
   hyphens: auto;
-}
-`
-}
-
-
-function css_header() {
-  return css`
-.post header {
-  border-bottom: 1px solid rgba(161, 161, 161, 0.3);
-  margin: -1em -1em 0 -1em;
-  text-align: center;
-  -ms-word-break: break-word;
-  word-break: break-word;
-}
-@media (min-width: 768px) {
-  .post header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    justify-content: space-between;
-    text-align: left;
-  }
-}
-.post header div {
-  padding-bottom: 1em;
-}
-@media (min-width: 768px) {
-  .post header div {
-    padding: 1.5em;
-  }
-}
-.post header p {
-  margin: -1em 0 0 0;
-}
-
-.meta {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .meta {
-    border-left: 1px solid rgba(161, 161, 161, 0.3);
-    text-align: right;
-    width: 25%;
-  }
-}
-.meta time {
-  font-size: 1.2em;
-  font-weight: 800;
 }
 `
 }

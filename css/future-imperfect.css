@@ -475,26 +475,6 @@ figcaption {
   @media (min-width: 768px) {
     .title {
       width: 75%; } }
-.meta {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%; }
-  @media (min-width: 768px) {
-    .meta {
-      border-left: 1px solid rgba(161, 161, 161, 0.3);
-      text-align: right;
-      width: 25%; } }
-  .meta time {
-    font-size: 1.2em;
-    font-weight: 800; }
 
 .stats {
   display: -webkit-box;
