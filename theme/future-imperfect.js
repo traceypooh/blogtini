@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file, no-use-before-define */
-import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
+import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import {
   LitElement, html, css, unsafeCSS,
-} from 'https://offshoot.prod.archive.org/lit.js'
+} from 'https://esm.archive.org/lit'
 import {
   summarize_markdown, url2post, cfg, post_featured_image, post_stats, urlify,
   markdown_to_html, comments_markup, create_comment_form,
@@ -627,16 +627,20 @@ function css_dark() {
 #site-nav-menu,
 .mini-post header,
 .content table,
+.single  table,
 .button {
   color: #ddd;
   background-color: #111;
 }
 .content table th,
-.content table tr:nth-child(even) {
+.content table tr:nth-child(even),
+.single  table th,
+.single  table tr:nth-child(even) {
   color: #ddd;
   background-color: #222;
 }
-.content table tbody tr td {
+.content table tbody tr td,
+.single  table tbody tr td {
   background-color: transparent;
 }
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
-import { unsafeHTML } from 'https://offshoot.prod.archive.org/lit/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import {
   state, summarize_markdown, url2post, cfg,
 } from '../js/blogtini.js'

@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { LitElement, html, css } from 'https://offshoot.prod.archive.org/lit.js'
+import { LitElement, html, css } from 'https://esm.archive.org/lit'
 
 customElements.define('bt-page', class extends LitElement {
   static get styles() {
