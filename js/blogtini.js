@@ -680,51 +680,6 @@ function post_full(post) {
 }
 
 
-function post_featured_image(post) {
-  let src = ''
-  let alt = ''
-  let blur
-  let stretch = cfg.image_stretch ?? ''
-
-  if (post.featured) {
-    // eslint-disable-next-line max-len
-    // xxx original: {{- $src = (path.Join "img" (cond (eq .Params.featuredpath "date") (.Page.Date.Format "2006/01") (.Params.featuredpath)) .Params.featured) | relURL -}}
-    src = post.featured?.match(/\//) ? post.featured : `${state.top_dir}img/${post.featured}` // xxx img/ parameterize
-
-    alt = post.featuredalt
-    stretch = (post.featuredstretch ?? '').toLowerCase()
-    blur = post.removeBlur ?? (cfg.remove_blur ?? '')
-  } else if (post.images) {
-    src = `${state.top_dir}${post.images[0].src}`
-    alt = post.images[0].alt
-    stretch = (post.images[0].stretch ?? '').toLowerCase()
-    blur = post.images[0].removeBlur ?? (cfg.remove_blur ?? '')
-  } else if (cfg.img_site) {
-    src = `${state.top_dir}${cfg.img_site}`
-    blur = post.removeBlur ?? (cfg.remove_blur ?? '')
-  } else {
-    return ''
-  }
-
-  // eslint-disable-next-line no-nested-ternary
-  const cls = (stretch === 'vertical' || stretch === 'v'
-    ? 'class="stretchV"'
-    // eslint-disable-next-line no-nested-ternary
-    : (stretch === 'horizontal' || stretch === 'h'
-      ? 'class="stretchH"'
-      : (stretch === 'cover' || stretch === 'c'
-        ? 'class="cover"'
-        : '')))
-
-  return `
-  <a href="${urlify(post.url)}" class="image featured ${post.class ?? '' /* xxx traceyism */}"
-    ${blur ? '' : `style="--bg-image: url('${src}')"`}>
-    <img src="${src}" alt="${alt}" ${cls}>
-  </a>
-  ${PR`<center>${post.featuredcaption}</center>`}`
-}
-
-
 function post_stats(post) {
   const taglinks =       post.tags.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
   const catlinks = post.categories.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?categories/${e}">${e}</a></li>`).join(' ').trim()
@@ -1267,7 +1222,6 @@ export {
   state,
   url2post,
   summarize_markdown,
-  post_featured_image,
   post_stats,
   urlify,
   datetime,

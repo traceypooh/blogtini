@@ -431,43 +431,6 @@ figcaption {
       margin: 1em auto;
       width: 100%; }
 
-.image {
-  border: 0;
-  display: grid;
-  place-items: center;
-  margin: 0 -1em 1em -1em;
-  overflow: hidden;
-  padding-bottom: 33%;
-  -webkit-transform: perspective(1000px);
-  -ms-transform: perspective(1000px);
-  transform: perspective(1000px); }
-  .image img {
-    position: absolute;
-    max-height: 100%;
-    transition: transform 0.35s ease-in-out; }
-    .image img.stretchV {
-      height: 100%; }
-    .image img.stretchH {
-      width: 100%; }
-    .image img.cover {
-      object-fit: cover;
-      width: 100%; }
-  .image[style]::before {
-    content: "";
-    position: absolute;
-    background-image: var(--bg-image);
-    background-size: 100% 100%;
-    height: 100%;
-    width: 100%;
-    -webkit-filter: blur(8px);
-    filter: blur(8px);
-    -webkit-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    transform: scale(1.1); }
-  .image:hover img {
-    -webkit-transform: scale(1.05);
-    -ms-transform: scale(1.05);
-    transform: scale(1.05); }
 
 .title {
   font-size: 1.1em;
@@ -804,8 +767,6 @@ figcaption {
       font-size: 0.6em;
       letter-spacing: 0.25em;
       text-transform: uppercase; }
-  .mini-post .image {
-    margin: 0; }
 
 .count {
   float: right; }

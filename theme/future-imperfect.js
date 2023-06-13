@@ -4,11 +4,13 @@ import {
   LitElement, html, css, unsafeCSS,
 } from 'https://esm.archive.org/lit'
 import {
-  summarize_markdown, url2post, cfg, post_featured_image, post_stats, urlify,
+  summarize_markdown, url2post, cfg, post_stats, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
   datetime, dark_mode, PR,
 } from '../js/blogtini.js'
+
+import('./featured-image.js')
 
 
 customElements.define('bt-posts', class extends LitElement {
@@ -37,7 +39,7 @@ customElements.define('bt-post', class extends LitElement {
   <article class="post">
     <bt-post-header .post=${post}></bt-post-header>
     <div class="content">
-      ${unsafeHTML(post_featured_image(post))}
+      <featured-image url=${this.url}></featured-image>
       ${unsafeHTML(summary)}
     </div>
     <footer>
@@ -53,7 +55,6 @@ customElements.define('bt-post', class extends LitElement {
     return [
       css_post(),
       css_title(),
-      css_image(),
       css_footer(),
       css_stats(),
       css_dark(),
@@ -106,7 +107,7 @@ customElements.define('bt-post-full', class extends LitElement {
         <div id="socnet-share">
           ${unsafeHTML(socnet_share)}
         </div>
-        ${unsafeHTML(post_featured_image(post))}
+        <featured-image url=${this.url} single=true></featured-image>
 
         <div>
           ${unsafeHTML(body)}
@@ -128,7 +129,6 @@ customElements.define('bt-post-full', class extends LitElement {
     return [
       css_post(),
       css_title(),
-      css_image(),
       css_footer(),
       css_stats(),
       css_dark(),
@@ -247,7 +247,7 @@ customElements.define('bt-post-mini', class extends LitElement {
 <link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="mini-post">
-    ${unsafeHTML(post_featured_image(post))}
+    <featured-image url=${this.url} mini=true></featured-image>
     <header>
       <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
       <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
@@ -258,7 +258,6 @@ customElements.define('bt-post-mini', class extends LitElement {
   static get styles() {
     const xxx = dark_mode() ? 'background-color: #222;' : '' // for dark mode border color
     return [
-      css_image(),
       css`
 :host {
   background: white;
@@ -305,15 +304,6 @@ header time {
   font-size: 0.6em;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-}
-.image {
-  margin: 0;
-}
-
-a.image.featured {
-  /* these magic missing pieces poached from default theme's '.post' class rules */
-  border: 0;
-  display: block;
 }
 
 `,
@@ -411,113 +401,6 @@ function css_title() {
     }
   }
   `
-}
-
-
-function css_image() {
-  return css`
-.image {
-  border: 0;
-  display: grid;
-  place-items: center;
-  margin: 0 -1em 1em -1em;
-  overflow: hidden;
-  padding-bottom: 33%;
-  -webkit-transform: perspective(1000px);
-  -ms-transform: perspective(1000px);
-  transform: perspective(1000px);
-}
-.image img {
-  position: absolute;
-  max-height: 100%;
-  transition: transform 0.35s ease-in-out;
-}
-.image img.stretchV {
-  height: 100%;
-}
-.image img.stretchH {
-  width: 100%;
-}
-.image img.cover {
-  object-fit: cover;
-  width: 100%;
-}
-.image[style]::before {
-  content: "";
-  position: absolute;
-  background-image: var(--bg-image);
-  background-size: 100% 100%;
-  height: 100%;
-  width: 100%;
-  -webkit-filter: blur(8px);
-  filter: blur(8px);
-  -webkit-transform: scale(1.1);
-  -ms-transform: scale(1.1);
-  transform: scale(1.1);
-}
-.image:hover img {
-  -webkit-transform: scale(1.05);
-  -ms-transform: scale(1.05);
-  transform: scale(1.05);
-}
-
-/* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
-
-/* https://codepen.io/burtclan/pen/mLqxC */
-.image.featured {
-  box-shadow: inset 0 0 10px 5px;
-  position: relative;
-  color: #666; /*xxx*/
-  padding-bottom: 0; /* override 33% from future imperfect 2022 update */
-}
-.image.featured:before {
-  content: "";
-  display: block;
-  padding-bottom: calc(100% / 2.35); /* enforce a styley 2.35:1 cinematic aspect ratio */
-}
-.image.featured:after {
-  /* gray blur on edges */
-  box-shadow: inset 0 0 10px 5px;
-  content: "";
-  position: absolute;
-  display: block;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-collapse: separate;
-}
-.image.featured img {
-  height: auto;
-  width: 100%;
-  object-fit: cover;
-  object-position: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-}
-.image.featured.featured-top img {
-  object-position: top;
-}
-.image.featured.featured-bottom img {
-  object-position: bottom;
-}
-
-/* OK now when we're showing a full single post, let the image height be fully natural */
-/* ie: reverse our customizations above.  Also don't do the edge blurring. */
-.post.single a.image.featured {
-  box-shadow: none;
-  height: auto;
-}
-.post.single a.image.featured img {
-  position: relative;
-}
-.post.single a.image.featured:after, .post.single a.image.featured:before {
-  display: none;
-}
-`
 }
 
 
