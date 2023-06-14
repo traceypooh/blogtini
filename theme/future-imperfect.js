@@ -4,13 +4,14 @@ import {
   LitElement, html, css, unsafeCSS,
 } from 'https://esm.archive.org/lit'
 import {
-  summarize_markdown, url2post, cfg, post_stats, urlify,
+  summarize_markdown, url2post, cfg, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
   datetime, dark_mode, PR,
 } from '../js/blogtini.js'
 
 import('./featured-image.js')
+import('./post-stats.js')
 
 
 customElements.define('bt-posts', class extends LitElement {
@@ -44,7 +45,10 @@ customElements.define('bt-post', class extends LitElement {
     </div>
     <footer>
       <a href="${urlify(post.url)}" class="button big">Read More</a>
-      ${post.type === 'post' ? unsafeHTML(post_stats(post)) : ''}
+      <post-stats
+        categories=${JSON.stringify(post.categories)}
+        tags=${JSON.stringify(post.tags)}>
+      </post-stats>
     </footer>
   </article>
 
@@ -56,7 +60,6 @@ customElements.define('bt-post', class extends LitElement {
       css_post(),
       css_title(),
       css_footer(),
-      css_stats(),
       css_dark(),
     ]
   }
@@ -115,7 +118,10 @@ customElements.define('bt-post-full', class extends LitElement {
 
         ${post.type === 'post' ? html`
         <footer>
-          ${unsafeHTML(post_stats(post))}
+          <post-stats
+            categories=${JSON.stringify(post.categories)}
+            tags=${JSON.stringify(post.tags)}>
+          </post-stats>
         </footer>` : ''}
 
       </div>
@@ -130,7 +136,6 @@ customElements.define('bt-post-full', class extends LitElement {
       css_post(),
       css_title(),
       css_footer(),
-      css_stats(),
       css_dark(),
     ]
   }
@@ -168,6 +173,7 @@ customElements.define('bt-post-header', class extends LitElement {
 
   static get styles() {
     return [
+      css_links(),
       css_headers(),
       css_title(),
       css`
@@ -313,7 +319,7 @@ header time {
 })
 
 
-function css_headers() {
+function css_links() {
   return css`
 a {
   border-bottom: 1px dotted rgba(161, 161, 161, 0.7);
@@ -324,7 +330,11 @@ a {
 a:hover {
   border-bottom-color: transparent;
   color: #2eb8ac;
+}`
 }
+
+function css_headers() {
+  return css`
 h1,
 h2,
 h3,
@@ -404,85 +414,6 @@ function css_title() {
 }
 
 
-function css_stats() {
-  return css`
-@charset "UTF-8";
-
-.stats {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-}
-@media (min-width: 375px) {
-  .stats {
-    flex-direction: row;
-    justify-content: space-around;
-  }
-}
-.stats ul {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 1em 0 0 0;
-  padding: 0;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  list-style: none;
-}
-@media (min-width: 375px) {
-  .stats ul {
-    max-width: 50%;
-    justify-content: center;
-  }
-}
-.stats ul::before {
-  width: 40px;
-  padding-right: 1em;
-  margin-right: 1em;
-  border-right: 1px solid rgba(161, 161, 161, 0.3);
-}
-@media (min-width: 375px) {
-  .stats ul::before {
-    padding-right: 0;
-    margin-right: 0;
-    border-right: 0;
-    border-bottom: 1px solid rgba(161, 161, 161, 0.3);
-    flex: 100%;
-    height: fit-content;
-    text-align: center;
-  }
-}
-.stats ul li {
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  font-weight: 400;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-}
-.stats ul li:not(:first-child) {
-  margin-left: 1em;
-}
-.stats ul li a {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.categories::before {
-  content: "\\f07b";
-}
-
-.tags::before {
-  content: "\\f02c";
-}
-`
-}
-
-
 function css_footer() {
   return css`
 footer {
@@ -556,4 +487,8 @@ a {
   color: inherit;
 }
 `
+}
+
+export {
+  css_links,
 }

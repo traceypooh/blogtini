@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file, no-use-before-define */
 import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import {
   LitElement, html, css, unsafeCSS,

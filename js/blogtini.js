@@ -680,22 +680,6 @@ function post_full(post) {
 }
 
 
-function post_stats(post) {
-  const taglinks =       post.tags.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?tags/${e}">${e}</a></li>`/*  */).join(' ').trim()
-  const catlinks = post.categories.map((e) => `<li><a class="article-terms-link" href="${state.top_page}?categories/${e}">${e}</a></li>`).join(' ').trim()
-
-  return `
-  <div class="stats">
-  <ul class="categories">
-    ${catlinks}
-  </ul>
-  <ul class="tags">
-    ${taglinks}
-  </ul>
-  </div>`
-}
-
-
 function SOC(str, svc) {
   const val = cfg.social[svc]
   return (val === '' || val === undefined || val === null ? '' :
@@ -1222,7 +1206,6 @@ export {
   state,
   url2post,
   summarize_markdown,
-  post_stats,
   urlify,
   datetime,
   markdown_to_html,
