@@ -199,35 +199,6 @@ cite {
 input[type="submit"],
 input[type="reset"],
 input[type="button"],
-.button {
-  background-color: transparent;
-  border: 1px solid rgba(161, 161, 161, 0.3);
-  color: #3b3a3a;
-  cursor: pointer;
-  display: inline-block;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  font-weight: 800;
-  height: 4.8125em;
-  letter-spacing: 0.25em;
-  line-height: 4.8125em;
-  margin: auto;
-  padding: 0 2em;
-  transition: background-color 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out;
-  text-align: center;
-  text-transform: uppercase;
-  width: fit-content; }
-  input[type="submit"]:hover,
-  input[type="reset"]:hover,
-  input[type="button"]:hover,
-  .button:hover {
-    border: 1px solid #2eb8ac;
-    color: #2eb8ac !important; }
-    input[type="submit"]:hover:active,
-    input[type="reset"]:hover:active,
-    input[type="button"]:hover:active,
-    .button:hover:active {
-      background-color: rgba(46, 184, 172, 0.05); }
 
 label {
   color: #3b3a3a;
@@ -427,9 +398,6 @@ figcaption {
     display: -webkit-flex;
     display: flex;
     flex-direction: column; }
-    .post footer .button {
-      margin: 1em auto;
-      width: 100%; }
 
 
 .title {
@@ -674,9 +642,6 @@ figcaption {
       letter-spacing: 0.25em;
       text-transform: uppercase; }
 
-.count {
-  float: right; }
-
 .copyright {
   color: #ababab;
   font-family: "Raleway", Helvetica, sans-serif;
@@ -836,47 +801,6 @@ figcaption {
     line-height: 2.5;
     margin-bottom: 0;
     text-transform: uppercase; }
-
-#site-sidebar {
-  grid-area: sidebar; }
-  #site-sidebar header h1 {
-    font-size: 1em; }
-  #site-sidebar > * {
-    border-top: 1px solid rgba(161, 161, 161, 0.3);
-    margin: 3em 2em 0 2em;
-    padding-top: 3em; }
-  @media (min-width: 1024px) {
-    #site-sidebar > *:first-child {
-      margin-top: 0; } }
-  #site-sidebar ul {
-    font-family: "Raleway", Helvetica, sans-serif;
-    font-size: 0.9em;
-    letter-spacing: 0.25em;
-    line-height: 1.65;
-    text-transform: uppercase;
-    list-style: none;
-    padding: 0; }
-  #site-sidebar footer {
-    margin: auto;
-    width: max-content; }
-
-#recent-posts {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; }
-  #recent-posts > header {
-    -webkit-box-flex: 1;
-    -ms-flex: 1 1 100%;
-    -webkit-flex: 1 1 100%;
-    flex: 1 1 100%; }
-
-#mini-bio p {
-  opacity: 0.65;
-  font-size: 0.9em;
-  padding: 0; }
 
 #site-main {
   grid-area: main; }

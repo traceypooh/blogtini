@@ -78,18 +78,6 @@
   height: 0 !important; /* scrollbar in the nav looks like a mistake */
 }
 
-/* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
-#posts .post .content {
-  /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */
-  word-break: initial;    /* first, try to break up *in between* words if we gonna overflow... (this needed for firefox, since will toss next line) */
-  word-break: break-word; /* first, try to break up *in between* words if we gonna overflow... (works better in chrome) */
-  word-wrap:  break-word; /* ... and if still overflowing, *then* split indiv. words up ... */
-  -webkit-hyphens: auto;  /* safari, you just rock! (and copy/paste works nicely too!) */
-  -moz-hyphens: auto;
-  hyphens: auto;
-}
-
-
 /* bug fix for mobile width and 2 wider than avg titles */
 .pagination {
   max-width: 100vw;

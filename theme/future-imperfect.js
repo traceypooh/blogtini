@@ -10,8 +10,9 @@ import {
   datetime, dark_mode, PR,
 } from '../js/blogtini.js'
 
-import('./featured-image.js')
-import('./post-stats.js')
+import './featured-image.js'
+import './post-stats.js'
+import './bt-sidebar.js'
 
 
 customElements.define('bt-posts', class extends LitElement {
@@ -58,6 +59,18 @@ customElements.define('bt-post', class extends LitElement {
   static get styles() {
     return [
       css_post(),
+      css`
+/* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
+.post .content {
+  /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */
+  word-break: initial;    /* first, try to break up *in between* words if we gonna overflow... (this needed for firefox, since will toss next line) */
+  word-break: break-word; /* first, try to break up *in between* words if we gonna overflow... (works better in chrome) */
+  word-wrap:  break-word; /* ... and if still overflowing, *then* split indiv. words up ... */
+  -webkit-hyphens: auto;  /* safari, you just rock! (and copy/paste works nicely too!) */
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+`,
       css_title(),
       css_footer(),
       css_dark(),
@@ -250,8 +263,6 @@ customElements.define('bt-post-mini', class extends LitElement {
     const post = url2post(this.url)
 
     return html`
-<link href="${urlify('theme/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
-
   <article class="mini-post">
     <featured-image url=${this.url} mini=true></featured-image>
     <header>
@@ -264,6 +275,7 @@ customElements.define('bt-post-mini', class extends LitElement {
   static get styles() {
     const xxx = dark_mode() ? 'background-color: #222;' : '' // for dark mode border color
     return [
+      css_headers(),
       css`
 :host {
   background: white;
@@ -313,11 +325,60 @@ header time {
 }
 
 `,
+      css_links(),
       css_dark(),
     ]
   }
 })
 
+
+function css_buttons() {
+  const xxx = dark_mode() ? `
+.button {
+  color: #ddd;
+  background-color: #111;
+}
+` : ''
+
+  return css`
+.button {
+  background-color: transparent;
+  border: 1px solid rgba(161, 161, 161, 0.3);
+  color: #3b3a3a;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.6em;
+  font-weight: 800;
+  height: 4.8125em;
+  letter-spacing: 0.25em;
+  line-height: 4.8125em;
+  margin: auto;
+  padding: 0 2em;
+  transition: background-color 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out;
+  text-align: center;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+.button:hover {
+  border: 1px solid #2eb8ac;
+  color: #2eb8ac !important;
+}
+
+input[type="submit"]:hover:active,
+input[type="reset"]:hover:active,
+input[type="button"]:hover:active,
+.button:hover:active {
+  background-color: rgba(46, 184, 172, 0.05);
+}
+
+${unsafeCSS(xxx)}
+`
+}
 
 function css_links() {
   return css`
@@ -334,6 +395,8 @@ a:hover {
 }
 
 function css_headers() {
+  const color = dark_mode() ? '#ddd' : '#3b3a3a'
+
   return css`
 h1,
 h2,
@@ -341,7 +404,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: #3b3a3a;
+  color: ${unsafeCSS(color)};
   font-family: "Raleway", Helvetica, sans-serif;
   letter-spacing: 0.25em;
   line-height: 1.65;
@@ -366,6 +429,14 @@ h3 {
   page-break-after: avoid;
 }
 
+/**
+ * Correct the font size and margin on <h1> elements within <section> and
+ * <article> contexts in Chrome, Firefox, and Safari.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
 `
 }
 
@@ -423,7 +494,7 @@ footer {
   display: flex;
   flex-direction: column;
 }
-footer .button {
+footer .button { /* xxx was .post footer .button */
   margin: 1em auto;
   width: 100%;
 }
@@ -465,12 +536,6 @@ article.comment header {
   color: #ddd;
   background-color: #222;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
 .pagination a,
 .asciiover pre,
 #comment-form input,
@@ -490,5 +555,7 @@ a {
 }
 
 export {
+  css_buttons,
+  css_headers,
   css_links,
 }

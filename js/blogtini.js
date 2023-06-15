@@ -4,6 +4,7 @@ xxx make /?tags work
 xxx make /?categories work
 xxx nav uses /categories (which fails, too)
 xxx nav home link wrong
+xxx socnet icons hover should blue color
 
 
 add storj, codepen, etc.
@@ -175,6 +176,7 @@ const log = console.log.bind(console)
 const state = {
   tags: {},
   cats: {},
+  urls_filtered: [],
   use_github_api_for_files: null,
   try_github_api_tree: false,
   num_posts: 0,
@@ -345,16 +347,6 @@ async function main() {
 
   const show_top_content = state.is_homepage && body_contents && !location.search
 
-  document.querySelector('body').innerHTML = `
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_start()}
-
-    ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
-
-    <div id="posts"></div>
-
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_end()}`
 
 /*
 cfg.repo = 'blogtini'
@@ -368,6 +360,25 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   // eslint-disable-next-line no-use-before-define
   storage_loop()
+
+  if (!filter_post) {
+    document.querySelector('body').innerHTML = `
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_start()}
+
+    ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
+
+    <bt-posts>
+      <slot>
+        <div id="posts">
+        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+        </div>
+      </slot>
+    </bt-posts>
+
+    ${'' /* eslint-disable-next-line no-use-before-define */}
+    ${site_end()}`
+  }
 
   // eslint-disable-next-line no-use-before-define
   finish()
@@ -592,7 +603,6 @@ async function parse_posts(markdowns) {
 function storage_loop() {
   showdown.setFlavor('github') // xxx?
 
-  let htm = '<bt-posts><slot>'
   for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
       state.tags[tag] = state.tags[tag] || []
@@ -623,6 +633,9 @@ function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
+      document.querySelector('body').innerHTML =
+        // eslint-disable-next-line no-use-before-define
+        post_full(post)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
@@ -631,21 +644,9 @@ function storage_loop() {
       head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
     }
 
-    // const postxxx = date: post.date.toString().split(' ').slice(0, 4).join(' ')
-
-    if (filter_post) {
-      document.querySelector('body').innerHTML =
-        // eslint-disable-next-line no-use-before-define
-        post_full(post)
-    } else {
-      htm += `<bt-post url="${urlify(post.url)}"></bt-post>`
-    }
+    if (!filter_post)
+      state.urls_filtered.push(post.url)
   }
-
-  htm += '</slot></bt-posts>'
-
-  if (!filter_post)
-    document.getElementById('posts').innerHTML = htm
 }
 
 
@@ -967,8 +968,7 @@ function site_start() {
 function site_end() {
   return `
     </main>
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_sidebar()}
+    <bt-sidebar></bt-sidebar>
 
     <footer id="site-footer">
       ${cfg.footer?.rss || cfg.footer?.social ? `
@@ -987,29 +987,6 @@ function site_end() {
   <a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
 }
 
-function site_sidebar() {
-  return `
-<section id="site-sidebar">
-
-  ${cfg.sidebar.post_amount ? '<section id="recent-posts"></section>' : ''}
-  ${cfg.sidebar.categories ? '<section id="categories"></section>' : ''}
-  <section id="tags" style="text-align:center"></section>
-
-  ${cfg.sidebar.about ? `
-    <section id="mini-bio">
-      <header>
-        <h1>About</h1>
-      </header>
-      ${'' /* eslint-disable-next-line no-use-before-define */}
-      <p> ${safeHTML(cfg.sidebar.about)}</p>
-      <footer>
-        <a href="${state.top_dir}about" class="button">Learn More</a>
-      </footer>
-    </section>` : ''}
-</section>`
-}
-
-function safeHTML(str) { return str } // xxx
 
 // deno-lint-ignore no-unused-vars
 function slugify(str) {
@@ -1049,56 +1026,35 @@ function dark_mode() {
 }
 
 function finish() {
-  let htm
-
   if (cfg.sidebar.post_amount) {
-    const more = STORAGE.docs.length > cfg.sidebar.post_amount
-
-    document.getElementById('recent-posts')?.insertAdjacentHTML('beforeend', `
-  <header>
-    <h1>Recent Posts</h1>
-  </header>
-  ${STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((post) => `
-    <bt-post-mini url="${urlify(post.url)}"></bt-post-mini>`).join('')}
-  ${more ? `
-  <footer>
-    <a href="${cfg.view_more_posts_link}" class="button">See More</a>
-  </footer>` : ''}`)
+    document.querySelector('bt-sidebar').setAttribute(
+      'recent_posts',
+      JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url)),
+    )
   }
 
-
-  if (cfg.sidebar.categories) { // xxx could support cfg.sidebar.categories_by_count option..
-    htm = `
-    <header>
-      <h1><a href="${state.top_page}?categories">Categories</a></h1>
-    </header>
-    <ul>`
-
+  if (cfg.sidebar.categories) {
+    const histogram = {}
     for (const cat of Object.keys(state.cats).sort())
-      htm += `<li><a href="${state.top_page}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${state.cats[cat].length}</span></li>`
-    htm += '</ul>'
-    document.getElementById('categories')?.insertAdjacentHTML('beforeend', htm)
+      histogram[cat] = state.cats[cat].length
+
+    document.querySelector('bt-sidebar').setAttribute(
+      'categories',
+      JSON.stringify(histogram),
+    )
   }
 
+  {
+    const histogram = {}
+    for (const tag of Object.keys(state.tags).sort())
+      histogram[tag] = state.tags[tag].length
 
-  htm = `
-  <header>
-    <h1><a href="${state.top_page}?tags">Tags</a></h1>
-  </header>`
-  const rem_min = 1
-  const rem_max = 2.5
-
-  const counts = Object.values(state.tags).map((e) => e.length)
-  const cnt_min = Math.min(...counts)
-  const cnt_max = 1 + Math.max(...counts)
-
-  for (const tag of Object.keys(state.tags).sort()) {
-    const count = state.tags[tag].length
-    const weight = (Math.log(count) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
-    const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
-    htm += `<a href="${state.top_page}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
+    document.querySelector('bt-sidebar').setAttribute(
+      'tags',
+      JSON.stringify(histogram),
+    )
   }
-  document.getElementById('tags')?.insertAdjacentHTML('beforeend', htm)
+
 
   document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
 
@@ -1181,7 +1137,7 @@ function head_insert_specifics() {
 
 
 const url2post_map = {}
-function url2post(url) {
+function url2post(url = '') {
   if (!Object.keys(url2post_map).length) {
     for (const [idx, post] of Object.entries(STORAGE.docs)) {
       // in localdev/filedev mode, make so we can find post with "short" urls

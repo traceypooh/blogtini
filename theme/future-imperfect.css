@@ -198,39 +198,6 @@ cite {
   cite sup {
     left: .5em; }
 
-input[type="submit"],
-input[type="reset"],
-input[type="button"],
-.button {
-  background-color: transparent;
-  border: 1px solid rgba(161, 161, 161, 0.3);
-  color: #3b3a3a;
-  cursor: pointer;
-  display: inline-block;
-  font-family: "Raleway", Helvetica, sans-serif;
-  font-size: 0.6em;
-  font-weight: 800;
-  height: 4.8125em;
-  letter-spacing: 0.25em;
-  line-height: 4.8125em;
-  margin: auto;
-  padding: 0 2em;
-  transition: background-color 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out;
-  text-align: center;
-  text-transform: uppercase;
-  width: fit-content; }
-  input[type="submit"]:hover,
-  input[type="reset"]:hover,
-  input[type="button"]:hover,
-  .button:hover {
-    border: 1px solid #2eb8ac;
-    color: #2eb8ac !important; }
-    input[type="submit"]:hover:active,
-    input[type="reset"]:hover:active,
-    input[type="button"]:hover:active,
-    .button:hover:active {
-      background-color: rgba(46, 184, 172, 0.05); }
-
 label {
   color: #3b3a3a;
   display: block;
@@ -520,9 +487,6 @@ figcaption {
   .nav-toggle i {
     vertical-align: middle; }
 
-
-.count {
-  float: right; }
 
 .copyright {
   color: #ababab;
