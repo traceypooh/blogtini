@@ -362,22 +362,17 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   storage_loop()
 
   if (!filter_post) {
-    document.querySelector('body').innerHTML = `
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_start()}
+    // eslint-disable-next-line no-use-before-define
+    bt_page(`
+  ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
 
-    ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
-
-    <bt-posts>
-      <slot>
-        <div id="posts">
-        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-        </div>
-      </slot>
-    </bt-posts>
-
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_end()}`
+  <bt-posts>
+    <slot>
+      <div id="posts">
+      ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      </div>
+    </slot>
+  </bt-posts>`)
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -633,9 +628,8 @@ function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
-      document.querySelector('body').innerHTML =
-        // eslint-disable-next-line no-use-before-define
-        post_full(post)
+      // eslint-disable-next-line no-use-before-define
+      bt_page(`<bt-post-full url="${urlify(post.url)}"></bt-post-full>`)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
@@ -666,18 +660,6 @@ function storage_add(post) { // xxx use snippet
   const ymd = date2ymd(new Date(post.date))
   if (!STORAGE.newest || ymd > STORAGE.newest)
     STORAGE.newest = ymd
-}
-
-
-function post_full(post) {
-  return `
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_start()}
-
-    <bt-post-full url="${urlify(post.url)}"></bt-post-full>
-
-    ${'' /* eslint-disable-next-line no-use-before-define */}
-    ${site_end()}`
 }
 
 
@@ -887,8 +869,10 @@ function share_buttons(post) {
   }).join('')
 }
 
-function site_header() {
-  return `
+
+function bt_page(main_section = '') {
+  document.querySelector('body').innerHTML = `
+
 <header id="site-header">
   <nav id="site-nav">
     <h1 class="nav-title">
@@ -928,63 +912,58 @@ function site_header() {
       <a href="#"><p>  future imperfect    </a>
       <a href="#"><p>  grid                </a>
     </menu>` : ''}
-</header>`
-}
+</header>
 
-function site_start() {
-  return `
-  ${site_header()}
-  <div id="wrapper">
-    <!-- xxx <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
-      {{ with .Site.Params.intro.pic }}<a href="{{ "/" | relLangURL}}"><img src="{{ .src | relURL }}"{{ with .shape}} class="{{ . }}"{{ end }} width="{{ .width | default "100" }}" alt="{{ .alt }}" /></a>{{ end }}
-      <header>
-        {{ with .Site.Params.intro.header }}<h1>{{ . | safeHTML }}</h1>{{ end }}
-      </header> -->
+<div id="wrapper">
+  <!-- xxx <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
+    {{ with .Site.Params.intro.pic }}<a href="{{ "/" | relLangURL}}"><img src="{{ .src | relURL }}"{{ with .shape}} class="{{ . }}"{{ end }} width="{{ .width | default "100" }}" alt="{{ .alt }}" /></a>{{ end }}
+    <header>
+      {{ with .Site.Params.intro.header }}<h1>{{ . | safeHTML }}</h1>{{ end }}
+    </header> -->
 
-    <section id="site-intro">
-      <header>
-        <img id="blogtini" src="${cfg.site_header}">
-        <h1>
-          <a href="${state.top_page}">
-            ${cfg.img_site ? `<img src="${state.top_dir}${cfg.img_site}">` : ''}<br>
-            ${cfg.title}
-          </a>
-        </h1>
-      </header>
+  <section id="site-intro">
+    <header>
+      <img id="blogtini" src="${cfg.site_header}">
+      <h1>
+        <a href="${state.top_page}">
+          ${cfg.img_site ? `<img src="${state.top_dir}${cfg.img_site}">` : ''}<br>
+          ${cfg.title}
+        </a>
+      </h1>
+    </header>
 
-      ${PR`<main><p>${cfg.intro?.paragraph}</p></main>`}
+    ${PR`<main><p>${cfg.intro?.paragraph}</p></main>`}
 
-      ${cfg.intro?.rss || cfg.intro?.social ? `
-        <footer>
-          <ul class="socnet-icons">
-            ${cfg.intro?.rss ? rss_icon() : ''}
-            ${cfg.intro?.social ? socnet_icon() : ''}
-          </ul>` : ''}
-      </footer>
-    </section>
-    <main id="site-main">`
-}
-
-function site_end() {
-  return `
-    </main>
-    <bt-sidebar></bt-sidebar>
-
-    <footer id="site-footer">
-      ${cfg.footer?.rss || cfg.footer?.social ? `
+    ${cfg.intro?.rss || cfg.intro?.social ? `
+      <footer>
         <ul class="socnet-icons">
-          ${cfg.footer?.rss ? rss_icon() : ''}
-          ${cfg.footer?.social ? socnet_icon() : ''}
+          ${cfg.intro?.rss ? rss_icon() : ''}
+          ${cfg.intro?.social ? socnet_icon() : ''}
         </ul>` : ''}
-      <p class="copyright">
-        ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
-        <br>
-        ${cfg.attribution ?? ''}
-      </p>
     </footer>
-  </div><!--//#wrapper-->
+  </section>
+  <main id="site-main">
 
-  <a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
+    ${main_section}
+
+  </main>
+  <bt-sidebar></bt-sidebar>
+
+  <footer id="site-footer">
+    ${cfg.footer?.rss || cfg.footer?.social ? `
+      <ul class="socnet-icons">
+        ${cfg.footer?.rss ? rss_icon() : ''}
+        ${cfg.footer?.social ? socnet_icon() : ''}
+      </ul>` : ''}
+    <p class="copyright">
+      ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
+      <br>
+      ${cfg.attribution ?? ''}
+    </p>
+  </footer>
+</div><!--//#wrapper-->
+
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
 }
 
 
