@@ -1,7 +1,7 @@
 import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.archive.org/lit'
-import { cfg, state, urlify } from '../js/blogtini.js'
-import { css_buttons, css_headers, css_links } from './future-imperfect.js'
+import { cfg, state, urlify } from '../../js/blogtini.js'
+import { css_buttons, css_headers, css_links } from './index.js'
 
 
 customElements.define('bt-sidebar', class extends LitElement {

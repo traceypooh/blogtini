@@ -3,10 +3,10 @@ import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.j
 import { LitElement, html, css } from 'https://esm.archive.org/lit'
 import {
   css_buttons, css_headers, css_links, css_dark,
-} from './future-imperfect.js'
+} from './index.js'
 import {
   cfg, state, PR, share_buttons, urlify,
-} from '../js/blogtini.js'
+} from '../../js/blogtini.js'
 
 
 customElements.define('bt-body', class extends LitElement {

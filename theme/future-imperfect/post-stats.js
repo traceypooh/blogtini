@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.archive.org/lit'
-import { state } from '../js/blogtini.js'
-import { css_links } from './future-imperfect.js'
+import { state } from '../../js/blogtini.js'
+import { css_links } from './index.js'
 
 customElements.define('post-stats', class extends LitElement {
   static get properties() {

@@ -203,7 +203,7 @@ let cfg = {
   user: '',
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
-  theme: '../theme/future-imperfect.js',
+  theme: '../theme/future-imperfect/index.js',
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',

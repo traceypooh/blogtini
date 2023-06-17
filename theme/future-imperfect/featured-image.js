@@ -4,7 +4,7 @@ import {
 } from 'https://esm.archive.org/lit'
 import {
   url2post, cfg, state, urlify, PR, dark_mode,
-} from '../js/blogtini.js'
+} from '../../js/blogtini.js'
 
 
 customElements.define('featured-image', class extends LitElement {
