@@ -6,7 +6,7 @@ import {
   share_buttons,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_headers,
+  css_post, css_dark, css_footer, css_title, css_headers, css_buttons,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -80,6 +80,7 @@ customElements.define('bt-post-full', class extends LitElement {
       css_title(),
       css_footer(),
       css_dark(),
+      css_buttons(),
     ]
   }
 })
