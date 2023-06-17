@@ -150,7 +150,7 @@ customElements.define('bt-body', class extends LitElement {
   static get styles() {
     return [
       css`
-/* copied from 'css/future-imperfect.css' for '#share-menu' */
+/* copied from '#share-menu' */
 #theme-menu {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -182,7 +182,7 @@ customElements.define('bt-body', class extends LitElement {
   visibility: hidden;
 }
 
-/* copied from 'css/future-imperfect.css' for '.share-toggle' */
+/* copied from '.share-toggle' */
 .theme-toggle {
   display: none;
 }
