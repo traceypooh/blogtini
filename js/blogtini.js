@@ -866,7 +866,7 @@ function finish() {
       log({ theme })
 
       state.theme_change_number += 1
-      await import(`../theme/${theme}.js?${state.theme_change_number}`)
+      await import(`../theme/${theme}/index.js?${state.theme_change_number}`)
 
       // eslint-disable-next-line no-use-before-define
       storage_loop()
