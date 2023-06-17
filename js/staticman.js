@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 /* eslint-disable */
 (function() {
-  let form = document.querySelector('.new-comment');
+  let form = document.querySelector('.new-comment'); // xxxxxxxx
   if (form) {
     form.querySelector('#comment-form-submit').addEventListener('click', function () {
       form.classList.add('loading');
@@ -88,7 +88,7 @@
     }
 
     // record reply target when one of the "reply" buttons is pressed
-    document.querySelector('.comments-container').addEventListener('click', function (evt) {
+    document.querySelector('.comments-container').addEventListener('click', /* xxxxxxxx */ function (evt) {
       let target = evt.target;
       if (target.matches('.comment-reply-btn')){
         resetReplyTarget();

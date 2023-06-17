@@ -10,6 +10,7 @@ import {
   datetime, dark_mode, PR,
 } from '../js/blogtini.js'
 
+import './bt-body.js'
 import './featured-image.js'
 import './post-stats.js'
 import './bt-sidebar.js'
@@ -107,10 +108,9 @@ customElements.define('bt-post-full', class extends LitElement {
     if (!this.flyout_shared) {
       // copy sharing buttons to the fly-out menu
       this.flyout_shared = true // ensure this is only done once
-      document.getElementById('share-menu').insertAdjacentHTML(
-        'beforeend',
-        socnet_share,
-      )
+      const btpage = document.querySelector('bt-body')?.shadowRoot
+      const sharemenu = btpage.querySelector('#share-menu')
+      sharemenu.innerHTML = `${sharemenu.innerHTML} ${socnet_share}`
     }
 
 
@@ -558,4 +558,5 @@ export {
   css_buttons,
   css_headers,
   css_links,
+  css_dark,
 }

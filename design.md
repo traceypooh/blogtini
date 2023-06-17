@@ -10,12 +10,12 @@
 ```js
 import 'https://blogtini.com/js/blogtini.js'
 import 'https://blogtini.com/js/theme/future-imperfect/index.js'
-  ↘ import './bt-page.js'
+  ↘ import './bt-body.js'
   ↘️ import './bt-posts.js'
   ↘️ import './bt-post.js'
 
 document.write(`
-<bt-page>
+<bt-body>
 
   <bt-posts>
     <slot>
@@ -50,16 +50,16 @@ document.write(`
   <bt-footer>
 
 
-</bt-page>
+</bt-body>
 `)
 ```
 
 
-# bt-page.js
+# bt-body.js
 ```js
 import { LitElement, html, css } from 'https://esm.archive.org/lit'
 
-customElements.define('bt-page', class extends LitElement {
+customElements.define('bt-body', class extends LitElement {
   static get styles() {
     return css`
 :host {

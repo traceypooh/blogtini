@@ -8,13 +8,6 @@ import { summarize_markdown } from './text.js'
 
 
 // Flyout Menu Functions
-let toggles = {
-  ".search-toggle": "#search-input",
-  ".lang-toggle": "#lang-menu",
-  ".share-toggle": "#share-menu",
-  ".theme-toggle": "#theme-menu",
-  ".nav-toggle": "#site-nav-menu"
-};
 
 // Search
 let idx;                // Lunr index
@@ -28,47 +21,30 @@ function search_setup(docs, cfg) {
   for (const doc of docs)
     resultDetails[doc.url] = doc
 
-  $.each(toggles, function(toggle, menu) {
-    $(toggle).on("click", function() {
-      if ($(menu).hasClass("active")) {
-        $(".menu").removeClass("active");
-        $("#wrapper").removeClass("overlay");
-      } else {
-        $("#wrapper").addClass("overlay");
-        $(".menu").not($(menu + ".menu")).removeClass("active");
-        $(menu).addClass("active");
-        if (menu == "#search-input") {$("#search-results").toggleClass("active");}
-      }
-    });
-  });
-
   // Click anywhere outside a flyout to close
-  $(document).on("click", function(e) {
+  $(document).on("click", function(e) { // xxxxxxxxxxxx
     if ($(e.target).is(".lang-toggle, .lang-toggle span, #lang-menu, .share-toggle, .share-toggle i, .theme-toggle, .theme-toggle i, #share-menu, #theme-menu, .search-toggle, .search-toggle i, #search-input, #search-results .mini-post, .nav-toggle, .nav-toggle i, #site-nav") === false) {
       $(".menu").removeClass("active");
       $("#wrapper").removeClass('overlay');
     }
   });
 
-  // Check to see if the window is top if not then display button
-  $(window).scroll(function() {
-    if ($(this).scrollTop()) {
-      $('#back-to-top').fadeIn();
-    } else {
-      $('#back-to-top').fadeOut();
-    }
-  });
+  const btpage = document.querySelector('bt-body')?.shadowRoot
 
-  // Click event to scroll to top
-  $('#back-to-top').click(function() {
-    $('html, body').animate({scrollTop: 0}, 1000);
-    return false;
-  });
-
+  if (btpage) {
+    // Upon page load if somehow not at the top, show scroll up button
+    if (document.documentElement.scrollTop || document.body.scrollTop)
+      btpage.querySelector('#back-to-top').style.opacity = 1
+    // For any scroll event, check if window isnt top, then display button
+    $(window).scroll(function() {
+      btpage.querySelector('#back-to-top').style.opacity =
+        $(this).scrollTop() ? 1 : 0
+    })
+  }
 
   // Get dom objects for the elements we'll be interacting with
-  $searchResults = document.getElementById('search-results');
-  $searchInput   = document.getElementById('search-input');
+  $searchResults = btpage?.querySelector('#search-results');
+  $searchInput   = btpage?.querySelector('#search-input');
 
   // Build the index so Lunr can search it.  The `ref` field will hold the URL
   // to the page/post.  title, excerpt, and body will be fields searched.

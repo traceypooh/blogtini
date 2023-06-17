@@ -292,6 +292,13 @@ async function fetcher(url)  {
   return null
 }
 
+
+function bt_page(main_section = '') {
+  document.querySelector('body').innerHTML =
+    `<bt-body>${main_section}</bt-body>`
+}
+
+
 async function main() {
   let tmp
 
@@ -362,7 +369,6 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   storage_loop()
 
   if (!filter_post) {
-    // eslint-disable-next-line no-use-before-define
     bt_page(`
   ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
 
@@ -628,7 +634,6 @@ function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
-      // eslint-disable-next-line no-use-before-define
       bt_page(`<bt-post-full url="${urlify(post.url)}"></bt-post-full>`)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
@@ -660,76 +665,6 @@ function storage_add(post) { // xxx use snippet
   const ymd = date2ymd(new Date(post.date))
   if (!STORAGE.newest || ymd > STORAGE.newest)
     STORAGE.newest = ymd
-}
-
-
-function SOC(str, svc) {
-  const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
-    `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="noopener"></a></li>`)
-}
-function SOCME(str, svc) {
-  // like `SOC()` but with `rel="me"`
-  const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
-    `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="me"></a></li>`)
-}
-function SOC2(str, arg, svc) {
-  const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
-    `<li><a ${str[0]}${arg}${str[1]}${val}${str[2]} target="_blank" rel="noopener"></a></li>`)
-}
-
-function socnet_icon() {
-  // TODO: WeChat and QQ Check
-
-  return `
-${SOC`href="https://github.com/${'github'}" title="GitHub" class="fab fa-github"`}
-${SOC`href="https://gitlab.com/${'gitlab'}" title="GitLab" class="fab fa-gitlab"`}
-${SOC`href="https://stackoverflow.com/users/${'stackoverflow'}" title="Stack Overflow" class="fab fa-stack-overflow"`}
-${SOC`href="https://bitbucket.com/${'bitbucket'}" title="Bitbucket" class="fab fa-bitbucket"`}
-${SOC`href="https://jsfiddle.com/${'jsfiddle'}" title="JSFiddle" class="fab fa-jsfiddle"`}
-${SOC`href="https://codepen.io/${'codepen'}" title="CodePen" class="fab fa-codepen"`}
-${SOC`href="https://${'deviantart'}.deviantart.com/" title="DeviantArt" class="fab fa-deviantart"`}
-${SOC`href="https://flickr.com/photos/${'flickr'}" title="Flickr" class="fab fa-flickr"`}
-${SOC`href="https://behance.net/${'behance'}" title="Behance" class="fab fa-behance"`}
-${SOC`href="https://dribbble.com/${'dribbble'}" title="Dribbble" class="fab fa-dribbble"`}
-${SOC`href="https://${'wordpress'}.wordpress.com" title="WordPress" class="fab fa-wordpress"`}
-${SOC`href="https://medium.com/@${'medium'}" title="Medium" class="fab fa-medium"`}
-${SOC`href="https://www.linkedin.com/in/${'linkedin'}" title="LinkedIn" class="fab fa-linkedin"`}
-${SOC`href="https://linkedin.com/company/${'linkedin_company'}" title="LinkedIn Company" class="fab fa-linkedin"`}
-${SOC`href="https://foursquare.com/${'foursquare'}" title="Foursquare" class="fab fa-foursquare"`}
-${SOC`href="https://xing.com/profile/${'xing'}" title="Xing" class="fab fa-xing"`}
-${SOC`href="https://slideshare.com/${'slideshare'}" title="SlideShare" class="fab fa-slideshare"`}
-${SOC`href="https://facebook.com/${'facebook'}" title="Facebook" class="fab fa-facebook"`}
-${SOC`href="https://reddit.com/user/${'reddit'}" title="Reddit" class="fab fa-reddit"`}
-${SOC`href="https://quora.com/profile/${'quora'}" title="Quora" class="fab fa-quora"`}
-${SOC`href="https://youtube.com/${'youtube'}" title="YouTube" class="fab fa-youtube"`}
-${SOC`href="https://vimeo.com/${'vimeo'}" title="Vimeo" class="fab fa-vimeo"`}
-${SOC`href="https://api.whatsapp.com/send?phone=${'whatsapp'}" title="WhatsApp" class="fab fa-whatsapp"`}
-${SOC`href="weixin://contacts/profile/${'wechat'}" title="WeChat" class="fab fa-weixin"`}
-${SOC`href="https://wpa.qq.com/msgrd?v=3&amp;uin=${'qq'}&amp;site=qq&amp;menu=yes" title="QQ" class="fab fa-qq"`}
-${SOC`href="https://instagram.com/${'instagram'}" title="Instagram" class="fab fa-instagram"`}
-${SOC`href="https://${'tumblr'}.tumblr.com" title="Tumblr" class="fab fa-tumblr"`}
-${SOC`href="https://twitter.com/${'twitter'}" title="Twitter" class="fab fa-twitter"`}
-${SOC`href="https://strava.com/athletes/${'strava'}" title="Strava" class="fab fa-strava"`}
-${SOC`href="skype:${'skype'}?userinfo" title="Skype" class="fab fa-skype"`}
-${SOC`href="https://snapchat.com/add/${'snapchat'}" title="snapchat" class="fab fa-snapchat"`}
-${SOC`href="https://www.pinterest.com/${'pinterest'}" title="Pinterest" class="fab fa-pinterest-p"`}
-${SOC`href="https://telegram.me/${'telegram'}" title="telegram" class="fab fa-telegram"`}
-${SOC`href="https://vine.co/${'vine'}" title="Vine" class="fab fa-vine"`}
-${SOC`href="https://keybase.io/${'keybase'}" title="keybase" class="fab fa-keybase"`}
-${SOCME`href="https://${'mastodon'}" title="mastodon" class="fab fa-mastodon"`}
-${SOC`href="mailto:${'email'}" target="_blank" title="Email" class="far fa-envelope"`}
-
-${SOC`href="https://scholar.google.com/citations?user=${'googlescholar'}" title="Google Scholar"`}
-${SOC`href="https://orcid.org/${'orcid'}" title="ORCID"`}
-${SOC`href="https://researchgate.net/profile/${'researchgate'}" title="Research Gate"`}
-`
-}
-
-function rss_icon() {
-  return SOC2`href="${state.top_dir}${'rss'}" type="application/rss+xml" title="RSS" class="fas fa-rss"`
 }
 
 
@@ -870,102 +805,6 @@ function share_buttons(post) {
 }
 
 
-function bt_page(main_section = '') {
-  document.querySelector('body').innerHTML = `
-
-<header id="site-header">
-  <nav id="site-nav">
-    <h1 class="nav-title">
-      <a href="${state.top_page}" class="nav">
-        <!-- {{ if or .IsHome (not .Site.Params.header.dynamicTitles) }}
-          {{ .Site.Params.header.navbarTitle  | safeHTML }}
-        {{ else }} -->
-          ${cfg.title}
-      </a>
-    </h1>
-    <menu id="site-nav-menu" class="flyout-menu menu">
-      ${cfg.menu.main.map((e) => `<a href="${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}" class="nav link">${e.pre} ${e.name}</a>`).join('')}
-
-      ${cfg.header.share ? '<a href="#share-menu" class="nav link share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>' : ''}
-
-      ${cfg.header.theme ? '<a href="#theme-menu" class="nav link theme-toggle"><i class="fas fa-palette">&nbsp;</i>Theme</a>' : ''}
-
-      ${cfg.header.search ? '<a href="#search-input" class="nav link search-toggle"><i class="fas fa-search">&nbsp;</i>Search</a>' : ''}
-
-    </menu>
-    ${cfg.header.search ? '<a href="#search-input" class="nav search-toggle"><i class="fas fa-search fa-2x">&nbsp;</i></a>' : ''}
-    ${cfg.header.theme ? '<a href="#theme-menu" class="nav theme-toggle"><i class="fas fa-palette fa-2x">&nbsp;</i></a>' : ''}
-    ${cfg.header.share ? '<a href="#share-menu" class="nav share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>' : ''}
-    ${cfg.header.language ? `<a href="#lang-menu" class="nav lang-toggle" lang="${cfg.language.lang}">${cfg.language.lang}</a>` : ''}
-    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
-  </nav>
-  ${cfg.header.search ? '<menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>' : ''}
-  <!-- {{ if .Site.Params.header.languageMenu }}{{ partial "language-menu" . }}{{ end }} -->
-  ${cfg.header.share ? `
-    <menu id="share-menu" class="flyout-menu menu">
-      <h1>Share Post</h1>
-      ${share_buttons()}
-    </menu>` : ''}
-  ${cfg.header.theme ? `
-    <menu id="theme-menu" class="flyout-menu menu">
-      <h1>Choose a theme</h1>
-      <a href="#"><p>  future imperfect    </a>
-      <a href="#"><p>  grid                </a>
-    </menu>` : ''}
-</header>
-
-<div id="wrapper">
-  <!-- xxx <section id="site-intro" {{ if (and (.Site.Params.intro.hideWhenSingleColumn) (not (and .Page.IsHome .Site.Params.intro.alwaysOnHomepage))) }}class="hidden-single-column"{{ end }}>
-    {{ with .Site.Params.intro.pic }}<a href="{{ "/" | relLangURL}}"><img src="{{ .src | relURL }}"{{ with .shape}} class="{{ . }}"{{ end }} width="{{ .width | default "100" }}" alt="{{ .alt }}" /></a>{{ end }}
-    <header>
-      {{ with .Site.Params.intro.header }}<h1>{{ . | safeHTML }}</h1>{{ end }}
-    </header> -->
-
-  <section id="site-intro">
-    <header>
-      <img id="blogtini" src="${cfg.site_header}">
-      <h1>
-        <a href="${state.top_page}">
-          ${cfg.img_site ? `<img src="${state.top_dir}${cfg.img_site}">` : ''}<br>
-          ${cfg.title}
-        </a>
-      </h1>
-    </header>
-
-    ${PR`<main><p>${cfg.intro?.paragraph}</p></main>`}
-
-    ${cfg.intro?.rss || cfg.intro?.social ? `
-      <footer>
-        <ul class="socnet-icons">
-          ${cfg.intro?.rss ? rss_icon() : ''}
-          ${cfg.intro?.social ? socnet_icon() : ''}
-        </ul>` : ''}
-    </footer>
-  </section>
-  <main id="site-main">
-
-    ${main_section}
-
-  </main>
-  <bt-sidebar></bt-sidebar>
-
-  <footer id="site-footer">
-    ${cfg.footer?.rss || cfg.footer?.social ? `
-      <ul class="socnet-icons">
-        ${cfg.footer?.rss ? rss_icon() : ''}
-        ${cfg.footer?.social ? socnet_icon() : ''}
-      </ul>` : ''}
-    <p class="copyright">
-      ${cfg.copyright ?? `\u00A9 ${STORAGE.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
-      <br>
-      ${cfg.attribution ?? ''}
-    </p>
-  </footer>
-</div><!--//#wrapper-->
-
-<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x" style="display:inline"></a>`
-}
-
 
 // deno-lint-ignore no-unused-vars
 function slugify(str) {
@@ -1005,40 +844,19 @@ function dark_mode() {
 }
 
 function finish() {
-  if (cfg.sidebar.post_amount) {
-    document.querySelector('bt-sidebar').setAttribute(
-      'recent_posts',
-      JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url)),
-    )
+  const btpage = document.querySelector('bt-body')?.shadowRoot
+  if (!btpage) {
+    setTimeout(finish, 250) // xxxxxxxxxxxxxxxxxxxx
+    return
   }
 
-  if (cfg.sidebar.categories) {
-    const histogram = {}
-    for (const cat of Object.keys(state.cats).sort())
-      histogram[cat] = state.cats[cat].length
+  // eslint-disable-next-line no-use-before-define
+  update_sidebar(btpage)
 
-    document.querySelector('bt-sidebar').setAttribute(
-      'categories',
-      JSON.stringify(histogram),
-    )
-  }
-
-  {
-    const histogram = {}
-    for (const tag of Object.keys(state.tags).sort())
-      histogram[tag] = state.tags[tag].length
-
-    document.querySelector('bt-sidebar').setAttribute(
-      'tags',
-      JSON.stringify(histogram),
-    )
-  }
-
-
-  document.querySelectorAll('pre code').forEach(hljs.highlightBlock)
+  document.querySelectorAll('pre code').forEach(hljs.highlightBlock) // xxxxxxxxx
 
   state.theme_change_number = 0
-  document.querySelectorAll('#theme-menu a').forEach((e) => {
+  btpage.querySelectorAll('#theme-menu a').forEach((e) => {
     e.addEventListener('click', async (evt) => {
       const theme = evt.target.innerText.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
       evt.preventDefault()
@@ -1060,6 +878,40 @@ function finish() {
   import('./staticman.js')
 
   search_setup(STORAGE.docs, cfg)
+}
+
+
+function update_sidebar(btpage) {
+  const sidebar = btpage.querySelector('bt-sidebar')
+
+  if (cfg.sidebar.post_amount) {
+    sidebar.setAttribute(
+      'recent_posts',
+      JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url)),
+    )
+  }
+
+  if (cfg.sidebar.categories) {
+    const histogram = {}
+    for (const cat of Object.keys(state.cats).sort())
+      histogram[cat] = state.cats[cat].length
+
+    sidebar.setAttribute(
+      'categories',
+      JSON.stringify(histogram),
+    )
+  }
+
+  {
+    const histogram = {}
+    for (const tag of Object.keys(state.tags).sort())
+      histogram[tag] = state.tags[tag].length
+
+    sidebar.setAttribute(
+      'tags',
+      JSON.stringify(histogram),
+    )
+  }
 }
 
 
