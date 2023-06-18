@@ -383,6 +383,9 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   storage_loop()
 
   // eslint-disable-next-line no-use-before-define
+  rewrite_body()
+
+  // eslint-disable-next-line no-use-before-define
   finish()
 
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
@@ -647,17 +650,6 @@ function storage_loop() {
     if (!filter_post)
       state.urls_filtered.push(post.url)
   }
-
-
-  if (!filter_post) {
-    bt_body(`
-      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
-
-      <bt-posts>
-        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-      </bt-posts>
-    `)
-  }
 }
 
 
@@ -677,6 +669,19 @@ function storage_add(post) { // xxx use snippet
   const ymd = date2ymd(new Date(post.date))
   if (!STORAGE.newest || ymd > STORAGE.newest)
     STORAGE.newest = ymd
+}
+
+
+function rewrite_body() {
+  if (!filter_post) {
+    bt_body(`
+      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+
+      <bt-posts>
+        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      </bt-posts>
+    `)
+  }
 }
 
 
@@ -877,8 +882,10 @@ function finish() {
       state.theme_change_number += 1
       await import(`../theme/${theme}/index.js?${state.theme_change_number}`)
 
+
+      rewrite_body()
       // eslint-disable-next-line no-use-before-define
-      storage_loop()
+      setTimeout(() => update_sidebar(document.querySelector('bt-body')?.shadowRoot), 250) // xxxxx
 
       return false
     })
