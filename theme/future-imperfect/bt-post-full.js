@@ -21,7 +21,6 @@ customElements.define('bt-post-full', class extends LitElement {
 
   render() {
     const post = url2post(this.url)
-    const body = markdown_to_html(post.body_raw)
 
     const key = new URL(post.url).pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
     // console.error({key})
@@ -59,9 +58,9 @@ customElements.define('bt-post-full', class extends LitElement {
           </div>
           <featured-image url=${this.url} single=true></featured-image>`}
 
-        <div>
-          ${unsafeHTML(body)}
-        </div>
+        <bt-un-markup>
+          ${unsafeHTML(post.body_raw)}
+        </bt-un-markup>
 
         ${post.type === 'post' ? html`
         <footer>
