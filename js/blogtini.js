@@ -166,7 +166,10 @@ import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 // eslint-disable-next-line import/no-named-as-default
 import search_setup from './future-imperfect.js'
 import { markdown_to_html, summarize_markdown } from './text.js'
+import init from './init.js'
 
+
+export { init }
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
@@ -700,7 +703,9 @@ async function comments_markup(path) {
         <h3 class="comment-author">${e.name}</h3>
         <a class="comment-date" href="#${refId}" title="Permalink to this comment">
           ${'' /* eslint-disable-next-line no-use-before-define */}
-          <time datetime="${e.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(e.date)}</time>
+          <bt-time
+            datetime="${e.date /* xxx 2022-01-23T04:44:06.937Z */}"
+          ></bt-time>
         </a>
       </div>
       <a class="comment-reply-btn" href="#say-something">Reply</a>
