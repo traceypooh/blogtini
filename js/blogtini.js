@@ -384,13 +384,12 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   if (!filter_post) {
     bt_body(`
-  <bt-posts>
-    <slot>
       ${show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
 
-      ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-    </slot>
-  </bt-posts>`)
+      <bt-posts>
+        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      </bt-posts>
+    `)
   }
 
   // eslint-disable-next-line no-use-before-define
