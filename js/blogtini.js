@@ -159,7 +159,6 @@ jekyll (GitHub Pages) plugins:
 import yml from 'https://esm.archive.org/js-yaml'
 import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
-import hljs from 'https://esm.archive.org/highlightjs'
 
 import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
@@ -293,7 +292,7 @@ async function fetcher(url)  {
 }
 
 
-function bt_page(main_section = '') {
+function bt_body(main_section = '') {
   document.querySelector('body').innerHTML =
     `<bt-body>${main_section}</bt-body>`
 }
@@ -353,6 +352,21 @@ async function main() {
   add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
 
   const show_top_content = state.is_homepage && body_contents && !location.search
+  if (show_top_content) {
+    // NOTE: the front matter below wont get used -- but we need a title & date
+    // eslint-disable-next-line no-use-before-define
+    const date = date2ymd(new Date())
+    // eslint-disable-next-line no-use-before-define
+    state.homepage_post = markdown_to_post(`
+---
+title:
+date: ${date}
+type: homepage
+---
+
+${body_contents}
+`.trimStart(), location.href)
+  }
 
 
 /*
@@ -369,14 +383,12 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   storage_loop()
 
   if (!filter_post) {
-    bt_page(`
-  ${show_top_content ? `${markdown_to_html(body_contents)} <hr>` : ''}
-
+    bt_body(`
   <bt-posts>
     <slot>
-      <div id="posts">
+      ${show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+
       ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-      </div>
     </slot>
   </bt-posts>`)
   }
@@ -579,7 +591,7 @@ function markdown_to_post(markdown, url = location.pathname) {
   for (const key of Object.keys(post))
     if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
 
-  if (json.type === 'page') post.type = 'page'
+  if ('type' in json && json.type !== 'post') post.type = json.type
 
   return post
 }
@@ -634,7 +646,7 @@ function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
-      bt_page(`<bt-post-full url="${urlify(post.url)}"></bt-post-full>`)
+      bt_body(`<bt-post-full url="${urlify(post.url)}"></bt-post-full>`)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
@@ -749,7 +761,7 @@ function create_comment_form(entryId, comments) {
   </div>`
 }
 
-function share_buttons(post) {
+function share_buttons(post) { // xxxxx
   if (!post) {
     // if no post, parse url for ?tags etc and fake
     // post = markdown_to_post(document.querySelector('body').innerHTML, 'xxx')
@@ -805,7 +817,6 @@ function share_buttons(post) {
 }
 
 
-
 // deno-lint-ignore no-unused-vars
 function slugify(str) {
   return str.toLowerCase()
@@ -852,8 +863,6 @@ function finish() {
 
   // eslint-disable-next-line no-use-before-define
   update_sidebar(btpage)
-
-  document.querySelectorAll('pre code').forEach(hljs.highlightBlock) // xxxxxxxxx
 
   state.theme_change_number = 0
   btpage.querySelectorAll('#theme-menu a').forEach((e) => {
@@ -969,6 +978,9 @@ function head_insert_specifics() {
 
 const url2post_map = {}
 function url2post(url = '') {
+  if (url === 'homepage/')
+    return state.homepage_post
+
   if (!Object.keys(url2post_map).length) {
     for (const [idx, post] of Object.entries(STORAGE.docs)) {
       // in localdev/filedev mode, make so we can find post with "short" urls

@@ -3,11 +3,6 @@
 @import 'academicons.css';
 @import 'fontawesome.css';
 
-/* https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/github.min.css */
-@import 'github.min.css';
-
-@import 'atom-one-dark.css';
-
 
 html {
   color: #3b3a3a;

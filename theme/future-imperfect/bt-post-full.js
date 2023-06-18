@@ -1,12 +1,14 @@
 import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import { LitElement, html } from 'https://esm.archive.org/lit'
+
 import {
   url2post, urlify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_headers, css_buttons,
+  css_post, css_dark, css_footer, css_title, css_hljs,
+  css_headers, css_buttons,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -46,13 +48,16 @@ customElements.define('bt-post-full', class extends LitElement {
     return html`
 <link href="${urlify('theme/future-imperfect/css.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
+<link href="${urlify('css/fontawesome.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
+
     <article>
       <div class="post single">
-        <bt-post-header .post=${post}></bt-post-header>
-        <div id="socnet-share">
-          ${unsafeHTML(socnet_share)}
-        </div>
-        <featured-image url=${this.url} single=true></featured-image>
+        ${post.type === 'homepage' ? '' : html`
+          <bt-post-header .post=${post}></bt-post-header>
+          <div id="socnet-share">
+            ${unsafeHTML(socnet_share)}
+          </div>
+          <featured-image url=${this.url} single=true></featured-image>`}
 
         <div>
           ${unsafeHTML(body)}
@@ -73,6 +78,18 @@ customElements.define('bt-post-full', class extends LitElement {
   `
   }
 
+
+  updated() {
+    // add code highlighting
+    const codes = this.shadowRoot.querySelectorAll('pre code')
+    if (codes.length) {
+      import('https://esm.archive.org/highlightjs').then(
+        (esm) => codes.forEach(esm.default.highlightBlock),
+      )
+    }
+  }
+
+
   static get styles() {
     return [
       css_post(),
@@ -81,6 +98,7 @@ customElements.define('bt-post-full', class extends LitElement {
       css_footer(),
       css_dark(),
       css_buttons(),
+      css_hljs(),
     ]
   }
 })
