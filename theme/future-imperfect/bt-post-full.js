@@ -23,7 +23,8 @@ customElements.define('bt-post-full', class extends LitElement {
     const post = url2post(this.url)
     const body = markdown_to_html(post.body_raw)
 
-    const key = new URL(post.url).pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
+    // use a default base in case url is relative (pathname) only
+    const key = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
     // console.error({key})
 
     if (post.type === 'post') {
