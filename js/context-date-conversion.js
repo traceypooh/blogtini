@@ -4,20 +4,24 @@
  */
 export const ContextRequest_DateConversion = 'date-conversion'
 
+
 const KEYS_DateConversion = ['date', 'dateIsoString', 'dateUnix', 'dateHuman']
+
 
 export const isContextRequest_DateConveresion = (event) =>
   event.context === ContextRequest_DateConversion
 
-export const assertContextRequest_DateConveresion = (event) => {
+
+export const assertContextRequest_DateConversion = (event) => {
   if (!isContextRequest_DateConveresion(event)) {
     const message = `Unexpected error, we expected a "ContextRequest_DateConversion" context event`
     throw new Error(message)
   }
 }
 
+
 export const getFromContext_DateConversion = (event) => {
-  assertContextRequest_DateConveresion(event)
+  assertContextRequest_DateConversion(event)
   const maybeDate = event.originalTarget.getAttribute('datetime')
   const dateHumanFormat = event.originalTarget.dataset.dateHumanFormat ?? 'MMM D, YYYY' /* data-date-human-format */
   const date = maybeDate ?? null
@@ -26,6 +30,7 @@ export const getFromContext_DateConversion = (event) => {
     dateHumanFormat,
   })
 }
+
 
 export const isValidContextResponse_DateConversion = (payload) => {
   const _keys = Object.keys(payload)
