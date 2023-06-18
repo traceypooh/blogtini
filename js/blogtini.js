@@ -351,8 +351,8 @@ async function main() {
   // eslint-disable-next-line no-use-before-define
   add_css(`${prefix}css/blogtini.css`) // xxxx theme.css
 
-  const show_top_content = state.is_homepage && body_contents && !location.search
-  if (show_top_content) {
+  state.show_top_content = state.is_homepage && body_contents && !location.search
+  if (state.show_top_content) {
     // NOTE: the front matter below wont get used -- but we need a title & date
     // eslint-disable-next-line no-use-before-define
     const date = date2ymd(new Date())
@@ -381,16 +381,6 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   // eslint-disable-next-line no-use-before-define
   storage_loop()
-
-  if (!filter_post) {
-    bt_body(`
-      ${show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
-
-      <bt-posts>
-        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-      </bt-posts>
-    `)
-  }
 
   // eslint-disable-next-line no-use-before-define
   finish()
@@ -656,6 +646,17 @@ function storage_loop() {
 
     if (!filter_post)
       state.urls_filtered.push(post.url)
+  }
+
+
+  if (!filter_post) {
+    bt_body(`
+      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+
+      <bt-posts>
+        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      </bt-posts>
+    `)
   }
 }
 

@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { LitElement, html, css } from 'https://esm.archive.org/lit'
 import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
+import { css_links } from '../future-imperfect/index.js'
 import {
   state, summarize_markdown, url2post, cfg,
 } from '../../js/blogtini.js'
@@ -41,14 +42,16 @@ customElements.define('bt-post', class extends LitElement {
 
     return html`
 ${post.featured ? html`<img src="${imgurl}"/>` : ''}
-<div class="date">${post.date}</div>
+<div class="date">${post.date.slice(0, 10)}</div>
 <h1>${post.title}</h1>
 ${unsafeHTML(summary)}
 `
   }
 
   static get styles() {
-    return css`
+    return [
+      css_links(),
+      css`
 :host {
   border: 1px solid gray;
   border-radius: 5px;
@@ -63,6 +66,7 @@ img {
   margin-left: -10px;
   margin-top: -10px;
 }
-`
+`,
+    ]
   }
 })
