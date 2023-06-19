@@ -91,9 +91,11 @@ function renderSearchResults(results) {
           <a href="${result.ref}">
             <header>
               <h2>${resultDetails[result.ref].title}</h2>
-              <time class="published" datetime="">
-                ${dayjs(resultDetails[result.ref].date).format('MMM D, YYYY')}
-              </time>
+              <bt-time
+                class="published"
+                datetime="${resultDetails[result.ref].date}"
+                data-date-human-format="MMM D, YYYY"
+              ></bt-time>
             </header>
             <main>
               <p>

@@ -2,13 +2,20 @@ import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.j
 import { LitElement, html } from 'https://esm.archive.org/lit'
 
 import {
-  url2post, urlify,
-  markdown_to_html, comments_markup, create_comment_form,
+  comments_markup,
+  create_comment_form,
   share_buttons,
+  url2post,
+  urlify,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_hljs,
-  css_headers, css_buttons,
+  css_buttons,
+  css_dark,
+  css_footer,
+  css_headers,
+  css_hljs,
+  css_post,
+  css_title,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -21,7 +28,6 @@ customElements.define('bt-post-full', class extends LitElement {
 
   render() {
     const post = url2post(this.url)
-    const body = markdown_to_html(post.body_raw)
 
     // use a default base in case url is relative (pathname) only
     const key = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
@@ -60,9 +66,9 @@ customElements.define('bt-post-full', class extends LitElement {
           </div>
           <featured-image url=${this.url} single=true></featured-image>`}
 
-        <div>
-          ${unsafeHTML(body)}
-        </div>
+        <bt-un-markup>
+          ${unsafeHTML(post.body_raw)}
+        </bt-un-markup>
 
         ${post.type === 'post' ? html`
         <footer>
