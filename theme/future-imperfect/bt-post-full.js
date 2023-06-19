@@ -2,13 +2,20 @@ import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.j
 import { LitElement, html } from 'https://esm.archive.org/lit'
 
 import {
-  url2post, urlify,
-  markdown_to_html, comments_markup, create_comment_form,
+  comments_markup,
+  create_comment_form,
   share_buttons,
+  url2post,
+  urlify,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_hljs,
-  css_headers, css_buttons,
+  css_buttons,
+  css_dark,
+  css_footer,
+  css_headers,
+  css_hljs,
+  css_post,
+  css_title,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
