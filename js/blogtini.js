@@ -1,4 +1,4 @@
-/
+
 /* eslint-disable no-continue */
 import yml from 'https://esm.archive.org/js-yaml'
 import dayjs from 'https://esm.archive.org/dayjs'
