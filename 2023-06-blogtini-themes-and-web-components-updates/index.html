@@ -1,0 +1,57 @@
+---
+title: Blogtini Themes and Web Components - Update
+date: 2023-06-15
+categories:
+  - website
+tags:
+  - markdown
+  - javascript
+  - blog
+  - website
+  - blogtini
+
+featured: theme-picker.png
+class: featured-top
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+
+Working with the amazing
+[Renior, another volunteer](https://twitter.com/renoirb) ... We've been splitting up the main (javascript) post "crawling" and processing, from the formatting.
+
+## Themes
+That gives us very easy to create themes!  A theme can reuse formating or "business logic" from other themes -- or come up with any number of new ways to display pages and/or the entire site.
+
+The above image shows the theme picker from the top nav menu.
+
+## Web Components
+We settled on
+[Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components)
+which are browser native (as opposed to `react`).
+
+Tracey likes [lit](https://lit.dev/) since it is a lightweight/minimal setup atop
+native web components.  But a theme can use any style of web components they like.
+
+## Example
+Once the posts are all parsed from your site, they are stored in a browser cache (`localStorage` or `indexedDB`).
+
+When you arrive at a blog post, a page, or a list of posts for a given tag, etc.
+the main javascript can simply rewrite the page `<body>` tag to:
+
+```html
+<bt-body>
+  <bt-posts>
+    <bt-post url="first-post-with-tag/"></bt-post>
+    <bt-post url="second-post-with-tag/"></bt-post>
+    ...
+  </bt-posts>
+</bt-body>
+```
+
+Each web component is its own javacript file that knows how to render the given section.
+
+For example, this is the default theme's
+[bt-post](https://blogtini.com/theme/future-imperfect/bt-post.js)
+file/component.
+
+Here is a [second theme](https://blogtini.com/theme/grid/index.js) and how it sets itself up --
+as overrides to the main theme.
