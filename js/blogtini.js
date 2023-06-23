@@ -399,7 +399,9 @@ function markdown_to_post(markdown, url = location.pathname) {
   const [json, body_raw] = markdown_parse(markdown)
   if (!json) {
     // no front-matter or not parseable -- skip
-    log('not parseable', { url, markdown })
+    // eslint-disable-next-line no-console
+    console.error('not parseable', { url, markdown })
+    return undefined
   }
 
   log({ json })
@@ -410,7 +412,8 @@ function markdown_to_post(markdown, url = location.pathname) {
   const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
 
   if (!date) {
-    log('no date', { url, json })
+    // eslint-disable-next-line no-console
+    console.error('no date', { url, json })
     return undefined
   }
 
