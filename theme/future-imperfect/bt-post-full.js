@@ -2,7 +2,7 @@ import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.j
 import { LitElement, html } from 'https://esm.archive.org/lit'
 
 import {
-  url2post, urlify,
+  url2post, cssify,
   markdown_to_html, comments_markup, create_comment_form,
   share_buttons,
 } from '../../js/blogtini.js'
@@ -47,9 +47,9 @@ customElements.define('bt-post-full', class extends LitElement {
 
 
     return html`
-<link href="${urlify('theme/future-imperfect/css.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${cssify('theme/future-imperfect/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
-<link href="${urlify('css/fontawesome.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
+<link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
 
     <article>
       <div class="post single">

@@ -5,7 +5,7 @@ import {
   css_buttons, css_headers, css_links, css_dark,
 } from './index.js'
 import {
-  cfg, state, PR, share_buttons, urlify,
+  cfg, state, PR, share_buttons, cssify,
 } from '../../js/blogtini.js'
 
 
@@ -13,8 +13,8 @@ customElements.define('bt-body', class extends LitElement {
   // eslint-disable-next-line class-methods-use-this
   render() {
     return html`
-<link href="${urlify('css/future-imperfect.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="${urlify('css/fontawesome.css', true)}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${cssify('css/future-imperfect.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
 <header id="site-header">
   <nav id="site-nav">

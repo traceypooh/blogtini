@@ -116,6 +116,10 @@ function urlify(url, no_trail_slashes = false) {
   return urlize(url).replace(/\/+$/, no_trail_slashes ? '' : '/')
 }
 
+function cssify(url) {
+  return `https://blogtini.js${url}` // return urlize(url) // xxx
+}
+
 
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
@@ -857,6 +861,7 @@ export {
   url2post,
   summarize_markdown,
   urlify,
+  cssify,
   datetime,
   markdown_to_html,
   comments_markup,
