@@ -117,7 +117,7 @@ function urlify(url, no_trail_slashes = false) {
 }
 
 function cssify(url) {
-  return `https://blogtini.js${url}` // return urlize(url) // xxx
+  return `https://blogtini.com/${url}` // return urlize(url) // xxx
 }
 
 
