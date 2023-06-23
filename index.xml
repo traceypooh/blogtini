@@ -4,7 +4,7 @@
       <title>Blogtini</title>
       <link>https://blogtini.com/</link>
       <description>Recent content in Blogtini</description>
-      <lastBuildDate>Thu, 22 Jun 2023 20:31:37 -0700</lastBuildDate>
+      <lastBuildDate>Thu, 22 Jun 2023 21:02:59 -0700</lastBuildDate>
       <atom:link href="https://blogtini.com/index.xml" rel="self" type="application/rss+xml"/>
       <generator>blogtini.com</generator>
 
@@ -23,6 +23,15 @@
           <link>https://blogtini.com/2023-06-blogtini-themes-and-web-components-updates/</link>
           <guid>https://blogtini.com/2023-06-blogtini-themes-and-web-components-updates/</guid>
           <pubDate>Thu, 15 Jun 2023 00:00:00 -0700</pubDate>
+          <description></description>
+        </item>
+
+        <item>
+          <title>Blogtini @ DWebCamp
+</title>
+          <link>https://blogtini.com/2023-06-blogtini-dwebcamp/</link>
+          <guid>https://blogtini.com/2023-06-blogtini-dwebcamp/</guid>
+          <pubDate>Fri, 23 Jun 2023 00:00:00 -0700</pubDate>
           <description></description>
         </item>
 
