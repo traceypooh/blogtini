@@ -1,10 +1,10 @@
 
 /* eslint-disable no-continue */
-import yml from 'https://esm.archive.org/js-yaml'
-import dayjs from 'https://esm.archive.org/dayjs'
-import showdown from 'https://esm.archive.org/showdown'
+import yml from './js-yaml.js'
+import dayjs from './day.js'
+import showdown from './showdown.js'
 
-import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { krsort } from './strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
@@ -47,7 +47,7 @@ let cfg = {
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
   theme: '../theme/future-imperfect/index.js',
-  theme_css: 'https://blogtini.com/css/blogtini.css', // can be relative url
+  theme_css: './css/blogtini.css', // can be relative url
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
@@ -117,7 +117,7 @@ function urlify(url, no_trail_slashes = false) {
 }
 
 function cssify(url) {
-  return `https://blogtini.com/${url}` // return urlize(url) // xxx
+  return url // return `https://blogtini.com/${url}` // return urlize(url) // xxx
 }
 
 
@@ -237,7 +237,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   finish()
 
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
-  await import('https://esm.archive.org/redefine-custom-elements')
+  await import('./redefine.js')
 
   import(cfg.theme)
 }

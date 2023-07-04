@@ -1,7 +1,7 @@
-import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
+import { unsafeHTML } from '../../js/unsafe-html.js'
 import {
   LitElement, html, css, unsafeCSS,
-} from 'https://esm.archive.org/lit'
+} from '../../js/lit.js'
 import {
   url2post, cfg, state, urlify, PR, dark_mode,
 } from '../../js/blogtini.js'

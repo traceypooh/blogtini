@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { LitElement, html, css } from '../../js/lit.js'
 import {
   cfg, urlify, datetime, PR,
 } from '../../js/blogtini.js'

@@ -1,5 +1,5 @@
-import showdown from 'https://esm.archive.org/showdown'
-import { friendly_truncate } from 'https://av.prod.archive.org/js/util/strings.js'
+import showdown from './showdown.js'
+import { friendly_truncate } from './strings.js'
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
 
