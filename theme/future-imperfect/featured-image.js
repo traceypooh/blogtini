@@ -56,7 +56,7 @@ customElements.define('featured-image', class extends LitElement {
 
     return html`
     <a href="${urlify(post.url)}"
-      class="image featured ${this.mini ? 'mini' : ''} ${this.single ? 'single' : ''} ${post.class ?? '' /* xxx traceyism */}"
+      class="image ${this.mini ? 'mini' : ''} ${this.single ? 'single' : ''}"
       ${blur ? '' : `style="--bg-image: url('${src}')"`}>
       <img src="${src}" alt="${alt}" ${cls}>
     </a>
@@ -83,18 +83,18 @@ ${unsafeCSS(xxx)}
 .image.mini {
   margin: 0;
 }
-.image img {
+img {
   position: absolute;
   max-height: 100%;
   transition: transform 0.35s ease-in-out;
 }
-.image img.stretchV {
+img.stretchV {
   height: 100%;
 }
-.image img.stretchH {
+img.stretchH {
   width: 100%;
 }
-.image img.cover {
+img.cover {
   object-fit: cover;
   width: 100%;
 }
@@ -120,18 +120,18 @@ ${unsafeCSS(xxx)}
 /* OVERRIDES TO FUTURE IMPERFECT ORIGINAL THEME */
 
 /* https://codepen.io/burtclan/pen/mLqxC */
-.image.featured {
+.image {
   box-shadow: inset 0 0 10px 5px;
   position: relative;
   color: #666; /*xxx*/
   padding-bottom: 0; /* override 33% from future imperfect 2022 update */
 }
-.image.featured:before {
+.image:before {
   content: "";
   display: block;
   padding-bottom: calc(100% / 2.35); /* enforce a styley 2.35:1 cinematic aspect ratio */
 }
-.image.featured:after {
+.image:after {
   /* gray blur on edges */
   box-shadow: inset 0 0 10px 5px;
   content: "";
@@ -144,7 +144,7 @@ ${unsafeCSS(xxx)}
   height: 100%;
   border-collapse: separate;
 }
-.image.featured img {
+img {
   height: auto;
   width: 100%;
   object-fit: cover;
@@ -154,25 +154,27 @@ ${unsafeCSS(xxx)}
   left: 0;
   height: 100%;
 }
-.image.featured.featured-top img {
-  object-position: top;
-}
-.image.featured.featured-bottom img {
+
+img[src*="#bottom"] {
   object-position: bottom;
+}
+
+img[src*="#top"] {
+  object-position: top;
 }
 
 
 /* OK now when we're showing a full single post, let the image height be fully natural */
 /* ie: reverse our customizations above.  Also don't do the edge blurring. */
-.image.featured.single {
+.image.single {
   box-shadow: none;
   height: auto;
 }
-.image.featured.single img {
+.image.single img {
   position: relative;
 }
-.image.featured.single:after,
-.image.featured.single:before {
+.image.single:after,
+.image.single:before {
   display: none;
 }
 `
