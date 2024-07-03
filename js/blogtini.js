@@ -26,7 +26,7 @@ const state = {
   filedev: location.protocol === 'file:',
   localdev: location.hostname === 'localhost',
   pathrel: '',
-  is_homepage: document.querySelector('body').classList.contains('homepage'),
+  is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
@@ -148,6 +148,22 @@ function bt_body(main_section = '') {
 
 
 async function main() {
+  if (globalThis.Deno) {
+    /**
+  eg:
+
+  clear -x; deno run -A --location https://blogtini.com/2023-06-blogtini-dwebcamp/ js/blogtini.js
+
+    */
+
+    const ret = await import('./ssr.js')
+    globalThis.render = ret.render
+    globalThis.html = ret.html
+    globalThis.unsafeHTML = ret.unsafeHTML
+    globalThis.collectResultSync = ret.collectResultSync
+  }
+
+
   let tmp
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
@@ -235,11 +251,31 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   // eslint-disable-next-line no-use-before-define
   finish()
-
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
-  await import('https://esm.archive.org/redefine-custom-elements')
+  if (!globalThis.Deno)
+    await import('https://esm.archive.org/redefine-custom-elements')
 
   import(cfg.theme)
+
+
+  if (globalThis.Deno) {
+    const bod = document.querySelector('body').innerHTML /// xxxcc add og:image
+    const htm = `
+<!DOCTYPE html>
+<html>
+  <head>
+    ${document.head.innerHTML.replace(/</g, '\n    <').trim()}
+  </head>
+  <body>
+    ${bod}
+  </body>
+</html>
+  `
+    const ssr = globalThis.collectResultSync(globalThis.render(globalThis.html`${globalThis.unsafeHTML(htm)}`))
+    Deno.writeTextFileSync('ssr.htm', ssr)
+    if (globalThis.Deno)
+      Deno.exit(0)
+  }
 }
 
 
@@ -574,7 +610,7 @@ function create_comment_form(entryId, comments) {
   if (!cfg.staticman?.enabled)
     return ''
 
-  window.cfg = cfg // xxx
+  globalThis.cfg = cfg // xxx
 
   const xxx = '' // reply stuff
   return `
@@ -704,7 +740,7 @@ function datetime(date) {
  */
 function dark_mode() {
   const hour = new Date().getHours()
-  const dark = (hour < 7 || hour > 17) && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  const dark = (hour < 7 || hour > 17) && globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches
   if (dark)
     document.querySelector('body').classList.add('dark')
   return dark
@@ -851,8 +887,8 @@ function url2post(url = '') {
 }
 
 
-if (!window.blogtini_imported) {
-  window.blogtini_imported = true // avoid any inadvertent double import
+if (!globalThis.blogtini_imported) {
+  globalThis.blogtini_imported = true // avoid any inadvertent double import
   // eslint-disable-next-line no-void
   void main()
 }
