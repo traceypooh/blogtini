@@ -22,7 +22,11 @@ customElements.define('bt-post-mini', class extends LitElement {
     <featured-image url=${this.url} mini=true></featured-image>
     <header>
       <h2><a href="${urlify(post.url)}">${post.title}</a></h2>
-      <time class="published" datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(post.date)}</time>
+      <bt-time
+        class="published"
+        datetime="${post.date /* xxx 2022-01-23T04:44:06.937Z */}"
+        data-date-human-format="ddd MMM DD, YYYY"
+      ></bt-time>
     </header>
   </article>`
   }
