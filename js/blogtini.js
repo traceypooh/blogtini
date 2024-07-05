@@ -27,6 +27,7 @@ const state = {
   localdev: location.hostname === 'localhost',
   pathrel: '',
   is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
+  filter_post_url: null,
 }
 const SEARCH = decodeURIComponent(location.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
@@ -141,9 +142,32 @@ async function fetcher(url)  {
 }
 
 
-function bt_body(main_section = '') {
+function bt_body() {
+  const main_section = filter_post
+    ? `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
+    : `
+      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+
+      <bt-posts>
+        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      </bt-posts>`
+
+  const categories_histogram = {}
+  if (cfg.sidebar.categories) {
+    for (const cat of Object.keys(state.cats).sort())
+      categories_histogram[cat] = state.cats[cat].length
+  }
+
+  const tags_histogram = {}
+  for (const tag of Object.keys(state.tags).sort())
+    tags_histogram[tag] = state.tags[tag].length
+
   document.querySelector('body').innerHTML =
-    `<bt-body>${main_section}</bt-body>`
+    `<bt-body
+      recent_posts="${JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url))}"
+      tags="${JSON.stringify(tags_histogram)}"
+      categories="${JSON.stringify(categories_histogram)}"
+    >${main_section}</bt-body>`
 }
 
 
@@ -247,7 +271,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   storage_loop()
 
   // eslint-disable-next-line no-use-before-define
-  rewrite_body()
+  bt_body()
 
   // eslint-disable-next-line no-use-before-define
   finish()
@@ -525,7 +549,7 @@ function storage_loop() {
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
-      bt_body(`<bt-post-full url="${urlify(post.url)}"></bt-post-full>`)
+      state.filter_post_url = urlify(post.url)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
@@ -556,19 +580,6 @@ function storage_add(post) { // xxx use snippet
   const ymd = date2ymd(new Date(post.date))
   if (!STORAGE.newest || ymd > STORAGE.newest)
     STORAGE.newest = ymd
-}
-
-
-function rewrite_body() {
-  if (!filter_post) {
-    bt_body(`
-      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
-
-      <bt-posts>
-        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-      </bt-posts>
-    `)
-  }
 }
 
 
@@ -749,12 +760,9 @@ function dark_mode() {
 function finish() {
   const btpage = document.querySelector('bt-body')?.shadowRoot
   if (!btpage) {
-    setTimeout(finish, 250) // xxxxxxxxxxxxxxxxxxxx
+    setTimeout(finish, 250) // xxx this is for CSR (not SSR)
     return
   }
-
-  // eslint-disable-next-line no-use-before-define
-  update_sidebar(btpage)
 
   state.theme_change_number = 0
   btpage.querySelectorAll('#theme-menu a').forEach((e) => {
@@ -769,10 +777,7 @@ function finish() {
       state.theme_change_number += 1
       await import(`../theme/${theme}/index.js?${state.theme_change_number}`)
 
-
-      rewrite_body()
-      // eslint-disable-next-line no-use-before-define
-      setTimeout(() => update_sidebar(document.querySelector('bt-body')?.shadowRoot), 250) // xxxxx
+      bt_body()
 
       return false
     })
@@ -781,40 +786,6 @@ function finish() {
   import('./staticman.js')
 
   search_setup(STORAGE.docs, cfg)
-}
-
-
-function update_sidebar(btpage) {
-  const sidebar = btpage.querySelector('bt-sidebar')
-
-  if (cfg.sidebar.post_amount) {
-    sidebar.setAttribute(
-      'recent_posts',
-      JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url)),
-    )
-  }
-
-  if (cfg.sidebar.categories) {
-    const histogram = {}
-    for (const cat of Object.keys(state.cats).sort())
-      histogram[cat] = state.cats[cat].length
-
-    sidebar.setAttribute(
-      'categories',
-      JSON.stringify(histogram),
-    )
-  }
-
-  {
-    const histogram = {}
-    for (const tag of Object.keys(state.tags).sort())
-      histogram[tag] = state.tags[tag].length
-
-    sidebar.setAttribute(
-      'tags',
-      JSON.stringify(histogram),
-    )
-  }
 }
 
 

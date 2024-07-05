@@ -10,6 +10,15 @@ import {
 
 
 customElements.define('bt-body', class extends LitElement {
+  static get properties() {
+    return {
+      tags: { type: Object },
+      // xxx could support cfg.sidebar.categories_by_count option..
+      categories: { type: Object },
+      recent_posts: { type: Object },
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   render() {
     return html`
@@ -90,7 +99,11 @@ customElements.define('bt-body', class extends LitElement {
     <slot></slot>
 
   </main>
-  <bt-sidebar></bt-sidebar>
+  <bt-sidebar
+    recent_posts="${JSON.stringify(this.recent_posts)}"
+    categories="${JSON.stringify(this.categories)}"
+    tags="${JSON.stringify(this.tags)}"
+  ></bt-sidebar>
 
   <footer id="site-footer">
     ${cfg.footer?.rss || cfg.footer?.social ? html`
