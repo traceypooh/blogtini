@@ -23,23 +23,25 @@ const state = {
   use_github_api_for_files: null,
   try_github_api_tree: false,
   num_posts: 0,
-  filedev: location.protocol === 'file:',
-  localdev: location.hostname === 'localhost',
+  filedev: location?.protocol === 'file:',
+  localdev: location?.hostname === 'localhost',
   pathrel: '',
   is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
   filter_post_url: null,
 }
-const SEARCH = decodeURIComponent(location.search)
+const SEARCH = decodeURIComponent(location?.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const filter_post = (state.is_homepage ? '' :
-  `${location.origin}${location.pathname}`.replace(/\/index\.html$/, '/'))
+  `${location?.origin}${location?.pathname}`.replace(/\/index\.html$/, '/'))
 
 // eslint-disable-next-line no-use-before-define
-const STORAGE_KEY = url_to_base(location.href) ?? 'blogtini'
+const STORAGE_KEY = url_to_base(location?.href ?? '') ?? 'blogtini'
 
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
+
+const HEADLINE = '<!DOCTYPE html><html><head><style>body{display:none}</style>'
 
 // defaults
 // eslint-disable-next-line import/no-mutable-exports
@@ -164,31 +166,38 @@ function bt_body() {
 
   document.querySelector('body').innerHTML =
     `<bt-body
-      recent_posts="${JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url))}"
-      tags="${JSON.stringify(tags_histogram)}"
-      categories="${JSON.stringify(categories_histogram)}"
+      recent_posts='${JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url))}'
+      tags='${JSON.stringify(tags_histogram)}'
+      categories='${JSON.stringify(categories_histogram)}'
     >${main_section}</bt-body>`
 }
 
 
 async function main() {
+  let tmp
+
   if (globalThis.Deno) {
     /**
   eg:
 
-  clear -x; deno run -A --location https://blogtini.com/2023-06-blogtini-dwebcamp/ js/blogtini.js
+  clear -x; deno run -A  js/blogtini.js  index.html
 
     */
+    const fi = Deno.args[0]
+    const body_contents = Deno.readTextFileSync(fi)
+    if (!body_contents.startsWith(HEADLINE)) {
+      // eslint-disable-next-line no-use-before-define
+      const [my_frontmatter] = markdown_parse(body_contents)
 
-    const ret = await import('./ssr.js')
-    globalThis.render = ret.render
-    globalThis.html = ret.html
-    globalThis.unsafeHTML = ret.unsafeHTML
-    globalThis.collectResultSync = ret.collectResultSync
+      await import('./dom.js')
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(my_frontmatter.title)  // xxxcc add og:image
+
+      const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
+      Deno.writeTextFileSync(fi, `${headline}${body_contents}`)
+    }
+    Deno.exit()
   }
-
-
-  let tmp
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
   const body_contents = document.querySelector('body').innerHTML.trim()
@@ -274,32 +283,16 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   bt_body()
 
   // eslint-disable-next-line no-use-before-define
-  finish()
+  add_interactivity()
+
+
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
-  if (!globalThis.Deno)
-    await import('https://esm.archive.org/redefine-custom-elements')
+  await import('https://esm.archive.org/redefine-custom-elements')
 
   import(cfg.theme)
 
 
-  if (globalThis.Deno) {
-    const bod = document.querySelector('body').innerHTML /// xxxcc add og:image
-    const htm = `
-<!DOCTYPE html>
-<html>
-  <head>
-    ${document.head.innerHTML.replace(/</g, '\n    <').trim()}
-  </head>
-  <body>
-    ${bod}
-  </body>
-</html>
-  `
-    const ssr = globalThis.collectResultSync(globalThis.render(globalThis.html`${globalThis.unsafeHTML(htm)}`))
-    Deno.writeTextFileSync('ssr.htm', ssr)
-    if (globalThis.Deno)
-      Deno.exit(0)
-  }
+  document.querySelector('body').style.display = 'block' // for SSR
 }
 
 
@@ -442,6 +435,10 @@ async function find_posts_from_github_api_tree() {
 
 function markdown_parse(markdown) {
   const chunks = markdown.split('\n---')
+
+  // normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
+  if (chunks[0].trim().startsWith(HEADLINE)) chunks.shift()
+
   const front_matter = chunks.shift()
   const body_raw = chunks.join('\n---')
 
@@ -757,10 +754,10 @@ function dark_mode() {
   return dark
 }
 
-function finish() {
+function add_interactivity() {
   const btpage = document.querySelector('bt-body')?.shadowRoot
   if (!btpage) {
-    setTimeout(finish, 250) // xxx this is for CSR (not SSR)
+    setTimeout(add_interactivity, 250) // xxx
     return
   }
 
