@@ -177,11 +177,8 @@ async function main() {
   let tmp
 
   if (globalThis.Deno) {
-    /**
-  eg:
-
-  clear -x; deno run -A  js/blogtini.js  index.html
-
+    /* eg:
+      deno run -A  js/blogtini.js  index.html
     */
     const fi = Deno.args[0]
     const body_contents = Deno.readTextFileSync(fi)
@@ -191,7 +188,7 @@ async function main() {
 
       await import('./dom.js')
       // eslint-disable-next-line no-use-before-define
-      head_insert_titles(my_frontmatter.title)  // xxxcc add og:image
+      head_insert_titles(my_frontmatter.title ?? 'blogtini')  // xxxcc add og:image; 'blogtini'
 
       const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
       Deno.writeTextFileSync(fi, `${headline}${body_contents}`)

@@ -41,10 +41,8 @@ customElements.define('bt-post-full', class extends LitElement {
       // copy sharing buttons to the fly-out menu
       this.flyout_shared = true // ensure this is only done once
       const btpage = document.querySelector('bt-body')?.shadowRoot
-      if (btpage) { // xxxcc
-        const sharemenu = btpage.querySelector('#share-menu')
-        sharemenu.innerHTML = `${sharemenu.innerHTML} ${socnet_share}`
-      }
+      const sharemenu = btpage.querySelector('#share-menu')
+      sharemenu.innerHTML = `${sharemenu.innerHTML} ${socnet_share}`
     }
 
 
