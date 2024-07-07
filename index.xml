@@ -4,7 +4,7 @@
       <title>Blogtini</title>
       <link>https://blogtini.com/</link>
       <description>Recent content in Blogtini</description>
-      <lastBuildDate>Thu, 04 Jul 2024 23:35:13 -0400</lastBuildDate>
+      <lastBuildDate>Sat, 06 Jul 2024 23:10:39 -0400</lastBuildDate>
       <atom:link href="https://blogtini.com/index.xml" rel="self" type="application/rss+xml"/>
       <generator>blogtini.com</generator>
 
@@ -14,6 +14,14 @@
           <link>https://blogtini.com/about/</link>
           <guid>https://blogtini.com/about/</guid>
           <pubDate>Mon, 16 Mar 2009 00:00:00 -0400</pubDate>
+          <description></description>
+        </item>
+
+        <item>
+          <title>Blogtini SEO</title>
+          <link>https://blogtini.com/2024-07-blogtini-seo/</link>
+          <guid>https://blogtini.com/2024-07-blogtini-seo/</guid>
+          <pubDate>Sat, 06 Jul 2024 00:00:00 -0400</pubDate>
           <description></description>
         </item>
 
