@@ -542,6 +542,8 @@ function storage_loop() {
 
     if (filter_post) {
       // eslint-disable-next-line no-use-before-define
+      head_insert_json_ld(post)
+      // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title)
       state.filter_post_url = urlify(post.url)
     } else if (filter_tag.length) {
@@ -827,6 +829,45 @@ function head_insert_titles(title) {
     document.head.appendChild(e)
   }
 }
+
+function head_insert_json_ld(post) {
+  // https://schema.org/BlogPosting#Examples
+
+  const { head } = document
+  const e = document.createElement('script')
+  e.type = 'application/ld+json'
+
+  const img = (post.featured.startsWith('https://') ?
+    post.featured : `https://blogtini.com/img/${post.featured}`) // xxxcc
+    .replace(/#(bottom|top)$/, '')
+
+  const data = {
+    '@context': 'https://schema.org/',
+    '@type': 'BlogPosting',
+    '@id': `${post.url}#BlogPosting`,
+    url: post.url,
+    mainEntityOfPage: post.url,
+    headline: post.title,
+    name: post.title,
+    datePublished: post.date.slice(0, 10),
+    wordCount: post.body_raw.trim().split(/\s+/).length,
+    keywords: [...new Set([...post.tags, ...post.categories])], // unique array(s); preserve order
+    image: {
+      '@type': 'ImageObject',
+      '@id': img,
+      url: img,
+      height: '362',
+      width: '388',
+    },
+    // dateModified: '2019-05-14', // xxxcc
+    // "description": "xxxcc",
+  }
+  log('JSONLD', { post, data })
+
+  e.innerHTML = JSON.stringify(data)
+  head.appendChild(e)
+}
+
 
 // deno-lint-ignore no-unused-vars
 function head_insert_specifics() {
