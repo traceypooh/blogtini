@@ -849,15 +849,15 @@ function head_insert_json_ld(post) {
     mainEntityOfPage: post.url,
     headline: post.title,
     name: post.title,
-    datePublished: post.date.toString().slice(0, 10),
+    datePublished: date2ymd(new Date(post.date)),
     wordCount: post.body_raw.trim().split(/\s+/).length,
     keywords: [...new Set([...post.tags, ...post.categories])], // unique array(s); preserve order
     image: {
       '@type': 'ImageObject',
       '@id': img,
       url: img,
-      height: '362',
-      width: '388',
+      // height: '362', // xxxcc
+      // width: '388', // xxxcc
     },
     // dateModified: '2019-05-14', // xxxcc
     // "description": "xxxcc",
