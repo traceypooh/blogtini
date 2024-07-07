@@ -849,7 +849,7 @@ function head_insert_json_ld(post) {
     mainEntityOfPage: post.url,
     headline: post.title,
     name: post.title,
-    datePublished: post.date.slice(0, 10),
+    datePublished: post.date.toString().slice(0, 10),
     wordCount: post.body_raw.trim().split(/\s+/).length,
     keywords: [...new Set([...post.tags, ...post.categories])], // unique array(s); preserve order
     image: {
