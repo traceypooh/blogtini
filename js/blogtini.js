@@ -811,6 +811,10 @@ function head_insert_generics() {
 function head_insert_titles(title) {
   document.title = title // xxx &gt; &lt;
 
+  // document.getElementsByTagName('meta')['description'].content = 'New meta description'
+  // document.getElementsByTagName('meta')['viewport']
+  // <meta name="description" content="SPA metadata is not so fun"/>
+
   {
     const e = document.createElement('title') // chexxx
     e.textContent = title // xxx &gt; &lt;
@@ -849,7 +853,7 @@ function head_insert_json_ld(post) {
     mainEntityOfPage: post.url,
     headline: post.title,
     name: post.title,
-    datePublished: date2ymd(new Date(post.date)),
+    datePublished: date2ymd(new Date(post.date ?? new Date().getTime())),
     wordCount: post.body_raw.trim().split(/\s+/).length,
     keywords: [...new Set([...post.tags, ...post.categories])], // unique array(s); preserve order
     image: {
