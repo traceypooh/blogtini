@@ -55,12 +55,14 @@ jobs:
           sudo apt-get install -yqq zsh
           # get deno
           curl -fsSL https://deno.land/install.sh | sh
+          export DENO_INSTALL="/home/runner/.deno"
+          export PATH="$DENO_INSTALL/bin:$PATH"
 
-          # get files setup
+          # get files & dir layout set up
           mkdir -p _site/bin
-          mv _blogtini/bin/* _site/bin/
-          mv * _site/ || echo fine
+          mv     _blogtini/bin/* _site/bin/
           rm -rf _blogtini
+          mv * _site/ || echo fine
 
           # run SSR and create sitemap
           ./_site/bin/ssr.sh
