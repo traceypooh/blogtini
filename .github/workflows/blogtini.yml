@@ -51,9 +51,10 @@ jobs:
           path: _blogtini
       - name: Blogtini SSR head elements & sitemap
         run: |
+          apt-get install -yqq zsh
           mkdir -p _site/bin
           mv _blogtini/bin/* _site/bin/
-          mv * _/site || echo fine
+          mv * _site/ || echo fine
           rm -rf _blogtini
           ./_site/bin/ssr.sh
           if [ ! -e sitemap.xml ]; then ./_site/bin/sitemap; fi
