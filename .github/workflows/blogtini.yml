@@ -9,7 +9,7 @@ name: blogtini.com lightweight build & deploy to GitHub Pages
 #  push:
 #    branches: ["main"]
 #jobs:
-#  cicd:
+#  blogtini:
 #    uses: traceypooh/blogtini/.github/workflows/blogtini.yml@main
 
 

@@ -545,7 +545,7 @@ function storage_loop() {
       // eslint-disable-next-line no-use-before-define
       head_insert_json_ld(post)
       // eslint-disable-next-line no-use-before-define
-      head_insert_titles(post.title)
+      head_insert_titles(post.title, imgurl(post, true, false))
       state.filter_post_url = urlify(post.url)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
@@ -818,7 +818,7 @@ function imgurl(post, nohash = true, relative = false) {
   return nohash ? img.replace(/#(bottom|top)$/, '') : img
 }
 
-function head_insert_titles(title) {
+function head_insert_titles(title, img) {
   document.title = title // xxx &gt; &lt;
 
   // document.getElementsByTagName('meta')['description'].content = 'New meta description'
@@ -840,6 +840,12 @@ function head_insert_titles(title) {
     const e = document.createElement('meta') // chexxx
     e.setAttribute('property', 'og:title')
     e.setAttribute('content', title) // xxx quote escape, etc.
+    document.head.appendChild(e)
+  }
+  if (img) {
+    const e = document.createElement('meta') // chexxx
+    e.setAttribute('property', 'og:image')
+    e.setAttribute('content', img) // xxx quote escape, etc.
     document.head.appendChild(e)
   }
 }

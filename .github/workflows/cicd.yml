@@ -2,5 +2,5 @@ on:
   push:
     branches: ["main"]
 jobs:
-  cicd:
+  blogtini:
     uses: traceypooh/blogtini/.github/workflows/blogtini.yml@main
