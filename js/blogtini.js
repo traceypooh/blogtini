@@ -226,12 +226,6 @@ async function main() {
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
 
-  log({
-    filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
-  })
-  // log('STORAGE', JSON.parse(localStorage.getItem(STORAGE_KEY)))
-
-
   if (globalThis.Deno) {
     /* eg:
       deno run -A  js/blogtini.js  index.html
@@ -251,6 +245,12 @@ async function main() {
     }
     Deno.exit()
   }
+
+
+  log({
+    filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
+  })
+  // log('STORAGE', JSON.parse(localStorage.getItem(STORAGE_KEY)))
 
 
   // eslint-disable-next-line no-use-before-define
