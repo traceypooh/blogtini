@@ -48,13 +48,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: traceypooh/blogtini
-          path: /blogtini
+          path: _blogtini
       - name: Blogtini SSR head elements & sitemap
         run: |
           mkdir _site
           cp -pr ./ _site
-          /blogtini/bin/ssr.sh
-          if [ ! -e sitemap.xml ]; then /blogtini/bin/sitemap; fi
+          ./_blogtini/bin/ssr.sh
+          if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
