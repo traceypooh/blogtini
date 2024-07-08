@@ -189,7 +189,7 @@ async function main() {
 
       await import('./dom.js')
       // eslint-disable-next-line no-use-before-define
-      head_insert_titles(my_frontmatter.title ?? 'blogtini')  // xxxcc add og:image; 'blogtini'
+      head_insert_titles(my_frontmatter.title ?? 'blogtini', imgurl({ featured: my_frontmatter.featured }, true, false))
 
       const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
       Deno.writeTextFileSync(fi, `${headline}${body_contents}`)
