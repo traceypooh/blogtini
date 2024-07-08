@@ -47,7 +47,7 @@ jobs:
         with:
           repository: traceypooh/blogtini
           path: _blogtini
-      - name: Blogtini SSR head elements & sitemap
+      - name: Blogtini SEO head elements & sitemap
         run: |
           set -x
           sudo apt-get install -yqq zsh
@@ -57,21 +57,20 @@ jobs:
           export PATH="$DENO_INSTALL/bin:$PATH"
 
           # get files & dir layout set up
-          mkdir -p _site/bin
-          mv     _blogtini/bin/* _site/bin/
+          mkdir -p bin
+          mv     _blogtini/bin/*  bin/
           rm -rf _blogtini
 
-          # effectively copy (move) everything in repo to _site/ subdir
-          mv  *  .git  _site/  ||  echo fine
-
-          # run SSR and create sitemap
-          ./_site/bin/ssr.sh
-          if [ ! -e _site/sitemap.xml ]; then ./_site/bin/sitemap; fi
+          # setup SEO headers and create sitemap
+          ./bin/ssr.sh
+          if [ ! -e sitemap.xml ]; then ./bin/sitemap; fi
 
           # cleanup
-          rm -rf  _site/bin  _site/.git
+          rm -rf  bin  .*
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
 
   # Deploy to GitHub Pages
   deploy:
