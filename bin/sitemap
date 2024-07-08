@@ -68,7 +68,7 @@ function rss() { # xxx <description> using snippet??
       echo -n '
         <item>
           <title>'
-      ( yq -r .title .yml 2>/dev/null  ||  echo -n untitled )
+      ( ( yq -r .title .yml 2>/dev/null |grep -Ev '^null$'  ||  echo -n untitled ) | tr -d '\n' )
       echo '</title>
           <link>'$predir'/</link>
           <guid>'$predir'/</guid>

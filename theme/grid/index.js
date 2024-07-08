@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'https://esm.archive.org/lit'
 import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
 import { css_links } from '../future-imperfect/index.js'
 import {
-  state, summarize_markdown, url2post, cfg,
+  summarize_markdown, url2post, cfg, imgurl,
 } from '../../js/blogtini.js'
 
 
@@ -38,10 +38,10 @@ customElements.define('bt-post', class extends LitElement {
     // console.warn({ post })
     const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
-    const imgurl = post.featured ? `${state.top_dir}img/${post.featured}` : '' // xxx img/ parameterize
+    const img = post.featured ? imgurl(post, true, true) : ''
 
     return html`
-${post.featured ? html`<img src="${imgurl}"/>` : ''}
+${post.featured ? html`<img src="${img}"/>` : ''}
 <div class="date">${post.date.slice(0, 10)}</div>
 <h1>${post.title}</h1>
 ${unsafeHTML(summary)}

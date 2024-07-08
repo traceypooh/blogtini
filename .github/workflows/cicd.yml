@@ -1,0 +1,6 @@
+on:
+  push:
+    branches: ["main"]
+jobs:
+  cicd:
+    uses: traceypooh/blogtini/.github/workflows/blogtini.yml@main

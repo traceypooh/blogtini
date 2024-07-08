@@ -49,6 +49,7 @@ let cfg = {
   user: '',
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
+  site_url: 'https://example.com/',
   theme: '../theme/future-imperfect/index.js',
   theme_css: 'https://blogtini.com/css/blogtini.css', // can be relative url
   title: 'welcome to my blog',
@@ -808,6 +809,15 @@ function head_insert_generics() {
   }
 }
 
+function imgurl(post, nohash = true, relative = false) {
+  const prefix = relative ? state.top_dir : cfg.site_url
+  const img = post.featured.startsWith('https://')
+    ? post.featured
+    : `${prefix}img/${post.featured}` // xxxcc /img/
+
+  return nohash ? img.replace(/#(bottom|top)$/, '') : img
+}
+
 function head_insert_titles(title) {
   document.title = title // xxx &gt; &lt;
 
@@ -841,10 +851,7 @@ function head_insert_json_ld(post) {
   const e = document.createElement('script')
   e.type = 'application/ld+json'
 
-  const img = (post.featured.startsWith('https://') ?
-    post.featured : `https://blogtini.com/img/${post.featured}`) // xxxcc
-    .replace(/#(bottom|top)$/, '')
-
+  const img = imgurl(post)
   const data = {
     '@context': 'https://schema.org/',
     '@type': 'BlogPosting',
@@ -918,4 +925,5 @@ export {
   share_buttons,
   dark_mode,
   PR,
+  imgurl,
 }

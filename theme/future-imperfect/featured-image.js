@@ -3,7 +3,7 @@ import {
   LitElement, html, css, unsafeCSS,
 } from 'https://esm.archive.org/lit'
 import {
-  url2post, cfg, state, urlify, PR, dark_mode,
+  url2post, cfg, state, urlify, PR, dark_mode, imgurl
 } from '../../js/blogtini.js'
 
 
@@ -27,13 +27,12 @@ customElements.define('featured-image', class extends LitElement {
     if (post.featured) {
       // eslint-disable-next-line max-len
       // xxx original: {{- $src = (path.Join "img" (cond (eq .Params.featuredpath "date") (.Page.Date.Format "2006/01") (.Params.featuredpath)) .Params.featured) | relURL -}}
-      src = post.featured?.match(/\//) ? post.featured : `${state.top_dir}img/${post.featured}` // xxx img/ parameterize
-
+      src = imgurl(post, false, true)
       alt = post.featuredalt
       stretch = (post.featuredstretch ?? '').toLowerCase()
       blur = post.removeBlur ?? (cfg.remove_blur ?? '')
     } else if (post.images) {
-      src = `${state.top_dir}${post.images[0].src}`
+      src = `${state.top_dir}${post.images[0].src}` // xxx use imgurl
       alt = post.images[0].alt
       stretch = (post.images[0].stretch ?? '').toLowerCase()
       blur = post.images[0].removeBlur ?? (cfg.remove_blur ?? '')
