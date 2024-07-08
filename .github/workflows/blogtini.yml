@@ -50,7 +50,7 @@ jobs:
       - name: Blogtini SEO head elements & sitemap
         run: |
           set -x
-          sudo apt-get install -yqq zsh
+          sudo apt-get install -yqq zsh yq
           # get deno
           curl -fsSL https://deno.land/install.sh | sh
           export DENO_INSTALL="/home/runner/.deno"
