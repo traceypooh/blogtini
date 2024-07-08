@@ -60,14 +60,16 @@ jobs:
           mkdir -p _site/bin
           mv     _blogtini/bin/* _site/bin/
           rm -rf _blogtini
-          mv * _site/ || echo fine
+
+          # effectively copy (move) everything in repo to _site/ subdir
+          mv  *  .git  _site/  ||  echo fine
 
           # run SSR and create sitemap
           ./_site/bin/ssr.sh
-          if [ ! -e sitemap.xml ]; then ./_site/bin/sitemap; fi
+          if [ ! -e _site/sitemap.xml ]; then ./_site/bin/sitemap; fi
 
           # cleanup
-          rm -rf _site/bin
+          rm -rf  _site/bin  _site/.git
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
