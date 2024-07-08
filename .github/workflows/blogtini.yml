@@ -37,10 +37,6 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    container:
-      # something with `deno` and `zsh`
-      # https://gitlab.com/internetarchive/nomad
-      image: docker://registry.gitlab.com/internetarchive/nomad/master
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,13 +52,21 @@ jobs:
       - name: Blogtini SSR head elements & sitemap
         run: |
           set -x
-          # sudo apt-get install -yqq zsh
+          sudo apt-get install -yqq zsh
+          # get deno
+          curl -fsSL https://deno.land/install.sh | sh
+
+          # get files setup
           mkdir -p _site/bin
           mv _blogtini/bin/* _site/bin/
           mv * _site/ || echo fine
           rm -rf _blogtini
+
+          # run SSR and create sitemap
           ./_site/bin/ssr.sh
           if [ ! -e sitemap.xml ]; then ./_site/bin/sitemap; fi
+
+          # cleanup
           rm -rf _site/bin
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
