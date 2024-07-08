@@ -128,9 +128,13 @@ function cssify(url) {
 async function fetcher(url)  {
   const text = !url.match(/\.(json)$/i) || url.endsWith('/')
 
+  if (globalThis.Deno && !url.startsWith('http')) {
+    const tmp = Deno.readTextFileSync(url)
+    return text ? tmp : JSON.parse(tmp)
+  }
+
   try {
     const ret = await fetch(url.concat(url.endsWith('/') ? 'index.html' : ''))
-
     if (!ret.ok) {
       // safari file:// doesnt set .ok properly...
       if (!state.filedev || url.startsWith('http'))
@@ -177,41 +181,23 @@ function bt_body() {
 async function main() {
   let tmp
 
-  if (globalThis.Deno) {
-    /* eg:
-      deno run -A  js/blogtini.js  index.html
-    */
-    const fi = Deno.args[0]
-    const body_contents = Deno.readTextFileSync(fi)
-    if (!body_contents.startsWith(HEADLINE)) {
-      // eslint-disable-next-line no-use-before-define
-      const [my_frontmatter] = markdown_parse(body_contents)
-
-      await import('./dom.js')
-      // eslint-disable-next-line no-use-before-define
-      head_insert_titles(my_frontmatter.title ?? 'blogtini', imgurl({ featured: my_frontmatter.featured }, true, false))
-
-      const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
-      Deno.writeTextFileSync(fi, `${headline}${body_contents}`)
-    }
-    Deno.exit()
-  }
-
   // see if this is an (atypical) "off site" page/post, compared to the main site
-  const body_contents = document.querySelector('body').innerHTML.trim()
+  const body_contents = globalThis.document?.querySelector('body').innerHTML.trim()
   // eslint-disable-next-line no-use-before-define
-  const [my_frontmatter] = markdown_parse(body_contents)
+  const [my_frontmatter] = markdown_parse(body_contents ?? '')
   const base = my_frontmatter?.base
 
-  state.pathrel = state.is_homepage ? '' : '../' // xxxx generalize
+  state.pathrel = state.is_homepage || globalThis.Deno ? '' : '../' // xxxx generalize
   state.top_dir = base ?? state.pathrel
   state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '')
 
-  // eslint-disable-next-line no-use-before-define
-  dark_mode()
+  if (!globalThis.Deno) {
+    // eslint-disable-next-line no-use-before-define
+    dark_mode()
 
-  // eslint-disable-next-line no-use-before-define
-  head_insert_generics()
+    // eslint-disable-next-line no-use-before-define
+    head_insert_generics()
+  }
 
   if (state.is_homepage) {
     if (SEARCH.match(/^\?20\d\d-\d\d-\d\d-/)) {
@@ -226,8 +212,10 @@ async function main() {
   }
 
 
-  // default expect github pages hostname - user can override via their own `config.yml` file
-  [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
+  if (!globalThis.Deno) {
+    // default expect github pages hostname - user can override via their own `config.yml` file
+    [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
+  }
 
 
   if (!STORAGE.base)
@@ -242,6 +230,28 @@ async function main() {
     filter_post, base: STORAGE.base, STORAGE_KEY, cfg, state,
   })
   // log('STORAGE', JSON.parse(localStorage.getItem(STORAGE_KEY)))
+
+
+  if (globalThis.Deno) {
+    /* eg:
+      deno run -A  js/blogtini.js  index.html
+    */
+    const fi = Deno.args[0]
+    const body = Deno.readTextFileSync(fi)
+    if (!body.startsWith(HEADLINE)) {
+      // eslint-disable-next-line no-use-before-define
+      const [frontmatter] = markdown_parse(body)
+
+      await import('./dom.js')
+      // eslint-disable-next-line no-use-before-define
+      head_insert_titles(frontmatter.title ?? 'blogtini', imgurl({ featured: frontmatter.featured }, true, false))
+
+      const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
+      Deno.writeTextFileSync(fi, `${headline}${body}`)
+    }
+    Deno.exit()
+  }
+
 
   // eslint-disable-next-line no-use-before-define
   add_css(cfg.theme_css)
