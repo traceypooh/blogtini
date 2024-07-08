@@ -26,7 +26,6 @@ during each "pre commit" hook (above), you'll need to have the
 
 ## Best two website/blog setup options
 ### Blog source repository that uses markdown inside html markup files
-- /.nojekyll
 - /2022/01/i-baked-a-pie/
 - /2022/01/i-baked-a-pie/index.html
   - start with front matter
