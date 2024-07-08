@@ -65,8 +65,8 @@ jobs:
           ./bin/ssr.sh
           if [ ! -e sitemap.xml ]; then ./bin/sitemap; fi
 
-          # cleanup
-          rm -rf  bin  .*
+          # cleanup, remove .git/ etc..
+          rm -rf  bin  .[^.]*
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
