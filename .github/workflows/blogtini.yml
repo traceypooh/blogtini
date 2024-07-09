@@ -4,7 +4,7 @@ name: blogtini.com lightweight build & deploy to GitHub Pages
 
 # First, you must permit the reusable workflow to be called from another organization. For that, go to Organization settings -> Actions -> General. Under the policies, select the "Allow all actions and reusable workflows" option to use the workflow outside the organization.
 
-## Example usage:
+## Example usage, a file named .github/workflows/cicd.yml at top of your repo, with contents
 #on:
 #  push:
 #    branches: ["main"]
@@ -64,6 +64,11 @@ jobs:
           curl -fsSL https://deno.land/install.sh | sh
           export DENO_INSTALL="/home/runner/.deno"
           export PATH="$DENO_INSTALL/bin:$PATH"
+
+          # xxxcc
+          ls .git
+          git log -1 --format='%cI' -- about/index.html
+          git config remote.origin.url
 
           # setup SEO headers & create sitemap
           ./_blogtini/bin/ssr.sh
