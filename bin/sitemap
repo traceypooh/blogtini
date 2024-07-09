@@ -72,7 +72,7 @@ function rss() { # xxx <description> using snippet??
       echo -n '
         <item>
           <title>'
-      ( ( yq -r .title .yml 2>/dev/null |grep -Ev '^null$'  ||  echo -n untitled ) | tr -d '\n' )
+      ( ( yq -r .title .yml 2>/dev/null |grep -Ev '^null$'  ||  echo -n untitled ) | tr -d '\n' | perl -pe 's/&/&amp;/g; s/&amp;amp;/&amp;/g; s/</&lt;/g')
       echo '</title>
           <link>'$predir'/</link>
           <guid>'$predir'/</guid>

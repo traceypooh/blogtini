@@ -821,6 +821,10 @@ function head_insert_generics() {
 
 function imgurl(post, nohash = true, relative = false) {
   const prefix = relative ? state.top_dir : cfg.site_url
+
+  if (!post.featured)
+    return `${prefix}${cfg.img_site}`
+
   const img = post.featured.startsWith('https://')
     ? post.featured
     : `${prefix}img/${post.featured}` // xxxcc /img/

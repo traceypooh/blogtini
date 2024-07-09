@@ -3,7 +3,7 @@ import {
   LitElement, html, css, unsafeCSS,
 } from 'https://esm.archive.org/lit'
 import {
-  url2post, cfg, state, urlify, PR, dark_mode, imgurl
+  url2post, cfg, state, urlify, PR, dark_mode, imgurl,
 } from '../../js/blogtini.js'
 
 
