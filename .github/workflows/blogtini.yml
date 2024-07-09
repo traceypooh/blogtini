@@ -4,10 +4,17 @@ name: blogtini.com lightweight build & deploy to GitHub Pages
 
 # First, you must permit the reusable workflow to be called from another organization. For that, go to Organization settings -> Actions -> General. Under the policies, select the "Allow all actions and reusable workflows" option to use the workflow outside the organization.
 
-# Example usage:
+## Example usage:
 #on:
 #  push:
 #    branches: ["main"]
+#
+## Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+#permissions:
+#  contents: read
+#  pages: write
+#  id-token: write
+#
 #jobs:
 #  blogtini:
 #    uses: traceypooh/blogtini/.github/workflows/blogtini.yml@main
@@ -43,7 +50,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Blogtini setup
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: traceypooh/blogtini
           path: _blogtini
