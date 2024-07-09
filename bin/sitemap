@@ -5,11 +5,16 @@ if [ ! -e config.yml ]; then
   exit 1
 fi
 
-NAME=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f1)
-REPO=$(git config remote.origin.url |cut -f2 -d: |cut -d/ -f2)
-
-PREFIX=https://$NAME.github.io/$REPO
-[ -e CNAME ]  &&  PREFIX=https://$(cat CNAME)
+if [ -e CNAME ]; then
+  PREFIX=https://$(cat CNAME)
+else
+  # examples of remote.origin.url:
+  #   https://github.com/traceypooh/blogtini
+  #   github.com:traceypooh/blogtini
+  NAME=$(git config remote.origin.url |tr : / |rev |cut -d/ -f2 |rev)
+  REPO=$(git config remote.origin.url |tr : / |rev |cut -d/ -f1 |rev)
+  PREFIX=https://$NAME.github.io/$REPO
+fi
 
 function sitemap() {
   OUTFILE=sitemap.xml
