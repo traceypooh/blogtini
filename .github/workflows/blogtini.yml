@@ -50,24 +50,20 @@ jobs:
       - name: Blogtini SEO head elements & sitemap
         run: |
           set -x
+          # get pkgs
           sudo apt-get install -yqq zsh yq
-          # get deno
+
+          # get & setup deno
           curl -fsSL https://deno.land/install.sh | sh
           export DENO_INSTALL="/home/runner/.deno"
           export PATH="$DENO_INSTALL/bin:$PATH"
 
-          # get files & dir layout set up
-          mkdir -p bin  js
-          mv     _blogtini/bin/*  bin/
-          mv     _blogtini/js/blogtini.js  js/
-          rm -rf _blogtini
-
-          # setup SEO headers and create sitemap
-          ./bin/ssr.sh
-          if [ ! -e sitemap.xml ]; then ./bin/sitemap; fi
+          # setup SEO headers & create sitemap
+          ./_blogtini/bin/ssr.sh
+          if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi
 
           # cleanup, remove .git/ etc..
-          rm -rf  bin  .[^.]*
+          rm -rf  _blogtini  .[^.]*
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
