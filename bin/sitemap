@@ -31,7 +31,9 @@ function sitemap() {
   echo '</urlset>' >> $OUTFILE
 
 
-  echo "Sitemap: $PREFIX/sitemap.xml" >| robots.txt
+  if [ ! -e robots.txt ]; then
+    echo "Sitemap: $PREFIX/sitemap.xml" >| robots.txt
+  fi
   echo
 }
 

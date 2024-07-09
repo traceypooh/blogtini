@@ -57,8 +57,9 @@ jobs:
           export PATH="$DENO_INSTALL/bin:$PATH"
 
           # get files & dir layout set up
-          mkdir -p bin
+          mkdir -p bin  js
           mv     _blogtini/bin/*  bin/
+          mv     _blogtini/js/blogtini.js  js/
           rm -rf _blogtini
 
           # setup SEO headers and create sitemap
