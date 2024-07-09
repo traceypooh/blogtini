@@ -109,7 +109,7 @@ function comments() {
 
 
 function list-posts() {
-  find . -mindepth 2 -name index.html | cut -f2- -d/ |sort -r
+  find . -mindepth 2 -name index.html |cut -f2- -d/ |sort -r |egrep -v ^_blogtini
 }
 
 

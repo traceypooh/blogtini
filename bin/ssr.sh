@@ -1,4 +1,4 @@
-#!/bin/zsh -eux
+#!/bin/zsh -eu
 
 mydir=${0:a:h}
 
@@ -7,8 +7,17 @@ if [ ! -e config.yml ]; then
   exit 1
 fi
 
+
+function list-posts() {
+  find . -mindepth 2 -name index.html |cut -f2- -d/ |sort -r |egrep -v ^_blogtini
+}
+
+
 for FILE in $(
-  grep -nE '^\-\-\-' $(find . -name '*index.html') |grep -F :1:--- |rev |cut -f3- -d: |rev
+  grep -nE '^\-\-\-' $(list-posts) |grep -F :1:--- |rev |cut -f3- -d: |rev
 ); do
-  deno run -A  $mydir/../js/blogtini.js  $FILE
+  (
+    set -x
+    deno run -A  $mydir/../js/blogtini.js  $FILE
+  )
 done
