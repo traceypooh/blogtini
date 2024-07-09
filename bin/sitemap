@@ -68,10 +68,6 @@ function rss() { # xxx <description> using snippet??
   for htm in $(list-posts); do
     echo -n .
     grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- >| .yml
-    if [ ! $xxxcc ]; then
-      cat .yml
-      xxxcc=1
-    fi
     YMD=$(yq -r .date .yml | cut -b1-10)
     PUBDATE=$(pubDate $YMD)
     # echo YMD=$YMD PUBDATE=$PUBDATE

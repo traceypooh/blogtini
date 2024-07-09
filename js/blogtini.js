@@ -4,7 +4,7 @@ import yml from 'https://esm.archive.org/js-yaml'
 import dayjs from 'https://esm.archive.org/dayjs'
 import showdown from 'https://esm.archive.org/showdown'
 
-import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { krsort, vrsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
@@ -32,6 +32,8 @@ const state = {
 const SEARCH = decodeURIComponent(location?.search)
 const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
 const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
+state.list_tags   =  SEARCH.match(/^\?tags[^/]*$/)
+state.list_cats   =  SEARCH.match(/^\?categories[^/]*$/)
 const filter_post = (state.is_homepage ? '' :
   `${location?.origin}${location?.pathname}`.replace(/\/index\.html$/, '/'))
 
@@ -149,16 +151,24 @@ async function fetcher(url)  {
 }
 
 
+function main_section(histogram) {
+  if (filter_post)
+    return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
+
+  if (state.list_tags || state.list_cats) {
+    const type = state.list_tags ? 'tags' : 'categories'
+    return `<h1>${type}</h1><ul>${Object.entries(vrsort(histogram)).map((e) => `<li><article><header><a href="${state.top_page}?${type}/${e[0]}">${e[0]}<span style="float:right">${e[1]}</span></a></header></article></li>`).join('')}</ul>` // xxxcc make new WC
+  }
+
+  return `
+    ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+
+    <bt-posts>
+      ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+    </bt-posts>`
+}
+
 function bt_body() {
-  const main_section = filter_post
-    ? `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
-    : `
-      ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
-
-      <bt-posts>
-        ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
-      </bt-posts>`
-
   const categories_histogram = {}
   if (cfg.sidebar.categories) {
     for (const cat of Object.keys(state.cats).sort())
@@ -169,12 +179,15 @@ function bt_body() {
   for (const tag of Object.keys(state.tags).sort())
     tags_histogram[tag] = state.tags[tag].length
 
+  // eslint-disable-next-line no-nested-ternary, max-len
+  const histogram = state.list_tags ? tags_histogram : (state.list_cats ? categories_histogram : null)
+
   document.querySelector('body').innerHTML =
     `<bt-body
       recent_posts='${JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url))}'
       tags='${JSON.stringify(tags_histogram)}'
       categories='${JSON.stringify(categories_histogram)}'
-    >${main_section}</bt-body>`
+    >${main_section(histogram)}</bt-body>`
 }
 
 
@@ -209,6 +222,12 @@ async function main() {
 
     // eslint-disable-next-line no-use-before-define
     head_insert_titles('Blogtini') // xxx
+  } else if (state.list_tags) {
+    // eslint-disable-next-line no-use-before-define
+    head_insert_titles('Tags')
+  } else if (state.list_cats) {
+    // eslint-disable-next-line no-use-before-define
+    head_insert_titles('Categories')
   }
 
 
@@ -533,6 +552,9 @@ function storage_loop() {
       state.cats[cat] = state.cats[cat] || []
       state.cats[cat].push(post.url)
     }
+
+    if (state.list_tags || state.list_cats)
+      continue
 
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
