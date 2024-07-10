@@ -15,7 +15,10 @@ import { markdown_to_html, summarize_markdown } from './text.js'
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)
 
-
+// log(new URLSearchParams(location?.search))
+const SEARCH = decodeURIComponent(location?.search)
+const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
+const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
 const state = {
   tags: {},
   cats: {},
@@ -28,12 +31,10 @@ const state = {
   pathrel: '',
   is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
   filter_post_url: null,
+  page: Number((SEARCH.match(/[?&]page=(\d+)/) || [1, 1])[1]) - 1,
+  list_tags: !filter_tag && SEARCH.match(/[?&]tags/),
+  list_cats: !filter_cat && SEARCH.match(/[?&]categories/),
 }
-const SEARCH = decodeURIComponent(location?.search)
-const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
-const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
-state.list_tags   =  SEARCH.match(/^\?tags[^/]*$/)
-state.list_cats   =  SEARCH.match(/^\?categories[^/]*$/)
 const filter_post = (state.is_homepage ? '' :
   `${location?.origin}${location?.pathname}`.replace(/\/index\.html$/, '/'))
 
@@ -590,6 +591,11 @@ function storage_loop() {
     if (!filter_post)
       state.urls_filtered.push(post.url)
   }
+
+  state.urls_filtered = state.urls_filtered.slice(
+    state.page * cfg.posts_per_page,
+    state.page * cfg.posts_per_page + cfg.posts_per_page,
+  )
 }
 
 
