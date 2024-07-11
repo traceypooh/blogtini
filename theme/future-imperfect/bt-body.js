@@ -134,7 +134,7 @@ customElements.define('bt-body', class extends LitElement {
         ${cfg.footer?.social ? socnet_icon() : ''}
       </ul>` : ''}
     <p class="copyright">
-      ${cfg.copyright ?? html`\u00A9 ${/* xxxxxxxxxxxxxxxxxxxxxxxxxxxx */globalThis.STORAGE?.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
+      ${cfg.copyright ?? html`\u00A9 ${state.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
       <br>
       ${cfg.attribution ? unsafeHTML(cfg.attribution) : ''}
     </p>

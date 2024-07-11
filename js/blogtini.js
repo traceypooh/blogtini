@@ -495,7 +495,7 @@ function markdown_to_post(markdown, url = location.pathname) {
   const title      = json.title?.trim() ?? ''
   const tags       = (json.tags       ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
   const categories = (json.categories ?? []).map((e) => e.trim().replace(/ /g, '-').toLowerCase())
-  const date       = json.date || json.created_at || '' // xxx any more possibilities should do?
+  const date       = json.date || json.created_at || '' // xxx any more possibilities should do?  // xxx try to parse date from start of path/url!
 
   if (!date) {
     // eslint-disable-next-line no-console
@@ -544,6 +544,8 @@ async function parse_posts(markdowns) {
 
 function storage_loop() {
   showdown.setFlavor('github') // xxx?
+
+  state.newest = STORAGE.newest
 
   for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
