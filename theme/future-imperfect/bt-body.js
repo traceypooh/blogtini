@@ -21,9 +21,7 @@ customElements.define('bt-body', class extends LitElement {
 
   // eslint-disable-next-line class-methods-use-this
   render() {
-    const page_is_home = (location.pathname === '' || location.pathname === '/') &&
-      !state.filter_tag && !state.filter_cat
-
+    const page_is_home = !state.filter_tag && !state.filter_cat
     const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
     const page_left = state.page > 0 ? state.page - 1 : null
     const page_rite = state.page_more ? state.page + 1 : null
