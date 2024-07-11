@@ -21,6 +21,23 @@ customElements.define('bt-body', class extends LitElement {
 
   // eslint-disable-next-line class-methods-use-this
   render() {
+    const page_is_home = (location.pathname === '' || location.pathname === '/') &&
+      !state.filter_tag && !state.filter_cat
+
+    const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
+    const page_left = state.page > 0 ? state.page - 1 : null
+    const page_rite = state.page_more ? state.page + 1 : null
+
+    const page_sep = page_is_home ? '?' : '/'
+    const page_left_url = `${page_base}${page_left ? `${page_sep}page/${1 + page_left}` : ''}`
+    const page_rite_url = `${page_base}${page_sep}page/${1 + page_rite}`
+
+    const navurl = (e) => {
+      const url =
+        `${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}`
+      return (url === '') ? './' : url
+    }
+
     return html`
 <link href="${cssify('css/future-imperfect.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 <link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
@@ -36,7 +53,7 @@ customElements.define('bt-body', class extends LitElement {
       </a>
     </h1>
     <menu id="site-nav-menu" class="flyout-menu menu">
-      ${cfg.menu.main.map((e) => html`<a href="${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}" class="nav link">${unsafeHTML(e.pre)} ${e.name}</a>`)}
+      ${cfg.menu.main.map((e) => html`<a href="${navurl(e)}" class="nav link">${unsafeHTML(e.pre)} ${e.name}</a>`)}
 
       ${cfg.header.share ? html`<a href="#share-menu" class="nav link share-toggle" @click=${this.nav_toggle}><i class="fas fa-share-alt">&nbsp;</i>Share</a>` : ''}
 
@@ -92,11 +109,18 @@ customElements.define('bt-body', class extends LitElement {
           ${cfg.intro?.rss ? rss_icon() : ''}
           ${cfg.intro?.social ? socnet_icon() : ''}
         </ul>` : ''}
-    </footer>
+      </footer>
   </section>
   <main id="site-main">
 
     <slot></slot>
+
+    <div class="pagination">
+      ${page_left !== null ? html`<a href="${page_left_url}"
+        class="button left"><span>Previous Page</span></a>` : ''}
+      ${page_rite !== null ? html`<a href="${page_rite_url}"
+        class="button right"><span>Next Page</span></a>` : ''}
+    </div>
 
   </main>
   <bt-sidebar

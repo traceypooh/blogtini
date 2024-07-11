@@ -10,6 +10,7 @@ import { unsafeHTML } from 'npm:lit/directives/unsafe-html.js'
 import '../theme/future-imperfect/bt-body.js'
 
 
+// eslint-disable-next-line no-unused-vars
 async function demo() {
   if (globalThis.Deno) {
     /**

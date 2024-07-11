@@ -17,8 +17,8 @@ const log = console.log.bind(console)
 
 // log(new URLSearchParams(location?.search))
 const SEARCH = decodeURIComponent(location?.search)
-const filter_tag  = (SEARCH.match(/^\?tags\/([^&]+)/)        || ['', ''])[1]
-const filter_cat  = (SEARCH.match(/^\?categories\/([^&]+)/)  || ['', ''])[1]
+const filter_tag  = (SEARCH.match(/^\?tags\/([^&/]+)/)        || ['', ''])[1]
+const filter_cat  = (SEARCH.match(/^\?categories\/([^&/]+)/)  || ['', ''])[1]
 const state = {
   tags: {},
   cats: {},
@@ -31,9 +31,11 @@ const state = {
   pathrel: '',
   is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
   filter_post_url: null,
-  page: Number((SEARCH.match(/[?&]page=(\d+)/) || [1, 1])[1]) - 1,
+  page: Number((SEARCH.match(/[?/]page\/(\d+)/) || [1, 1])[1]) - 1,
   list_tags: !filter_tag && SEARCH.match(/[?&]tags/),
   list_cats: !filter_cat && SEARCH.match(/[?&]categories/),
+  filter_tag,
+  filter_cat,
 }
 const filter_post = (state.is_homepage ? '' :
   `${location?.origin}${location?.pathname}`.replace(/\/index\.html$/, '/'))
@@ -78,7 +80,6 @@ let cfg = {
   },
   social: {},
   social_share: ['twitter', 'facebook', 'pinterest', 'email'],
-  view_more_posts_link: '/post/', // xxx
   remove_blur: true,
 }
 
@@ -592,10 +593,10 @@ function storage_loop() {
       state.urls_filtered.push(post.url)
   }
 
-  state.urls_filtered = state.urls_filtered.slice(
-    state.page * cfg.posts_per_page,
-    state.page * cfg.posts_per_page + cfg.posts_per_page,
-  )
+  const postL = state.page * cfg.posts_per_page
+  const postR = postL + cfg.posts_per_page
+  state.page_more = postR < state.urls_filtered.length
+  state.urls_filtered = state.urls_filtered.slice(postL, postR)
 }
 
 

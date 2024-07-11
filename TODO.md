@@ -1,12 +1,14 @@
 
-xxx make /?tags work
-xxx make /?categories work
-xxx nav uses /categories (which fails, too)
-xxx nav home link wrong
 xxx socnet icons hover should blue color
 
 
 add storj, codepen, etc.
+
+xxx add either:
+```html
+<meta property="og:type" content="website">
+<meta property="og:type" content="article">
+```
 
 xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
 xxx autogen rss
@@ -45,7 +47,6 @@ nav search box that prefills google search site:xxx AND ..
 
 
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
-xxx pagination
 xxx JS/CSS versioning..
 
 github.com cookie: dotcom_user
