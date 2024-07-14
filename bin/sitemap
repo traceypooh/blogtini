@@ -96,18 +96,18 @@ function rss() { # xxx <description> using snippet??
 
 
 function comments() {
+  # this helps with efficiency but could be replaced with a lot of requests at runtime in the browser
   (
     mkdir -p comments
     cd       comments
     find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
     for DIR in $(cat index.txt); do
       OUT=$DIR/index.json
-      echo '[' >| $OUT
-      for JSON in $(ls $DIR | grep -Ev '^index.json$'); do
-        cat "$DIR/$JSON" >> $OUT
-        echo ",\n" >> $OUT
-      done
-      echo "\n{}\n]" >> $OUT
+      rm -f $OUT
+      jq -rs '. | map(.)' $DIR/*.json \
+        | jq '.[] | del(.replyThread) | with_entries(if .key == "_id" then .key = "id" else . end)' \
+        | jq -s 'flatten(1)' \
+        > $OUT
     done
   )
 }
