@@ -9,6 +9,7 @@ import './bt-post-mini.js'
 import './bt-post-header.js'
 import './featured-image.js'
 import './post-stats.js'
+import './bt-comment.js'
 
 
 function css_buttons() {

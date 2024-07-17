@@ -251,6 +251,7 @@ async function main() {
     /* eg:
       deno run -A  js/blogtini.js  index.html
     */
+    if (!Deno.args.length) return
     const fi = Deno.args[0]
     const body = Deno.readTextFileSync(fi)
     if (!body.startsWith(HEADLINE)) {
@@ -621,37 +622,29 @@ function storage_add(post) { // xxx use snippet
 }
 
 
-async function comments_markup(path) {
+/**
+ * @param {string} path
+ */
+async function comments_get(path) {
   let posts_with_comments
   try {
     posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
     /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
   } catch {}
-  if (!posts_with_comments?.includes(path)) return null
+  if (!posts_with_comments?.includes(path))
+    return []
 
-  const comments = (await fetcher(`${state.top_dir}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length)
-
-  const refId = 'xxx'
-
-  return comments.map((e) => `
-<article id="${refId}" class="comment" data-reply-thread="${refId}">
-  <header>
-    <img class="comment-avatar circle" src="https://www.gravatar.com/avatar/${e.email}?s=100" alt="${e.name}'s Gravatar">
-    <div>
-      <div class="comment-author-container">
-        <h3 class="comment-author">${e.name}</h3>
-        <a class="comment-date" href="#${refId}" title="Permalink to this comment">
-          ${'' /* eslint-disable-next-line no-use-before-define */}
-          <time datetime="${e.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(e.date)}</time>
-        </a>
-      </div>
-      <a class="comment-reply-btn" href="#say-something">Reply</a>
-    </div>
-  </header>
-  <div class="comment-content">
-    ${e.body}
-  </div>
-</article>`).join('')
+  // oldest comments (or oldest in a thread) first
+  return (await fetcher(`${state.top_dir}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length).sort((a, b) => a.date < b.date).map((e) => {
+    // delete any unused keys in each comment hashmap
+    for (const [k, v] of Object.entries(e)) {
+      if (v === '' || v === undefined || v === null)
+        delete e[k]
+      if (!['id', 'name', 'email', 'date', 'website', 'replyID', 'body'].includes(k))
+        delete e[k]
+    }
+    return e
+  })
 }
 
 
@@ -696,7 +689,7 @@ function create_comment_form(entryId, comments) {
 
     <div class="comments-container">
       <h2>Comments</h2>
-      ${comments ?? '<p>Nothing yet.</p>'}
+      ${comments && comments.length ? '' : '<p>Nothing yet.</p>'}
     </div>
 
   </div>`
@@ -971,7 +964,7 @@ export {
   cssify,
   datetime,
   markdown_to_html,
-  comments_markup,
+  comments_get,
   create_comment_form,
   share_buttons,
   dark_mode,
