@@ -1,6 +1,6 @@
 import {
   LitElement, html, css, unsafeCSS,
-} from 'https://esm.archive.org/lit'
+} from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   url2post, urlify,
   datetime, dark_mode,

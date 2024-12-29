@@ -57,7 +57,7 @@ document.write(`
 
 # bt-body.js
 ```js
-import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 customElements.define('bt-body', class extends LitElement {
   static get styles() {
@@ -97,7 +97,7 @@ customElements.define('bt-body', class extends LitElement {
 
 # bt-posts.js
 ```js
-import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 customElements.define('bt-posts', class extends LitElement {
   static get styles() {
@@ -118,7 +118,7 @@ customElements.define('bt-posts', class extends LitElement {
 # bt-post.js
 ```js
 import { url2post, markdown_to_html } from 'https://blogtini.com/js/blogtini.js'
-import { LitElement, html } from 'https://esm.archive.org/lit'
+import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 customElements.define('bt-post', class extends LitElement {
   render() {

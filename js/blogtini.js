@@ -1,8 +1,8 @@
 
 /* eslint-disable no-continue */
-import yml from 'https://esm.archive.org/js-yaml'
-import dayjs from 'https://esm.archive.org/dayjs'
-import showdown from 'https://esm.archive.org/showdown'
+import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
+import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
+import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
 import { krsort, vrsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
@@ -317,7 +317,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
 
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
-  await import('https://esm.archive.org/redefine-custom-elements')
+  await import('https://esm.ext.archive.org/redefine-custom-elements@0.1.3')
 
   import(cfg.theme)
 

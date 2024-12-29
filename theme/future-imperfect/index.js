@@ -1,4 +1,4 @@
-import { css, unsafeCSS } from 'https://esm.archive.org/lit'
+import { css, unsafeCSS } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { dark_mode } from '../../js/blogtini.js'
 
 import './bt-body.js'

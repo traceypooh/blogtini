@@ -1,8 +1,8 @@
 // deno-lint-ignore-file
 /* eslint-disable */
-import $ from 'https://esm.archive.org/jquery'
-import lunr from 'https://esm.archive.org/lunr'
-import dayjs from 'https://esm.archive.org/dayjs'
+import $ from 'https://esm.ext.archive.org/jquery@3.7.1'
+import lunr from 'https://esm.ext.archive.org/lunr@2.3.9'
+import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 
 import { summarize_markdown } from './text.js'
 

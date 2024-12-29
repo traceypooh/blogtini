@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { state } from '../../js/blogtini.js'
 import { css_links } from './index.js'
 

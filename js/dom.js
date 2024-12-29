@@ -1,4 +1,4 @@
-import { JSDOM } from 'https://esm.archive.org/jsdom'
+import { JSDOM } from 'https://esm.ext.archive.org/jsdom@25.0.1'
 
 const doc = new JSDOM('')
 globalThis.document = doc.window.document

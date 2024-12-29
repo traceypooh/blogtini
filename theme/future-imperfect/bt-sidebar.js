@@ -1,5 +1,5 @@
-import { unsafeHTML } from 'https://esm.archive.org/lit/directives/unsafe-html.js'
-import { LitElement, html, css } from 'https://esm.archive.org/lit'
+import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cfg, state, urlify } from '../../js/blogtini.js'
 import { css_buttons, css_headers, css_links } from './index.js'
 
