@@ -863,23 +863,6 @@ function head_insert_titles(title, img) {
   // document.getElementsByTagName('meta')['viewport']
   // <meta name="description" content="SPA metadata is not so fun"/>
 
-  {
-    const e = document.createElement('title') // chexxx
-    e.textContent = title // xxx &gt; &lt;
-    document.head.appendChild(e)
-  }
-  {
-    const e = document.createElement('meta') // chexxx
-    e.setAttribute('name', 'twitter:title')
-    e.setAttribute('content', title) // xxx quote escape, etc.
-    document.head.appendChild(e)
-  }
-  {
-    const e = document.createElement('meta') // chexxx
-    e.setAttribute('property', 'og:title')
-    e.setAttribute('content', title) // xxx quote escape, etc.
-    document.head.appendChild(e)
-  }
   if (img) {
     const e = document.createElement('meta') // chexxx
     e.setAttribute('property', 'og:image')
