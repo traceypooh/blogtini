@@ -315,14 +315,12 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   // eslint-disable-next-line no-use-before-define
   add_interactivity()
 
-
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
   await import('https://esm.ext.archive.org/redefine-custom-elements@0.1.3')
 
-  import(cfg.theme)
+  await import(cfg.theme)
 
-
-  document.querySelector('body').style.display = 'block' // for SSR
+  document.querySelector('body').style.display = 'block' // SSR step hides body until now
 }
 
 
