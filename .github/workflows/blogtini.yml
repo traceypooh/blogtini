@@ -61,7 +61,7 @@ jobs:
             # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
             entrypoint: /bin/sh
             # setup SEO headers & create sitemap xxx split out comments mgmt
-            args: "-c 'apk add zsh yq && if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi && ./_blogtini/bin/ssr.sh'"
+            args: -c 'apk add zsh yq && ( if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi ) && ./_blogtini/bin/ssr.sh'
       - name: Blogtini SEO head elements & sitemap
         run: |
           set -x
