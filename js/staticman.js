@@ -1,7 +1,8 @@
 // deno-lint-ignore-file
 /* eslint-disable */
 (function() {
-  let form = document.querySelector('.new-comment'); // xxxxxxxx
+  const form = document.querySelector('bt-post-full').shadowRoot.querySelector('.new-comment')
+
   if (form) {
     form.querySelector('#comment-form-submit').addEventListener('click', function () {
       form.classList.add('loading');
@@ -88,7 +89,9 @@
     }
 
     // record reply target when one of the "reply" buttons is pressed
-    document.querySelector('.comments-container').addEventListener('click', /* xxxxxxxx */ function (evt) {
+    // document.querySelector('.comments-container')
+    document.querySelector('bt-post-full').shadowRoot.querySelector('.comments-container')
+      .addEventListener('click', function (evt) {
       let target = evt.target;
       if (target.matches('.comment-reply-btn')){
         resetReplyTarget();
@@ -96,7 +99,7 @@
         while (!cmt.matches('.comment')) {  // find the comment containing the clicked "reply" button
           cmt = cmt.parentNode;
         }
-        form.querySelector('input[name="fields[replyThread]"]').value = cmt.dataset.replyThread;
+        // form.querySelector('input[name="fields[replyThread]"]').value = cmt.dataset.replyThread;
         form.querySelector('input[name="fields[replyID]"]').value = cmt.getAttribute('id');
         let replyName = cmt.querySelector('.comment-author').innerText
         form.querySelector('input[name="fields[replyName]"]').value = replyName;

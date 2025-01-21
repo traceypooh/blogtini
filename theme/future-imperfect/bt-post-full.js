@@ -82,8 +82,10 @@ customElements.define('bt-post-full', class extends LitElement {
 
 
   updated() {
-    if (this.comments && this.comments.length)
+    if (this.comments && this.comments.length) {
       this.comments_insert()
+      import('../../js/staticman.js')
+    }
 
     // add code highlighting
     const codes = this.shadowRoot.querySelectorAll('pre code')
@@ -100,7 +102,10 @@ customElements.define('bt-post-full', class extends LitElement {
    */
   comments_insert() {
     // loop over comments, appending each into the right parent, until all are added
-    // (or no more addable if corrupted / invalid parent pointer)
+    // (or no more addable if corrupted / invalid parent pointer).
+    // The comments can be in any order -- so a reply to a parent might be seen befor the parent.
+    // So we will loop over list of comments and insert what we can, repeatedly.
+    // We know we are done when a loop over any remaining comments to insert ends up inserting 0.
     // eslint-disable-next-line no-empty
     while (this.comments.reduce((sum, e) => sum + this.comment_insert(e), 0)) {}
 
