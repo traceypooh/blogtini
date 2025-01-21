@@ -320,7 +320,12 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 
   await import(cfg.theme)
 
-  document.querySelector('body').style.display = 'block' // SSR step hides body until now
+
+  window.onunhandledrejection = (unhandled_rejection) => {
+    document.querySelector('body').style.display = 'block' // SSR step hides body until now
+    // eslint-disable-next-line no-console
+    console.error({ unhandled_rejection })
+  }
 }
 
 

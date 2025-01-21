@@ -20,6 +20,14 @@ customElements.define('bt-body', class extends LitElement {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  updated() {
+    // eslint-disable-next-line no-promise-executor-return
+    new Promise((r) => requestAnimationFrame(r)).then(() => {
+      document.querySelector('body').style.display = 'block' // SSR step hides body until now
+    })
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   render() {
     const page_is_home = !state.filter_tag && !state.filter_cat
     const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
