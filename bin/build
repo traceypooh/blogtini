@@ -1,12 +1,17 @@
 #!/bin/sh
 
+# blogtini build step
+# runs in alpine linux container with `deno` binary installed
+
+# get other needed packages
 apk add zsh yq
 
-# setup SEO headers & create sitemap xxx split out comments mgmt
+# create sitemap xxx split out comments mgmt
 if [ ! -e sitemap.xml ]; then
   ./_blogtini/bin/sitemap
 fi
 
+# setup SEO headers
 ./_blogtini/bin/ssr.sh
 
 # cleanup, remove .git/ etc..
