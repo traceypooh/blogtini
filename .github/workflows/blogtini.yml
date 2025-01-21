@@ -55,6 +55,12 @@ jobs:
         with:
           repository: traceypooh/blogtini
           path: _blogtini
+      - name: R & D
+        uses: docker://alpine:3.8
+        with:
+            # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
+            entrypoint: /bin/echo
+            args:  The ${{ github.event_name }} event triggered this step.
       - name: Blogtini SEO head elements & sitemap
         run: |
           set -x
@@ -66,7 +72,7 @@ jobs:
           export DENO_INSTALL="/home/runner/.deno"
           export PATH="$DENO_INSTALL/bin:$PATH"
 
-          # setup SEO headers & create sitemap
+          # setup SEO headers & create sitemap xxx split out comments mgmt
           if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi
           ./_blogtini/bin/ssr.sh
 
