@@ -55,6 +55,12 @@ jobs:
         with:
           repository: traceypooh/blogtini
           path: _blogtini
+      - name: xxx
+        uses: docker://denoland/deno:alpine
+        with:
+          # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
+          entrypoint: /bin/sh
+          args: "-c 'apk add zsh yq; echo xxx'"
       - name: Blogtini SEO head elements & sitemap
         uses: docker://denoland/deno:alpine
         with:
