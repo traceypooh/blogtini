@@ -55,34 +55,11 @@ jobs:
         with:
           repository: traceypooh/blogtini
           path: _blogtini
-      - name: xxx
-        uses: docker://denoland/deno:alpine
-        with:
-          # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
-          entrypoint: /bin/sh
-          args: "-c 'apk add zsh yq; echo xxx'"
       - name: Blogtini SEO head elements & sitemap
         uses: docker://denoland/deno:alpine
         with:
           # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
           entrypoint: ./bin/build
-      - name: Blogtini SEO head elements & sitemap slower xxx
-        run: |
-          set -x
-          # get pkgs
-          sudo apt-get install -yqq zsh yq
-
-          # get & setup deno
-          curl -fsSL https://deno.land/install.sh | sh
-          export DENO_INSTALL="/home/runner/.deno"
-          export PATH="$DENO_INSTALL/bin:$PATH"
-
-          # setup SEO headers & create sitemap xxx split out comments mgmt
-          if [ ! -e sitemap.xml ]; then ./_blogtini/bin/sitemap; fi
-          ./_blogtini/bin/ssr.sh
-
-          # cleanup, remove .git/ etc..
-          rm -rf  _blogtini  .[^.]*
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
