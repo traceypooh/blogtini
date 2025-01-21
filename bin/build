@@ -1,6 +1,6 @@
 #!/bin/sh -eux
 
-# blogtini build step
+# blogtini build step (for github actions).
 # runs in alpine linux container with `deno` binary installed
 
 # get other needed packages
@@ -8,6 +8,7 @@ apk add zsh yq git
 
 # create sitemap xxx split out comments mgmt
 if [ ! -e sitemap.xml ]; then
+  git config --global --add safe.directory /github/workspace
   ./_blogtini/bin/sitemap
 fi
 
