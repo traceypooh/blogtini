@@ -1,0 +1,13 @@
+#!/bin/sh
+
+apk add zsh yq
+
+# setup SEO headers & create sitemap xxx split out comments mgmt
+if [ ! -e sitemap.xml ]; then
+  ./_blogtini/bin/sitemap
+fi
+
+./_blogtini/bin/ssr.sh
+
+# cleanup, remove .git/ etc..
+rm -rf  _blogtini  .[^.]*
