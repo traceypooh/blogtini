@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/sh -eux
 
 # blogtini build step
 # runs in alpine linux container with `deno` binary installed
 
 # get other needed packages
-apk add zsh yq
+apk add zsh yq git
 
 # create sitemap xxx split out comments mgmt
 if [ ! -e sitemap.xml ]; then
