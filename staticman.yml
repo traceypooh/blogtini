@@ -11,7 +11,7 @@ comments:
 
   # When allowedOrigins is defined, only requests sent from one of the domains
   # listed will be accepted.
-  allowedOrigins: ["localhost", "blogtini.com"]
+  allowedOrigins: ["localhost", "blogtini.com", "traceypooh.github.io"]
 
   # (*) REQUIRED
   #
@@ -27,7 +27,7 @@ comments:
   # to be used directly (e.g. a string, number or array)
   generatedFields:
     date:
-      type: date
+      type: "date"
 
   # The format of the generated data files. Accepted values are "json", "yaml"
   # or "frontmatter"
