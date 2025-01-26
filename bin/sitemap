@@ -1,5 +1,7 @@
 #!/bin/zsh -e
 
+mydir=${0:a:h}
+
 if [ ! -e config.yml ]; then
   echo run this script from the top-level of your repo
   exit 1
@@ -47,7 +49,7 @@ function sitemap() {
 
 function rss() { # xxx <description> using snippet??
   # If `yq` is not installed locally, we won't make RSS `index.xml`
-  ( which -a yq >/dev/null )  ||  return
+  ( set +e; which -a yq >/dev/null )  ||  return 0
 
   OUTFILE=index.xml
 
@@ -98,6 +100,7 @@ function rss() { # xxx <description> using snippet??
 function comments() {
   # this helps with efficiency but could be replaced with a lot of requests at runtime in the browser
   (
+    cd $mydir/..
     mkdir -p comments
     cd       comments
     find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
