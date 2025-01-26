@@ -53,6 +53,31 @@
       }
       xhr.send(formData)
     })
+
+    // record reply target when one of the "reply" buttons is pressed
+    document.querySelector('bt-post-full').shadowRoot.querySelectorAll('bt-comment').forEach((e) => {
+      e.shadowRoot.querySelector('.comment-reply-btn').addEventListener('click', (evt) => {
+        // eslint-disable-next-line no-use-before-define
+        resetReplyTarget()
+        let cmt = evt.currentTarget
+        while (!cmt.matches('.comment')) // find the comment containing the clicked "reply" button
+          cmt = cmt.parentNode
+        form.querySelector('input[name="fields[replyID]"]').value = cmt.getAttribute('id')
+        const replyName = cmt.querySelector('.comment-author').innerText
+
+        // display reply name
+        form.querySelector('.reply-notice').classList.remove('hidden')
+        form.querySelector('.reply-name').innerText = replyName
+      })
+    })
+
+    // handle removal of reply target when '×' is pressed
+    // eslint-disable-next-line no-use-before-define
+    form.querySelector('.reply-close-btn').addEventListener('click', resetReplyTarget)
+
+    // clear form when reset button is clicked
+    // eslint-disable-next-line no-use-before-define
+    form.querySelector('#comment-form-reset').addEventListener('click', clearForm)
   }
 
   function formSubmitted() {
@@ -96,27 +121,4 @@
     // eslint-disable-next-line no-return-assign
     Array.from(form.elements).filter((e) => e.name.indexOf('fields[reply') === 0).forEach((e) => e.value = '')
   }
-
-  // record reply target when one of the "reply" buttons is pressed
-  // document.querySelector('.comments-container')
-  document.querySelector('bt-post-full').shadowRoot.querySelectorAll('bt-comment').forEach((e) => {
-    e.shadowRoot.querySelector('.comment-reply-btn').addEventListener('click', (evt) => {
-      resetReplyTarget()
-      let cmt = evt.currentTarget
-      while (!cmt.matches('.comment')) // find the comment containing the clicked "reply" button
-        cmt = cmt.parentNode
-      form.querySelector('input[name="fields[replyID]"]').value = cmt.getAttribute('id')
-      const replyName = cmt.querySelector('.comment-author').innerText
-
-      // display reply name
-      form.querySelector('.reply-notice').classList.remove('hidden')
-      form.querySelector('.reply-name').innerText = replyName
-    })
-  })
-
-  // handle removal of reply target when '×' is pressed
-  form.querySelector('.reply-close-btn').addEventListener('click', resetReplyTarget)
-
-  // clear form when reset button is clicked
-  form.querySelector('#comment-form-reset').addEventListener('click', clearForm)
 })()
