@@ -78,8 +78,9 @@ social:
 social_share: ['twitter', 'facebook', 'pinterest', 'email', 'linkedin', 'reddit']
 
 staticman:
+  # https://staticman.net/docs/getting-started
   # If using GitHub, go to https://github.com/apps/staticman-net
   # If using GitLab, just add the GitLab bot, NO need to hit `/connect/v3/...`
   enabled:  true
-  api:      traceypooh-staticman.dev.archive.org  # without trailing slash, defaults to 'staticman3.herokuapp.com'
+  api:      staticman.ext.archive.org  # without trailing slash, defaults to 'staticman3.herokuapp.com'
   branch:   main
