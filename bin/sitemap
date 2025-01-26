@@ -1,7 +1,5 @@
 #!/bin/zsh -e
 
-mydir=${0:a:h}
-
 if [ ! -e config.yml ]; then
   echo run this script from the top-level of your repo
   exit 1
@@ -100,11 +98,12 @@ function rss() { # xxx <description> using snippet??
 function comments() {
   # this helps with efficiency but could be replaced with a lot of requests at runtime in the browser
   (
-    cd $mydir/..
+    echo -n Updating comments
     mkdir -p comments
     cd       comments
     find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
     for DIR in $(cat index.txt); do
+      echo -n .
       OUT=$DIR/index.json
       rm -f $OUT
       jq -rs '. | map(.)' $DIR/*.json \
@@ -112,6 +111,7 @@ function comments() {
         | jq -s 'flatten(1)' \
         > $OUT
     done
+    echo
   )
 }
 
