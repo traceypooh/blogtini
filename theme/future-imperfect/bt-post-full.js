@@ -30,7 +30,7 @@ customElements.define('bt-post-full', class extends LitElement {
       // console.error({key})
       comments_get(key).then(
         (comments) => {
-          this.comments_form = create_comment_form(post.url, comments)
+          this.comments_form = create_comment_form(key, comments)
           this.comments = comments
         },
       )
