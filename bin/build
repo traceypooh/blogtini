@@ -4,7 +4,7 @@
 # runs in alpine linux container with `deno` binary installed
 
 # get other needed packages
-apk add zsh yq git
+apk add zsh yq jq git
 
 # create sitemap xxx split out comments mgmt
 if [ ! -e sitemap.xml ]; then
