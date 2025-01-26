@@ -19,6 +19,8 @@ comments:
   # "config.toml".
   branch: "main"
 
+  commitMessage: "New comment {fields.date} by {fields.name}"
+
   # List of fields to be populated automatically by Staticman and included in
   # the data file. Keys are the name of the field. The value can be an object
   # with a `type` property, which configures the generated field, or any value
