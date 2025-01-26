@@ -107,7 +107,7 @@ function comments() {
       OUT=$DIR/index.json
       rm -f $OUT
       jq -rs '. | map(.)' $DIR/*.json \
-        | jq '.[] | del(.replyThread) | with_entries(if .key == "_id" then .key = "id" else . end)' \
+        | jq '.[] | del(.replyThread) | del(.replyName) | with_entries(if .key == "_id" then .key = "id" else . end)' \
         | jq -s 'flatten(1)' \
         > $OUT
     done

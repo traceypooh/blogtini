@@ -657,21 +657,18 @@ function create_comment_form(entryId, comments) {
 
   globalThis.cfg = cfg // xxx
 
-  const xxx = '' // reply stuff
   return `
   <div class="post">
     <div>
-      <h2 id="say-something">Say Something (* THIS IS NOT WORKING YET *)</h2>
+      <h2 id="say-something">Say Something</h2>
       <form id="comment-form" class="new-comment" method="POST">
         <h3 class="reply-notice hidden">
           <span class="reply-name"></span>
           <a class="reply-close-btn button"><i class="fas fa-times"></i></a>
         </h3>
 
-        <input type="hidden" name="options[entryId]"    value="${entryId}">
-        <input type="hidden" name="fields[replyThread]" value="${xxx}">
-        <input type="hidden" name="fields[replyID]"     value="${xxx}">
-        <input type="hidden" name="fields[replyName]"   value="${xxx}">
+        <input type="hidden" name="options[entryId]" value="${entryId}">
+        <input type="hidden" name="fields[replyID]"  value="">
 
         <input required="" name="fields[name]" type="text" placeholder="Your Name">
         <input name="fields[website]" type="text" placeholder="Your Website">
