@@ -3,8 +3,9 @@ import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 import {
   url2post, cssify,
-  markdown_to_html, comments_get, create_comment_form,
+  markdown_to_html,
   share_buttons,
+  cfg,
 } from '../../js/blogtini.js'
 import {
   css_post, css_dark, css_footer, css_title, css_hljs,
@@ -15,8 +16,6 @@ customElements.define('bt-post-full', class extends LitElement {
   static get properties() {
     return {
       url: { type: String },
-      comments_form: { type: String },
-      comments: { type: Object },
     }
   }
 
@@ -24,17 +23,7 @@ customElements.define('bt-post-full', class extends LitElement {
     const post = url2post(this.url)
     const body = markdown_to_html(post.body_raw)
 
-    if (post.type === 'post' && !this.comments_form) {
-      // use a default base in case url is relative (pathname) only
-      const key = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
-      // console.error({key})
-      comments_get(key).then(
-        (comments) => {
-          this.comments_form = create_comment_form(key, comments)
-          this.comments = comments
-        },
-      )
-    }
+    const comments_entryid = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
 
     const socnet_share = share_buttons(post)
 
@@ -72,21 +61,17 @@ customElements.define('bt-post-full', class extends LitElement {
             tags=${JSON.stringify(post.tags)}>
           </post-stats>
         </footer>` : ''}
-
       </div>
 
-      ${unsafeHTML(this.comments_form)}
+      ${post.type === 'post' && cfg.staticman?.enabled ? html`
+        <bt-comments entryid=${comments_entryid}></bt-comments>
+      ` : ''}
     </article>
   `
   }
 
 
   updated() {
-    if (this.comments && this.comments.length) {
-      this.comments_insert()
-      import('../../js/staticman.js')
-    }
-
     // add code highlighting
     const codes = this.shadowRoot.querySelectorAll('pre code')
     if (codes.length) {
@@ -94,49 +79,6 @@ customElements.define('bt-post-full', class extends LitElement {
         (esm) => codes.forEach(esm.default.highlightBlock),
       )
     }
-  }
-
-  /**
-   * Cleverly use DOM to add (potentially nested) comment elements into a div
-   * -- because threading replies (and replies of replies) gets complicated suuuuper quick
-   */
-  comments_insert() {
-    // loop over comments, appending each into the right parent, until all are added
-    // (or no more addable if corrupted / invalid parent pointer).
-    // The comments can be in any order -- so a reply to a parent might be seen befor the parent.
-    // So we will loop over list of comments and insert what we can, repeatedly.
-    // We know we are done when a loop over any remaining comments to insert ends up inserting 0.
-    // eslint-disable-next-line no-empty
-    while (this.comments.reduce((sum, e) => sum + this.comment_insert(e), 0)) {}
-
-    for (const com of this.comments) {
-      // eslint-disable-next-line no-console
-      if (com.id) console.error('Comment orphaned', com)
-    }
-  }
-
-  /**
-   * Adds a comment into DOM, finding the right parent for threaded comments, etc.
-   * @param {object} com
-   * @returns {number} 0 or 1 comments added
-   */
-  comment_insert(com) {
-    if (!com.id) return 0
-    const e = document.createElement('bt-comment')
-    for (const [k, v] of Object.entries(com))
-      e.setAttribute(k, v) // xxxcc JSON.stringify(v))
-
-    const addto = com.replyID
-      ? this.shadowRoot.getElementById(com.replyID)
-      : this.shadowRoot.querySelector('.comments-container')
-    if (!addto)
-      return 0 // *should* never happen -- but cant find parent for this comment's `replyID`
-
-    addto.appendChild(e)
-
-    // eslint-disable-next-line no-param-reassign
-    delete com.id
-    return 1
   }
 
 

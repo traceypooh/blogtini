@@ -625,76 +625,6 @@ function storage_add(post) { // xxx use snippet
 }
 
 
-/**
- * @param {string} path
- */
-async function comments_get(path) {
-  let posts_with_comments
-  try {
-    posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
-    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
-  } catch {}
-  if (!posts_with_comments?.includes(path))
-    return []
-
-  // oldest comments (or oldest in a thread) first
-  return (await fetcher(`${state.top_dir}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length).sort((a, b) => a.date < b.date).map((e) => {
-    // delete any unused keys in each comment hashmap
-    for (const [k, v] of Object.entries(e)) {
-      if (v === '' || v === undefined || v === null)
-        delete e[k]
-      if (!['id', 'name', 'email', 'date', 'website', 'replyID', 'body'].includes(k))
-        delete e[k]
-    }
-    return e
-  })
-}
-
-
-function create_comment_form(entryId, comments) {
-  if (!cfg.staticman?.enabled)
-    return ''
-
-  globalThis.cfg = cfg // xxx
-
-  return `
-  <div class="post">
-    <div>
-      <h2 id="say-something">Say Something</h2>
-      <form id="comment-form" class="new-comment" method="POST">
-        <h3 class="reply-notice hidden">
-          <span class="reply-name"></span>
-          <a class="reply-close-btn button"><i class="fas fa-times"></i></a>
-        </h3>
-
-        <input type="hidden" name="options[entryId]" value="${entryId}">
-        <input type="hidden" name="fields[replyID]"  value="">
-
-        <input required="" name="fields[name]" type="text" placeholder="Your Name">
-        <input name="fields[website]" type="text" placeholder="Your Website">
-        <input required="" name="fields[email]" type="email" placeholder="Your Email">
-        <textarea required="" name="fields[body]" placeholder="Your Message" rows="10"></textarea>
-
-        <div class="submit-notice">
-          <strong class="submit-notice-text submit-success hidden">Thanks for your comment! It will be shown on the site once it has been approved.</strong>
-          <strong class="submit-notice-text submit-failed hidden">Sorry, there was an error with your submission. Please make sure all required fields have been completed and try again.</strong>
-        </div>
-
-        <button type="button" id="comment-form-submit" class="button">Submit</button>
-        <button type="button" id="comment-form-submitted" class="hidden button" disabled="">Submitted</button>
-        <button type="reset"  id="comment-form-reset" class="button">Reset</button>
-      </form>
-    </div>
-
-
-    <div class="comments-container">
-      <h2>Comments</h2>
-      ${comments && comments.length ? '' : '<p>Nothing yet.</p>'}
-    </div>
-
-  </div>`
-}
-
 function share_buttons(post) { // xxxxx
   if (!post) {
     // if no post, parse url for ?tags etc and fake
@@ -947,10 +877,9 @@ export {
   cssify,
   datetime,
   markdown_to_html,
-  comments_get,
-  create_comment_form,
   share_buttons,
   dark_mode,
   PR,
   imgurl,
+  fetcher,
 }

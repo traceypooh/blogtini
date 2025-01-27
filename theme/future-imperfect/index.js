@@ -9,6 +9,7 @@ import './bt-post-mini.js'
 import './bt-post-header.js'
 import './featured-image.js'
 import './post-stats.js'
+import './bt-comments.js'
 import './bt-comment.js'
 
 
@@ -212,7 +213,8 @@ function css_dark() {
 article.post,
 article .post,
 .mini-post,
-article.comment header {
+.comments.post,
+.comment header {
   color: #ddd;
   background-color: #222;
 }
@@ -336,6 +338,96 @@ hue-6-2: #e6c07b
 `
 }
 
+
+function css_forms() {
+  return css`
+/*
+* Remove text-shadow in selection highlight:
+* https://twitter.com/miketaylr/status/12228805301
+*
+* Vendor-prefixed and regular ::selection selectors cannot be combined:
+* https://stackoverflow.com/a/16982510/7133471
+*
+* Customize the background color to match your design.
+*/
+::-moz-selection {
+  background: #2eb8ac;
+  text-shadow: none;
+}
+::selection {
+  background: #2eb8ac;
+  text-shadow: none;
+}
+
+/*
+* Allow only vertical resizing of textareas.
+*/
+textarea {
+  resize: vertical;
+}
+
+input,
+select,
+textarea {
+  color: #333333;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  line-height: 1.75em;
+}
+
+
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+label {
+  color: #3b3a3a;
+  display: block;
+  font-size: 0.9em;
+  font-weight: 700; }
+
+input,
+select,
+textarea {
+  background: rgba(161, 161, 161, 0.07);
+  border: 1px solid rgba(161, 161, 161, 0.3);
+  outline: 0;
+  margin: 0.25em 0;
+  padding: 0 1em;
+  width: 100%;
+  transition: border-color 0.2s ease-in-out;
+}
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #2eb8ac;
+}
+input:focus, input:active,
+select:focus,
+select:active,
+textarea:focus,
+textarea:active {
+  border: 1px solid #2eb8ac;
+}
+
+input, select {
+  height: 2.75em;
+}
+
+textarea {
+  height: 5em;
+}
+
+::-webkit-input-placeholder,
+:-moz-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder,
+.formerize-placeholder {
+  color: #ababab;
+  opacity: 1;
+}
+  `
+}
+
+
 export {
   css_buttons,
   css_headers,
@@ -345,4 +437,5 @@ export {
   css_post,
   css_title,
   css_hljs,
+  css_forms,
 }

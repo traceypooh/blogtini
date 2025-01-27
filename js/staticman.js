@@ -1,8 +1,10 @@
+import { cfg } from './blogtini.js'
+
 function find_form() {
   return document.querySelector('bt-post-full')?.shadowRoot?.querySelector('.new-comment')
 }
 
-function comment_setup(cfg) {
+function comment_setup() {
   const form = find_form()
   if (!form) {
     // eslint-disable-next-line no-console
@@ -120,6 +122,6 @@ function clearForm() {
   form.querySelector('.submit-failed').classList.add('hidden') // hide submission status
 }
 
-comment_setup(window.cfg) // xxx global
+comment_setup()
 
 export default comment_setup
