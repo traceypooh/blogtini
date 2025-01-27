@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { fetcher, state } from '../../js/blogtini.js'
+import { fetcher, state, cssify } from '../../js/blogtini.js'
 import {
   css_dark, css_headers, css_buttons, css_post, css_forms,
 } from './index.js'
@@ -29,6 +29,7 @@ customElements.define('bt-comments', class extends LitElement {
     }
 
     return html`
+  <link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
   <div class="comments post">
     <div>
       <h2 id="say-something">Say Something</h2>
@@ -143,6 +144,7 @@ customElements.define('bt-comments', class extends LitElement {
       css_post(),
       css_forms(),
       css`
+@charset "UTF-8";
 #comment-form input,
 #comment-form textarea {
   box-sizing: border-box;
@@ -152,130 +154,44 @@ customElements.define('bt-comments', class extends LitElement {
 
 /* Staticman Comments - Form */
 .new-comment.loading {
-  opacity: 0.5; }
-
+  opacity: 0.5;
+}
 .new-comment .reply-notice .comment-avatar {
   width: 2em;
   height: 2em;
-  margin: 0 0.6em; }
-
+  margin: 0 0.6em;
+}
 .new-comment .reply-notice .reply-close-btn {
   padding: unset;
   border: none;
   vertical-align: top;
   font-size: 1em;
   line-height: 0;
-  height: 0; }
-  .new-comment .reply-notice .reply-close-btn:hover {
-    border: none; }
-
+  height: 0;
+}
+.new-comment .reply-notice .reply-close-btn:hover {
+  border: none;
+}
 .new-comment .reply-notice .reply-name {
-  vertical-align: middle; }
-  .new-comment .reply-notice .reply-name::before {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f3e5";
-    margin-right: .5em;
-    width: 20px; }
+  vertical-align: middle;
+}
+.new-comment .reply-notice .reply-name::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\\f3e5";
+  margin-right: .5em;
+  width: 20px;
+}
 
 .submit-success {
   border: 1px solid #2eb8ac;
-  background: rgba(46, 184, 172, 0.25); }
-
+  background: rgba(46, 184, 172, 0.25);
+}
 .submit-failed {
   border: 1px solid #b82e6e;
-  background: rgba(184, 46, 110, 0.25); }
-
-/* Staticman Comments - Content */
-.comment header {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  background: #ededed;
-  align-items: center;
-  border-radius: 50px 0 0 50px; }
-  @media (min-width: 375px) {
-    .comment header {
-      border-radius: 0; } }
-  .comment header div {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    align-items: center; }
-    @media (min-width: 375px) {
-      .comment header div {
-        flex-direction: row; } }
-.comment.comment-reply {
-  margin-left: 1.875em; }
-  @media (min-width: 375px) {
-    .comment.comment-reply {
-      margin-left: 3.75em; } }
-.comment-author-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center; }
-  @media (min-width: 375px) {
-    .comment-author-container {
-      align-items: flex-start;
-      flex-grow: 1; } }
-  @media (min-width: 768px) {
-    .comment-author-container {
-      flex-direction: row;
-      align-items: center; } }
-.comment-avatar {
-  margin: 0 0 0 1em;
-  width: 3.75em;
-  height: 3.75em;
-  flex-grow: 0; }
-  @media (min-width: 375px) {
-    .comment-avatar {
-      margin: 0 .5em 0 0; }
-      .comment-avatar.circle {
-        -webkit-clip-path: none;
-        clip-path: none; } }
-.comment-author {
-  font-size: 0.9em;
-  margin: 0; }
-  @media (min-width: 768px) {
-    .comment-author {
-      margin-right: .5em;
-      padding-right: .5em;
-      border-right: 1px solid rgba(161, 161, 161, 0.3); } }
-.comment-reply-btn {
-  border: 0; }
-  .comment-reply-btn::before {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    content: "\f3e5";
-    margin-right: .5em;
-    width: 20px; }
-  @media (min-width: 375px) {
-    .comment-reply-btn {
-      margin-right: 1.5em; } }
-.comment-content {
-  margin: 1em; }
-
-/* TODO: Assess Value
-  .reply-target {
-    font-size: 0.9em;
-    border: 0;
-    &::before {
-      font-family: $fa-free-font;
-      font-weight: 900;
-      content: "\f3e5";
-      margin-right: .5em;
-      width: 20px;
-    }
-  }
-*/`,
+  background: rgba(184, 46, 110, 0.25);
+}
+`,
       css_dark(),
     ]
   }

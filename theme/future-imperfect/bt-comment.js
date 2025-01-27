@@ -1,4 +1,4 @@
-import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cssify, datetime } from '../../js/blogtini.js'
 import {
   css_post, css_dark, css_footer, css_title, css_buttons,
@@ -20,7 +20,7 @@ customElements.define('bt-comment', class extends LitElement {
 
   render() {
     return html`
-<link href="${cssify('theme/future-imperfect/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${cssify('css/blogtini.css')}" rel="stylesheet" type="text/css"/><!--fonts,fontawesome,etc.-->
 
 <article id="${this.id}" class="comment" style="${this.replID ? 'margin-left:150px' : ''}">
   <header>
@@ -54,6 +54,111 @@ customElements.define('bt-comment', class extends LitElement {
       css_title(),
       css_footer(),
       css_buttons(),
+      css`
+@charset "UTF-8";
+/* Staticman Comments - Content */
+.comment header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  background: #ededed;
+  align-items: center;
+  border-radius: 50px 0 0 50px;
+}
+@media (min-width: 375px) {
+  .comment header {
+    border-radius: 0;
+  }
+}
+.comment header div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+}
+@media (min-width: 375px) {
+  .comment header div {
+    flex-direction: row;
+  }
+}
+.comment.comment-reply {
+  margin-left: 1.875em;
+}
+@media (min-width: 375px) {
+  .comment.comment-reply {
+    margin-left: 3.75em;
+  }
+}
+.comment-author-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 375px) {
+  .comment-author-container {
+    align-items: flex-start;
+    flex-grow: 1;
+  }
+}
+@media (min-width: 768px) {
+  .comment-author-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+.comment-avatar {
+  margin: 0 0 0 1em;
+  width: 3.75em;
+  height: 3.75em;
+  flex-grow: 0;
+}
+@media (min-width: 375px) {
+  .comment-avatar {
+    margin: 0 .5em 0 0;
+  }
+  .comment-avatar.circle {
+    -webkit-clip-path: none;
+    clip-path: none;
+  }
+}
+.comment-author {
+  font-size: 0.9em;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .comment-author {
+    margin-right: .5em;
+    padding-right: .5em;
+    border-right: 1px solid rgba(161, 161, 161, 0.3);
+  }
+}
+.comment-reply-btn {
+  border: 0;
+}
+.comment-reply-btn::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\\f3e5";
+  margin-right: .5em;
+  width: 20px;
+}
+@media (min-width: 375px) {
+  .comment-reply-btn {
+    margin-right: 1.5em;
+  }
+}
+.comment-content {
+  margin: 1em;
+}
+`,
       css_dark(),
     ]
   }

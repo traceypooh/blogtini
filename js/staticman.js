@@ -1,7 +1,7 @@
 import { cfg } from './blogtini.js'
 
 function find_form() {
-  return document.querySelector('bt-post-full')?.shadowRoot?.querySelector('.new-comment')
+  return document.querySelector('bt-post-full')?.shadowRoot?.querySelector('bt-comments')?.shadowRoot?.querySelector('.new-comment')
 }
 
 function comment_setup() {
@@ -67,7 +67,7 @@ function comment_setup() {
   })
 
   // record reply target when one of the "reply" buttons is pressed
-  document.querySelector('bt-post-full').shadowRoot.querySelectorAll('bt-comment').forEach((e) => {
+  for (const e of document.querySelector('bt-post-full').shadowRoot.querySelector('bt-comments').shadowRoot.querySelectorAll('bt-comment')) {
     e.shadowRoot.querySelector('.comment-reply-btn').addEventListener('click', (evt) => {
       // eslint-disable-next-line no-use-before-define
       resetReplyTarget()
@@ -81,7 +81,7 @@ function comment_setup() {
       form.querySelector('.reply-notice').classList.remove('hidden')
       form.querySelector('.reply-name').innerText = replyName
     })
-  })
+  }
 
   // handle removal of reply target when '×' is pressed
   // eslint-disable-next-line no-use-before-define
