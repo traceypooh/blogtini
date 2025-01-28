@@ -23,6 +23,7 @@ customElements.define('bt-post-full', class extends LitElement {
     const post = url2post(this.url)
     const body = markdown_to_html(post.body_raw)
 
+    // use a default base in case url is relative (pathname) only
     const comments_entryid = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
 
     const socnet_share = share_buttons(post)

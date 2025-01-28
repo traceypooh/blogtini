@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { fetcher, state, cssify } from '../../js/blogtini.js'
+import {
+  fetcher, state, cssify, cfg,
+} from '../../js/blogtini.js'
 import {
   css_dark, css_headers, css_buttons, css_post, css_forms,
 } from './index.js'
@@ -14,19 +16,11 @@ customElements.define('bt-comments', class extends LitElement {
   }
 
   render() {
-    if (typeof this.comments === 'undefined') {
-      // use a default base in case url is relative (pathname) only
-      this.comments_get(this.entryid).then(
-        (comments) => {
-          this.comments = comments
-        },
-      )
-    }
+    if (typeof this.comments === 'undefined')
+      this.comments_get()
 
-    if (this.comments && this.comments.length) {
+    if (this.comments && this.comments.length)
       this.comments_insert()
-      import('../../js/staticman.js') // xxxxxx move into this class
-    }
 
     return html`
   <link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
@@ -36,7 +30,7 @@ customElements.define('bt-comments', class extends LitElement {
       <form id="comment-form" class="new-comment" method="POST">
         <h3 class="reply-notice hidden">
           <span class="reply-name"></span>
-          <a class="reply-close-btn button"><i class="fas fa-times"></i></a>
+          <a class="reply-close-btn button" @click=${this.resetReplyTarget}><i class="fas fa-times"></i></a>
         </h3>
 
         <input type="hidden" name="options[entryId]" value="${this.entryid}">
@@ -52,20 +46,53 @@ customElements.define('bt-comments', class extends LitElement {
           <strong class="submit-notice-text submit-failed hidden">Sorry, there was an error with your submission. Please make sure all required fields have been completed and try again.</strong>
         </div>
 
-        <button type="button" id="comment-form-submit" class="button">Submit</button>
+        <button type="button" id="comment-form-submit" class="button" @click=${this.submitted}>Submit</button>
         <button type="button" id="comment-form-submitted" class="hidden button" disabled="">Submitted</button>
-        <button type="reset"  id="comment-form-reset" class="button">Reset</button>
+        <button type="reset"  id="comment-form-reset" class="button" @click=${this.clearForm}>Reset</button>
       </form>
     </div>
 
 
     <div class="comments-container">
       <h2>Comments</h2>
-      ${this.comments && this.comments.length ? '' : '<p>Nothing yet.</p>'}
+      ${this.comments && this.comments.length ? '' : html`<p>Nothing yet.</p>`}
     </div>
   </div>`
   }
 
+  /**
+   * handles evnets from <bt-comment> children
+   * @param {*} event
+   */
+  events_handler(event) {
+    if (event.type === 'bt-comment-reply-clicked') {
+      // console.log(this, `comment reply event: ${event.detail.id} by ${event.detail.author}`)
+
+      const form = this.find_form()
+      this.resetReplyTarget()
+      form.querySelector('input[name="fields[replyID]"]').value = event.detail.id
+
+      // display reply name
+      form.querySelector('.reply-notice').classList.remove('hidden')
+      form.querySelector('.reply-name').innerText = event.detail.author
+    }
+  }
+
+  /**
+   * Dynamically attaches event listener for all bt-comment events
+   */
+  connectedCallback() {
+    super.connectedCallback()
+    this.addEventListener('bt-comment-reply-clicked', this.events_handler)
+  }
+
+  /**
+   * Cleans up event listener when the component is removed
+   */
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    this.removeEventListener('bt-comment-reply-clicked', this.events_handler)
+  }
 
   /**
    * Cleverly use DOM to add (potentially nested) comment elements into a div
@@ -111,20 +138,19 @@ customElements.define('bt-comments', class extends LitElement {
   }
 
 
-  /**
-   * @param {string} path
-   */
-  async comments_get(path) {
+  async comments_get() {
     let posts_with_comments
     try {
       posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
       /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
     } catch {}
-    if (!posts_with_comments?.includes(path))
-      return []
+    if (!posts_with_comments?.includes(this.entryid)) {
+      this.comments = []
+      return
+    }
 
     // oldest comments (or oldest in a thread) first
-    return (await fetcher(`${state.top_dir}comments/${path}/index.json`))?.filter((e) => Object.keys(e).length).sort((a, b) => a.date < b.date).map((e) => {
+    this.comments = (await fetcher(`${state.top_dir}comments/${this.entryid}/index.json`))?.filter((e) => Object.keys(e).length).sort((a, b) => a.date < b.date).map((e) => {
       // delete any unused keys in each comment hashmap
       for (const [k, v] of Object.entries(e)) {
         if (v === '' || v === undefined || v === null)
@@ -136,6 +162,91 @@ customElements.define('bt-comments', class extends LitElement {
     })
   }
 
+  find_form() {
+    return this.shadowRoot.querySelector('.new-comment')
+  }
+
+  submitted() {
+    const form = this.find_form()
+    form.classList.add('loading')
+    form.querySelector('#comment-form-submit').classList.add('hidden') // hide "submit"
+    form.querySelector('#comment-form-submitted').classList.remove('hidden') // show "submitted"
+
+    // Construct form action URL form JS to avoid spam
+    const { api } = cfg.staticman
+    const gitProvider = cfg.git_provider
+    const username = cfg.user
+    const { repo } = cfg
+    const { branch } = cfg.staticman
+    const url = ['https:/', api, 'v3/entry', gitProvider, username, repo, branch, 'comments'].join('/')
+
+    // Convert form fields to a JSON-friendly string
+    const formObj = Object.fromEntries(new FormData(form))
+    const xhrObj = { fields: {}, options: {} }
+    Object.entries(formObj).forEach(([key, value]) => {
+      const a = key.indexOf('[')
+      const b = key.indexOf('reCaptcha')
+      if (a === -1) { // key = "g-recaptcha-response"
+        xhrObj[key] = value
+      } else if (a === 6 || (a === 7 && b === -1)) { // key = "fields[*]", "options[*]"
+        xhrObj[key.slice(0, a)][key.slice(a + 1, -1)] = value
+      } else { // key = "options[reCaptcha][*]"
+        // define xhrObj.options.reCaptcha if it doesn't exist
+        xhrObj.options.reCaptcha = xhrObj.options.reCaptcha || {}
+        xhrObj.options.reCaptcha[key.slice(b + 11, -1)] = value
+      }
+    })
+    const formData = JSON.stringify(xhrObj)  // some API don't accept FormData objects
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', url)
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        const { status } = xhr
+        if (status >= 200 && status < 400) {
+          this.showAlert(form, 'success')
+          setTimeout(() => { this.clearForm() }, 3000) // display success message for 3s
+          form.classList.remove('loading')
+        } else {
+          this.showAlert(form, 'failed')
+          form.classList.remove('loading')
+        }
+      }
+    }
+    xhr.send(formData)
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  showAlert(form, msg) {
+    if (msg === 'success') {
+      form.querySelector('.submit-success').classList.remove('hidden')  // show submit success message
+      form.querySelector('.submit-failed').classList.add('hidden') // hide submit failed message
+    } else {
+      form.querySelector('.submit-success').classList.add('hidden') // hide submit success message
+      form.querySelector('.submit-failed').classList.remove('hidden')  // show submit failed message
+    }
+    form.querySelector('#comment-form-submit').classList.remove('hidden') // show "submit"
+    form.querySelector('#comment-form-submitted').classList.add('hidden')  // hide "submitted"
+  }
+
+  resetReplyTarget() {
+    const form = this.find_form()
+    form.querySelector('.reply-notice .reply-name').innerText = ''
+    form.querySelector('.reply-notice').classList.add('hidden') // hide reply target display
+    // empty all hidden fields whose name starts from "reply"
+    // eslint-disable-next-line no-return-assign
+    Array.from(form.elements).filter((e) => e.name.indexOf('fields[reply') === 0).forEach((e) => e.value = '')
+  }
+
+  // empty all text & hidden fields but not options
+  clearForm() {
+    this.resetReplyTarget()
+    const form = this.find_form()
+    form.querySelector('.submit-success').classList.add('hidden') // hide submission status
+    form.querySelector('.submit-failed').classList.add('hidden') // hide submission status
+  }
 
   static get styles() {
     return [

@@ -744,8 +744,6 @@ function add_interactivity() {
     })
   })
 
-  import('./staticman.js')
-
   search_setup(STORAGE.docs, cfg)
 }
 

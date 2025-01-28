@@ -36,7 +36,7 @@ customElements.define('bt-comment', class extends LitElement {
           <time datetime="${this.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.date)}</time>
         </a>
       </div>
-      <a class="comment-reply-btn" href="#say-something">Reply</a>
+      <a class="comment-reply-btn" href="#say-something" @click=${this.reply_clicked}>Reply</a>
     </div>
   </header>
   <div class="comment-content">
@@ -44,8 +44,16 @@ customElements.define('bt-comment', class extends LitElement {
     <slot></slot>
   </div>
 </article>
-
   `
+  }
+
+  // Dispatches a custom event (to parent component) when the reply button is clicked
+  reply_clicked() {
+    this.dispatchEvent(new CustomEvent('bt-comment-reply-clicked', {
+      detail: { id: this.id, author: this.name },  // Pass up event details
+      bubbles: true,  // Make sure the event bubbles up to the parent
+      composed: true,  // Allow the event to cross shadow DOM boundaries
+    }))
   }
 
   static get styles() {
