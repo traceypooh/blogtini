@@ -23,8 +23,15 @@ customElements.define('bt-post-full', class extends LitElement {
     const post = url2post(this.url)
     const body = markdown_to_html(post.body_raw)
 
+    // remove site_url prefix in case posts are 1+ subdir deep, example site & post:
+    //   https://traceypooh.github.io/poohtini/
+    //   https://traceypooh.github.io/poohtini/2024-04-sedona-death-valley-grand-canyon/
     // use a default base in case url is relative (pathname) only
-    const comments_entryid = new URL(post.url, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '') // xxx
+    const relative_path = post.url.startsWith(cfg.site_url)
+      ? post.url.slice(cfg.site_url.length)
+      : post.url
+    // ensure is just path.  remove lead/trail / chars
+    const comments_entryid = new URL(relative_path, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '')
 
     const socnet_share = share_buttons(post)
 
