@@ -60,7 +60,7 @@ jobs:
         with:
           # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-of-jobsjob_idstepswithargs
           # source: https://github.com/traceypooh/blogtini/blob/main/bin/build
-          entrypoint: ./bin/build
+          entrypoint: ./_blogtini/bin/build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
