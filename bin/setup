@@ -1,0 +1,22 @@
+
+if [ ! -e config.yml ]; then
+  echo run this script from the top-level of your repo
+  exit 1
+fi
+
+
+if [ -e CNAME ]; then
+  PREFIX=https://$(cat CNAME)
+else
+  # examples of remote.origin.url:
+  #   https://github.com/traceypooh/blogtini
+  #   github.com:traceypooh/blogtini
+  NAME=$(git config remote.origin.url |tr : / |rev |cut -d/ -f2 |rev)
+  REPO=$(git config remote.origin.url |tr : / |rev |cut -d/ -f1 |rev)
+  PREFIX=https://$NAME.github.io/$REPO
+fi
+
+
+function list-posts() {
+  find . -mindepth 2 -name index.html |cut -f2- -d/ |sort -r |egrep -v ^_blogtini
+}

@@ -1,0 +1,22 @@
+#!/bin/zsh -eu
+
+mydir=${0:a:h}
+source $mydir/setup
+
+# this helps with efficiency but could be replaced with a lot of requests at runtime in the browser
+(
+  echo -n Updating comments
+  mkdir -p comments
+  cd       comments
+  find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
+  for DIR in $(cat index.txt); do
+    echo -n .
+    OUT=$DIR/index.json
+    rm -f $OUT
+    jq -rs '. | map(.)' $DIR/*.json \
+      | jq '.[] | del(.replyThread) | del(.replyName) | with_entries(if .key == "_id" then .key = "id" else . end)' \
+      | jq -s 'flatten(1)' \
+      > $OUT
+  done
+  echo
+)

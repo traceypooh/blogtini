@@ -1,155 +1,30 @@
-#!/bin/zsh -e
+#!/bin/zsh -eu
 
-if [ ! -e config.yml ]; then
-  echo run this script from the top-level of your repo
-  exit 1
-fi
+mydir=${0:a:h}
+source $mydir/setup
 
-if [ -e CNAME ]; then
-  PREFIX=https://$(cat CNAME)
-else
-  # examples of remote.origin.url:
-  #   https://github.com/traceypooh/blogtini
-  #   github.com:traceypooh/blogtini
-  NAME=$(git config remote.origin.url |tr : / |rev |cut -d/ -f2 |rev)
-  REPO=$(git config remote.origin.url |tr : / |rev |cut -d/ -f1 |rev)
-  PREFIX=https://$NAME.github.io/$REPO
-fi
+OUTFILE=sitemap.xml
 
-function sitemap() {
-  OUTFILE=sitemap.xml
+echo -n Updating sitemap
+echo '
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+' >| $OUTFILE
 
-  echo -n Updating sitemap
-  echo '
-  <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  ' >| $OUTFILE
-
-  for htm in $(list-posts); do
-      echo -n .
-      dir=$(dirname -- "$htm")
-      lastmod=$(git log -1 --format='%cI' -- "$htm")
-      echo "
-  <url>
-    <loc>$PREFIX/$dir/</loc>
-    <lastmod>$lastmod</lastmod>
-  </url>" >> $OUTFILE
-  done
-
-  echo '</urlset>' >> $OUTFILE
-
-
-  if [ ! -e robots.txt ]; then
-    echo "Sitemap: $PREFIX/sitemap.xml" >| robots.txt
-  fi
-  echo
-}
-
-
-function rss() { # xxx <description> using snippet??
-  # If `yq` is not installed locally, we won't make RSS `index.xml`
-  ( set +e; which -a yq >/dev/null )  ||  return 0
-
-  OUTFILE=index.xml
-
-  SITE_TITLE=$(yq -r .title config.yml  ||  echo blogtini.com)
-  BUILD_DATE=$(pubDate)
-
-  echo -n Updating RSS
-  echo '
-  <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-      <title>'"$SITE_TITLE"'</title>
-      <link>'$PREFIX'/</link>
-      <description>Recent content in '"$SITE_TITLE"'</description>
-      <lastBuildDate>'$BUILD_DATE'</lastBuildDate>
-      <atom:link href="'"$PREFIX"'/index.xml" rel="self" type="application/rss+xml"/>
-      <generator>blogtini.com</generator>' >| $OUTFILE
-
-  for htm in $(list-posts); do
+for htm in $(list-posts); do
     echo -n .
-    grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- | grep -Fv '<!DOCTYPE html><html><head><style>body{display:none}</style>' >| .yml
-    YMD=$(yq -r .date .yml | cut -b1-10)
-    PUBDATE=$(pubDate $YMD)
-    # echo YMD=$YMD PUBDATE=$PUBDATE
     dir=$(dirname -- "$htm")
-    predir="$PREFIX/$dir"
-    (
-      echo -n '
-        <item>
-          <title>'
-      ( ( yq -r .title .yml 2>/dev/null |grep -Ev '^null$'  ||  echo -n untitled ) | tr -d '\n' | sed 's/&/&amp;/g; s/&amp;amp;/&amp;/g; s/</&lt;/g')
-      echo '</title>
-          <link>'$predir'/</link>
-          <guid>'$predir'/</guid>
-          <pubDate>'$PUBDATE'</pubDate>
-          <description></description>
-        </item>'
-    ) >> $OUTFILE
-  done
-  rm -f .yml
+    lastmod=$(git log -1 --format='%cI' -- "$htm")
+    echo "
+<url>
+  <loc>$PREFIX/$dir/</loc>
+  <lastmod>$lastmod</lastmod>
+</url>" >> $OUTFILE
+done
 
-  echo '
-    </channel>
-  </rss>' >> $OUTFILE
-  echo
-}
+echo '</urlset>' >> $OUTFILE
 
 
-function comments() {
-  # this helps with efficiency but could be replaced with a lot of requests at runtime in the browser
-  (
-    echo -n Updating comments
-    mkdir -p comments
-    cd       comments
-    find . -mindepth 1 -type d |cut -b3- |sort -o index.txt
-    for DIR in $(cat index.txt); do
-      echo -n .
-      OUT=$DIR/index.json
-      rm -f $OUT
-      jq -rs '. | map(.)' $DIR/*.json \
-        | jq '.[] | del(.replyThread) | del(.replyName) | with_entries(if .key == "_id" then .key = "id" else . end)' \
-        | jq -s 'flatten(1)' \
-        > $OUT
-    done
-    echo
-  )
-}
-
-
-function list-posts() {
-  find . -mindepth 2 -name index.html |cut -f2- -d/ |sort -r |egrep -v ^_blogtini
-}
-
-
-function pubDate() {
-  # RSS pubDate format, eg: Wed, 09 Aug 2017 13:25:47 +0530
-       TZ=$(datef +"%z" $@)
-  WEEKDAY=$(datef +"%a" $@)
-     DATE=$(datef +"%d" $@)
-    MONTH=$(datef +"%b" $@)
-     YEAR=$(datef +"%Y" $@)
-  if [ $# -eq 0 ]; then
-    TIME=$(datef +"%H:%M:%S")
-  else
-    TIME="00:00:00"
-  fi
-  echo "$WEEKDAY, $DATE $MONTH $YEAR $TIME $TZ"
-}
-
-
-function datef() {
-  FMT=$1
-  shift
-  if [ $# -eq 0 ]; then
-    # (current time as input)
-    date "$FMT"
-  else
-    YMD=$1
-    # macos else linux
-    date -j -f '%Y-%m-%d 00:00:00' "$YMD 00:00:00" "$FMT" 2> /dev/null  ||  date -d "$YMD 00:00:00" "$FMT"
-  fi
-}
-
-sitemap
-rss
-comments
+if [ ! -e robots.txt ]; then
+  echo "Sitemap: $PREFIX/sitemap.xml" >| robots.txt
+fi
+echo

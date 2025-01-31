@@ -6,14 +6,20 @@
 # get other needed packages
 apk add zsh yq jq git
 
-# create sitemap xxx split out comments mgmt
+# create sitemap
 if [ ! -e sitemap.xml ]; then
   git config --global --add safe.directory /github/workspace
   ./_blogtini/bin/sitemap
 fi
 
+# update comments JSON files from any merged-in comments
+./_blogtini/bin/comments
+
+# make RSS top page
+./_blogtini/bin/rss
+
 # setup SEO headers
-./_blogtini/bin/ssr.sh
+./_blogtini/bin/seo
 
 # cleanup, remove .git/ etc..
 rm -rf  _blogtini  .[^.]*

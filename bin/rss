@@ -1,0 +1,85 @@
+#!/bin/zsh -eu
+
+mydir=${0:a:h}
+source $mydir/setup
+
+
+function rss() { # xxx <description> using snippet??
+  # If `yq` is not installed locally, we won't make RSS `index.xml`
+  ( set +e; which -a yq >/dev/null )  ||  return 0
+
+  OUTFILE=index.xml
+
+  SITE_TITLE=$(yq -r .title config.yml  ||  echo blogtini.com)
+  BUILD_DATE=$(pubDate)
+
+  echo -n Updating RSS
+  echo '
+  <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>'"$SITE_TITLE"'</title>
+      <link>'$PREFIX'/</link>
+      <description>Recent content in '"$SITE_TITLE"'</description>
+      <lastBuildDate>'$BUILD_DATE'</lastBuildDate>
+      <atom:link href="'"$PREFIX"'/index.xml" rel="self" type="application/rss+xml"/>
+      <generator>blogtini.com</generator>' >| $OUTFILE
+
+  for htm in $(list-posts); do
+    echo -n .
+    grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- | grep -Fv '<!DOCTYPE html><html><head><style>body{display:none}</style>' >| .yml
+    YMD=$(yq -r .date .yml | cut -b1-10)
+    PUBDATE=$(pubDate $YMD)
+    # echo YMD=$YMD PUBDATE=$PUBDATE
+    dir=$(dirname -- "$htm")
+    predir="$PREFIX/$dir"
+    (
+      echo -n '
+        <item>
+          <title>'
+      ( ( yq -r .title .yml 2>/dev/null |grep -Ev '^null$'  ||  echo -n untitled ) | tr -d '\n' | sed 's/&/&amp;/g; s/&amp;amp;/&amp;/g; s/</&lt;/g')
+      echo '</title>
+          <link>'$predir'/</link>
+          <guid>'$predir'/</guid>
+          <pubDate>'$PUBDATE'</pubDate>
+          <description></description>
+        </item>'
+    ) >> $OUTFILE
+  done
+  rm -f .yml
+
+  echo '
+    </channel>
+  </rss>' >> $OUTFILE
+  echo
+}
+
+function pubDate() {
+  # RSS pubDate format, eg: Wed, 09 Aug 2017 13:25:47 +0530
+       TZ=$(datef +"%z" $@)
+  WEEKDAY=$(datef +"%a" $@)
+     DATE=$(datef +"%d" $@)
+    MONTH=$(datef +"%b" $@)
+     YEAR=$(datef +"%Y" $@)
+  if [ $# -eq 0 ]; then
+    TIME=$(datef +"%H:%M:%S")
+  else
+    TIME="00:00:00"
+  fi
+  echo "$WEEKDAY, $DATE $MONTH $YEAR $TIME $TZ"
+}
+
+
+function datef() {
+  FMT=$1
+  shift
+  if [ $# -eq 0 ]; then
+    # (current time as input)
+    date "$FMT"
+  else
+    YMD=$1
+    # macos else linux
+    date -j -f '%Y-%m-%d 00:00:00' "$YMD 00:00:00" "$FMT" 2> /dev/null  ||  date -d "$YMD 00:00:00" "$FMT"
+  fi
+}
+
+rss
