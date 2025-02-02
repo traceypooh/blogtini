@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cssify, datetime } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_buttons,
+  css_post, css_dark, css_footer, css_title, css_buttons, css_headers, css_links,
 } from './index.js'
 
 
@@ -20,7 +20,7 @@ customElements.define('bt-comment', class extends LitElement {
 
   render() {
     return html`
-<link href="${cssify('css/blogtini.css')}" rel="stylesheet" type="text/css"/><!--fonts,fontawesome,etc.-->
+<link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
 
 <article id="${this.id}" class="comment" style="${this.replID ? 'margin-left:150px' : ''}">
   <header>
@@ -62,6 +62,8 @@ customElements.define('bt-comment', class extends LitElement {
       css_title(),
       css_footer(),
       css_buttons(),
+      css_headers(),
+      css_links(),
       css`
 @charset "UTF-8";
 /* Staticman Comments - Content */

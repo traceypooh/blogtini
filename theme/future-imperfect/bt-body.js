@@ -45,7 +45,7 @@ customElements.define('bt-body', class extends LitElement {
     }
 
     return html`
-<link href="${cssify('css/future-imperfect.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${cssify('theme/future-imperfect/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 <link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
 <header id="site-header">
@@ -153,6 +153,18 @@ customElements.define('bt-body', class extends LitElement {
 `
   }
 
+  firstUpdated() {
+    // Whenever not at the top, show scroll up button
+    const to_top_arrow = this.shadowRoot.querySelector('#back-to-top')
+    if (document.documentElement.scrollTop || document.body.scrollTop)
+      to_top_arrow.style.opacity = 1
+
+    // For any scroll event, check if window isnt top, then display button
+    window.addEventListener('scroll', () => {
+      to_top_arrow.style.opacity = window.scrollY ? 1 : 0
+    })
+  }
+
   // eslint-disable-next-line class-methods-use-this
   nav_toggle(evt) {
     const menu = evt.currentTarget.hash // eg: `#theme-menu`
@@ -251,6 +263,236 @@ customElements.define('bt-body', class extends LitElement {
   }
 }
 
+.search-input {
+  background-color: white;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  height: 0px;
+  opacity: 0;
+  transition: 0.35s ease-in-out;
+  width: 300px;
+  z-index: -1;
+}
+.search-input.active {
+  opacity: 1;
+  height: 50px;
+  z-index: 0;
+}
+
+/* ==========================================================================
+  IDs and Grid
+  ========================================================================== */
+#site-intro {
+  grid-area: intro;
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5em;
+  padding: 1em;
+  text-align: center;
+}
+#site-intro a {
+  border: 0;
+}
+#site-intro p {
+  opacity: 0.6;
+}
+#site-intro header h1 {
+  font-size: 1.25em;
+  margin-bottom: 0;
+}
+#site-intro main p {
+  font-size: 0.7em;
+  letter-spacing: 0.25em;
+  line-height: 2.5;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+#site-main {
+  grid-area: main;
+}
+
+#site-header {
+  background-color: white;
+  border-bottom: 1px solid rgba(161, 161, 161, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  height: 3.5em;
+  line-height: 3.5em;
+  position: fixed;
+  margin-bottom: 3.5em;
+  top: 0;
+  width: 100%;
+  z-index: 10000;
+}
+
+#site-nav {
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+}
+#site-nav .flyout-menu {
+  right: -177px;
+  width: 177px;
+}
+@media (min-width: 1024px) {
+  #site-nav .flyout-menu {
+    background-color: unset;
+    border: none;
+    flex-grow: 1;
+    height: auto;
+    margin: 0;
+    overflow: auto;
+    position: static;
+    transition: none;
+    white-space: nowrap;
+  }
+  #site-nav .flyout-menu::-webkit-scrollbar {
+    height: 0.25em;
+  }
+  #site-nav .flyout-menu::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  #site-nav .flyout-menu::-webkit-scrollbar-thumb {
+    background-color: #ababab;
+    outline: 1px solid #6f8090;
+  }
+}
+#site-nav .flyout-menu.active {
+  flex-wrap: wrap;
+}
+@media (min-width: 1024px) {
+  #site-nav .flyout-menu.active {
+    box-shadow: none;
+  }
+}
+#site-nav .flyout-menu .search-toggle {
+  display: inline-flex;
+  flex-basis: 100%;
+  order: 1;
+}
+#site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle {
+  display: block;
+  flex-basis: 100%;
+  order: 3;
+}
+@media (min-width: 425px) {
+  #site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle {
+    display: none;
+  }
+}
+
+
+#search {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+}
+
+#lang-menu.flyout-menu {
+  right: -177px;
+  width: 177px;
+}
+#lang-menu.flyout-menu a {
+  border-left: 0;
+}
+#lang-menu.flyout-menu .link {
+  border-bottom: 1px dotted rgba(161, 161, 161, 0.7);
+  display: block;
+}
+#lang-menu.flyout-menu .no-lang {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
+#lang-menu.flyout-menu .no-lang span:hover {
+  box-shadow: none;
+}
+
+#share-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+}
+#share-menu.flyout-menu {
+  width: 177px;
+  right: -177px;
+  padding: 1em;
+}
+#share-menu.flyout-menu h1 {
+  font-size: 0.9em;
+}
+#share-menu.flyout-menu h1,
+#share-menu.flyout-menu a {
+  margin: 0.25em 0.25em;
+}
+@media (min-height: 600px) {
+  #share-menu.flyout-menu h1,
+  #share-menu.flyout-menu a {
+    margin: 0 0.25em 0.75em 0;
+  }
+}
+#share-menu.flyout-menu a p {
+  visibility: hidden;
+}
+#share-menu.flyout-menu .share-btn {
+  height: 50px;
+}
+#share-menu.flyout-menu .share-btn i {
+  font-size: 1.5em;
+}
+
+
+/* Pagination */
+.pagination {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 1.5em auto;
+  padding: 1em;
+  max-width: 55em;
+}
+.pagination .button {
+  margin: 1em;
+  width: 50%;
+}
+
+#site-footer {
+  grid-area: footer;
+  border-top: 1px solid rgba(161, 161, 161, 0.3);
+  margin: 3em 2em;
+  padding-top: 3em;
+}
+
+#back-to-top {
+  opacity: 0;
+  bottom: 15px;
+  color: #ababab;
+  display: none;
+  position: fixed;
+  right: 15px;
+  border: 0;
+  transition: opacity 1s ease, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+#back-to-top:hover {
+  color: #2eb8ac !important;
+  transform: translateY(-10px);
+}
 
 /* MAIN THEME OVERRIDES */ /* chexxx */
 
@@ -267,12 +509,6 @@ customElements.define('bt-body', class extends LitElement {
     max-width: 60vw;
   }
 }
-
-#back-to-top {
-  transition: opacity 1s ease;
-  opacity: 0;
-}
-
 
 /* search results */
 .search-results {

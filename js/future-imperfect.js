@@ -29,22 +29,10 @@ function search_setup(docs, cfg) {
     }
   });
 
-  const btpage = document.querySelector('bt-body')?.shadowRoot
-
-  if (btpage) {
-    // Upon page load if somehow not at the top, show scroll up button
-    if (document.documentElement.scrollTop || document.body.scrollTop)
-      btpage.querySelector('#back-to-top').style.opacity = 1
-    // For any scroll event, check if window isnt top, then display button
-    $(window).scroll(function() {
-      btpage.querySelector('#back-to-top').style.opacity =
-        $(this).scrollTop() ? 1 : 0
-    })
-  }
-
   // Get dom objects for the elements we'll be interacting with
-  $searchResults = btpage?.querySelector('#search-results');
-  $searchInput   = btpage?.querySelector('#search-input');
+  const btbody = document.querySelector('bt-body')?.shadowRoot
+  $searchResults = btbody?.querySelector('#search-results');
+  $searchInput   = btbody?.querySelector('#search-input');
 
   // Build the index so Lunr can search it.  The `ref` field will hold the URL
   // to the page/post.  title, excerpt, and body will be fields searched.

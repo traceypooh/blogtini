@@ -508,33 +508,6 @@ figcaption {
 /* ==========================================================================
    IDs and Grid
    ========================================================================== */
-#share-menu {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  text-align: center; }
-  #share-menu.flyout-menu {
-    width: 177px;
-    right: -177px;
-    padding: 1em; }
-    #share-menu.flyout-menu h1 {
-      font-size: 0.9em; }
-    #share-menu.flyout-menu h1,
-    #share-menu.flyout-menu a {
-      margin: 0.25em 0.25em; }
-      @media (min-height: 600px) {
-        #share-menu.flyout-menu h1,
-        #share-menu.flyout-menu a {
-          margin: 0 0.25em 0.75em 0; } }
-    #share-menu.flyout-menu a p {
-      visibility: hidden; }
-    #share-menu.flyout-menu .share-btn {
-      height: 50px; }
-      #share-menu.flyout-menu .share-btn i {
-        font-size: 1.5em; }
 
 #socnet-share {
   display: -webkit-box;

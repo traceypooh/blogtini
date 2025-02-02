@@ -1,8 +1,5 @@
 @import 'normalize.css';
 @import '../fonts/fonts.css';
-@import 'academicons.css';
-@import 'fontawesome.css';
-
 
 html {
   color: #3b3a3a;
@@ -79,7 +76,6 @@ code::-webkit-scrollbar-track {
 code::-webkit-scrollbar-thumb {
   background-color: #ababab;
   outline: 1px solid #6f8090;
-
 }
 
 pre {
@@ -123,10 +119,6 @@ body.dark h4,
 body.dark h5,
 body.dark h6 {
   color: #ddd;
-}
-
-body.dark img {
-  filter: grayscale(50%);
 }
 
 body.dark a {
