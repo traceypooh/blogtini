@@ -15,3 +15,6 @@ cp  $CSSDIR/fonts.css  fonts.css
 for i in  https://fonts.gstatic.com/s/raleway/v14/  https://fonts.gstatic.com/s/sourcesanspro/v13/
   do perl -i -pe "s|$i|/fonts/|" fonts.css
 done
+
+# later pulled all the fontawesome *non* .woff2 files (huge, slow, mostly just IE now..)
+# and moved `webfonts/*` to `fonts/`
