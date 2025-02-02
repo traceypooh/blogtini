@@ -2,14 +2,10 @@ import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/uns
 import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 import {
-  url2post, cssify,
-  markdown_to_html,
-  share_buttons,
-  cfg,
+  url2post, markdown_to_html, share_buttons, cfg, path_to_theme_url,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_hljs,
-  css_headers, css_buttons,
+  css_post, css_dark, css_footer, css_title, css_hljs, css_headers, css_buttons,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -45,9 +41,9 @@ customElements.define('bt-post-full', class extends LitElement {
 
 
     return html`
-<link href="${cssify('theme/future-imperfect/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
-<link href="${cssify('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
+<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
 
     <article>
       <div class="post single">

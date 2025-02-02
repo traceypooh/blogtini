@@ -1,7 +1,7 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
-  summarize_markdown, url2post, cfg, urlify, cssify,
+  summarize_markdown, url2post, cfg, urlify, path_to_theme_url,
 } from '../../js/blogtini.js'
 import {
   css_post, css_dark, css_footer, css_title, css_buttons,
@@ -21,7 +21,7 @@ customElements.define('bt-post', class extends LitElement {
     const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
     return html`
-<link href="${cssify('theme/future-imperfect/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 
   <article class="post">
     <bt-post-header .post=${post}></bt-post-header>

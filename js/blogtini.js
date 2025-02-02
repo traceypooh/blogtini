@@ -55,8 +55,7 @@ let cfg = {
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
   site_url: 'https://example.com/',
-  theme: '../theme/future-imperfect/index.js',
-  theme_css: 'https://blogtini.com/css/blogtini.css', // can be relative url
+  theme: 'https://blogtini.com/theme/future-imperfect/index.js',
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
@@ -124,8 +123,23 @@ function urlify(url, no_trail_slashes = false) {
   return urlize(url).replace(/\/+$/, no_trail_slashes ? '' : '/')
 }
 
-function cssify(url) {
-  return `https://blogtini.com/${url}` // return urlize(url) // xxx
+/**
+ * Returns an absolute or relative url for a theme asset;
+ * depending on the `config.yml` value of `theme`.
+ *
+ * Example paths: css/index.css, index.js
+ *
+ * @param {string} path
+ */
+function path_to_theme_url(path) {
+  const theme_dir = cfg.theme.replace(/\/[^/]+\.js$/, '/')
+
+  if (theme_dir.startsWith('https://'))
+    return `${theme_dir}${path}`
+
+  // compute paths from hostname
+  const path_from_top = cfg.site_url.replace(/^https:\/\/[^/]+/, '')
+  return `${path_from_top}${path.startsWith(theme_dir) ? '' : theme_dir}${path}`
 }
 
 
@@ -276,7 +290,7 @@ async function main() {
 
 
   // eslint-disable-next-line no-use-before-define
-  add_css(cfg.theme_css)
+  add_css(path_to_theme_url('css/blogtini.css'))
 
   state.show_top_content = state.is_homepage && body_contents && !location.search
   if (state.show_top_content) {
@@ -318,7 +332,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
   await import('https://esm.ext.archive.org/redefine-custom-elements@0.1.3')
 
-  await import(cfg.theme)
+  await import(path_to_theme_url(cfg.theme))
 
 
   window.onunhandledrejection = (unhandled_rejection) => {
@@ -872,7 +886,6 @@ export {
   url2post,
   summarize_markdown,
   urlify,
-  cssify,
   datetime,
   markdown_to_html,
   share_buttons,
@@ -880,4 +893,5 @@ export {
   PR,
   imgurl,
   fetcher,
+  path_to_theme_url,
 }

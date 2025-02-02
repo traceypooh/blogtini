@@ -11,8 +11,9 @@ img_site: img/profile.png
 posts_per_page: 10
 remove_blur: true
 
-# theme: https://blogtini.com/theme/grid.js
-# theme: ../theme/grid.js
+# Absolute url, or relative url (subdir) from your site's top page directory. Default to first example:
+# theme: https://blogtini.com/theme/future-imperfect/index.js
+theme: theme/future-imperfect/index.js
 
 intro:
   rss: true
