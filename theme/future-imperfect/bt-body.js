@@ -647,6 +647,7 @@ function SOC2(str, arg, svc) {
 
 function socnet_icon() {
   // TODO: WeChat and QQ Check
+  // xxx: googlescholar/researchgate/orcid all would need academicons.min.css to come back..
 
   return unsafeHTML(`
 ${SOC`href="https://github.com/${'github'}" title="GitHub" class="fab fa-github"`}
