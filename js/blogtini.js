@@ -290,7 +290,7 @@ async function main() {
 
 
   // eslint-disable-next-line no-use-before-define
-  add_css(path_to_theme_url('css/blogtini.css'))
+  add_css(path_to_theme_url('css/index.css'))
 
   state.show_top_content = state.is_homepage && body_contents && !location.search
   if (state.show_top_content) {
