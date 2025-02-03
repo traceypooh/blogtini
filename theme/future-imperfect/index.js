@@ -11,6 +11,7 @@ import './featured-image.js'
 import './post-stats.js'
 import './bt-comments.js'
 import './bt-comment.js'
+import './bt-share.js'
 
 
 function css_buttons() {

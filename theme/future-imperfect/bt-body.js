@@ -5,7 +5,7 @@ import {
   css_buttons, css_headers, css_links, css_dark,
 } from './index.js'
 import {
-  cfg, state, PR, share_buttons, path_to_theme_url,
+  cfg, state, PR, path_to_theme_url,
 } from '../../js/blogtini.js'
 
 
@@ -44,6 +44,9 @@ customElements.define('bt-body', class extends LitElement {
       return (url === '') ? './' : url
     }
 
+    // NOTE: for single page/post pages, this gets replaced w/ the more specific post info
+    const share_generic = { url: location.href, title: cfg.title }
+
     return html`
 <link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 <link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
@@ -79,7 +82,7 @@ customElements.define('bt-body', class extends LitElement {
   ${cfg.header.share ? html`
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
-      ${share_buttons()}
+      <bt-share .post=${share_generic}></bt-share>
     </menu>` : ''}
   ${cfg.header.theme ? html`
     <menu id="theme-menu" class="flyout-menu menu">
@@ -447,13 +450,6 @@ customElements.define('bt-body', class extends LitElement {
 #share-menu.flyout-menu a p {
   visibility: hidden;
 }
-#share-menu.flyout-menu .share-btn {
-  height: 50px;
-}
-#share-menu.flyout-menu .share-btn i {
-  font-size: 1.5em;
-}
-
 
 /* Pagination */
 .pagination {

@@ -639,62 +639,6 @@ function storage_add(post) { // xxx use snippet
 }
 
 
-function share_buttons(post) { // xxxxx
-  if (!post) {
-    // if no post, parse url for ?tags etc and fake
-    // post = markdown_to_post(document.querySelector('body').innerHTML, 'xxx')
-  }
-  if (!post)
-    return ''
-
-  const permalink = post.permalink || post.url // fqdn
-  return cfg.social_share.map((social) => {
-    switch (social) {
-    case 'twitter':
-      return `
-        <a href="//twitter.com/share?text=${post.title}&amp;url=${permalink}"
-            target="_blank" rel="noopener" class="nav share-btn twitter">
-          <p>Twitter</p>
-        </a>`
-    case 'facebook':
-      return `
-        <a href="//www.facebook.com/sharer/sharer.php?u=${permalink}"
-            target="_blank" rel="noopener" class="nav share-btn facebook">
-          <p>Facebook</p>
-        </a>`
-    case 'pinterest':
-      return `
-        <a href="//www.pinterest.com/pin/create/button/?url=${permalink}&amp;description=${post.title}"
-            target="_blank" rel="noopener" class="nav share-btn pinterest">
-          <p>Pinterest</p>
-        </a>`
-    default:
-      return ''
-    /*
-    {{ else if eq . "reddit" }}
-    <a href="//www.reddit.com/submit?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn reddit">
-          <p>Reddit</p>
-        </a>
-  {{ else if eq . "linkedin" }}
-        <a href="//www.linkedin.com/shareArticle?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn linkedin">
-            <p>LinkedIn</p>
-          </a>
-   {{ else if eq . "vk" }}
-        <a href="//vk.com/share.php?url={{ $permalink }}&amp;title={{ $title }}" target="_blank" rel="noopener" class="nav share-btn vk">
-          <p>VK</p>
-        </a>
-  {{ else if eq . "email" }}
-        <a href="mailto:?subject={{ i18n "check_out" }} ${post.author}&amp;body={{ $permalink }}" target="_blank" class="nav share-btn email" data-proofer-ignore>
-          <p>Email</p>
-        </a>
-  {{ end }}
-{{ end }}
-*/
-    }
-  }).join('')
-}
-
-
 // deno-lint-ignore no-unused-vars
 function slugify(str) {
   return str.toLowerCase()
@@ -733,14 +677,14 @@ function dark_mode() {
 }
 
 function add_interactivity() {
-  const btpage = document.querySelector('bt-body')?.shadowRoot
-  if (!btpage) {
+  const btbody = document.querySelector('bt-body')?.shadowRoot
+  if (!btbody) {
     setTimeout(add_interactivity, 250) // xxx
     return
   }
 
   state.theme_change_number = 0
-  btpage.querySelectorAll('#theme-menu a').forEach((e) => {
+  btbody.querySelectorAll('#theme-menu a').forEach((e) => {
     e.addEventListener('click', async (evt) => {
       const theme = evt.target.innerText.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
       evt.preventDefault()
@@ -888,7 +832,6 @@ export {
   urlify,
   datetime,
   markdown_to_html,
-  share_buttons,
   dark_mode,
   PR,
   imgurl,

@@ -76,7 +76,8 @@ social:
   strava: traceypooh
   mastodon: 'mastodon.social/@traceypooh'
 
-social_share: ['twitter', 'facebook', 'pinterest', 'email', 'linkedin', 'reddit']
+# share opts: ['twitter', 'facebook', 'pinterest', 'email', 'linkedin', 'reddit']
+social_share: ['twitter', 'facebook', 'pinterest']
 
 staticman:
   # https://staticman.net/docs/getting-started
