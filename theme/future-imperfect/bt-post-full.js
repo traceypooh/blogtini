@@ -5,7 +5,7 @@ import {
   url2post, markdown_to_html, cfg, path_to_theme_url,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_hljs, css_headers, css_buttons,
+  css_post, css_dark, css_footer, css_title, css_hljs, css_headers, css_buttons, css_links,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -93,6 +93,7 @@ customElements.define('bt-post-full', class extends LitElement {
       css_footer(),
       css_dark(),
       css_buttons(),
+      css_links(),
       css_hljs(),
     ]
   }

@@ -453,6 +453,18 @@ customElements.define('bt-body', class extends LitElement {
   }
 }
 
+.nav {
+  border: 0;
+  border-left: 1px solid rgba(161, 161, 161, 0.3);
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.7em;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  margin: 0;
+  padding: 0 1.5em;
+  text-transform: uppercase;
+}
+
 .nav-title {
   align-items: center;
   display: -webkit-box;

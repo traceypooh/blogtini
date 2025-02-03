@@ -12,6 +12,7 @@ import './post-stats.js'
 import './bt-comments.js'
 import './bt-comment.js'
 import './bt-share.js'
+import './bt-histogram.js'
 
 
 function css_buttons() {
@@ -41,6 +42,9 @@ function css_buttons() {
   text-align: center;
   text-transform: uppercase;
   width: fit-content;
+}
+a.button {
+  text-decoration: none;
 }
 
 input[type="submit"]:hover,

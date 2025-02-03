@@ -4,7 +4,7 @@ import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
-import { krsort, vrsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
@@ -176,10 +176,8 @@ function main_section(histogram) {
   if (filter_post)
     return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
 
-  if (state.list_tags || state.list_cats) {
-    const type = state.list_tags ? 'tags' : 'categories'
-    return `<h1>${type}</h1><ul>${Object.entries(vrsort(histogram)).map((e) => `<li><article><header><a href="${state.top_page}?${type}/${e[0]}">${e[0]}<span style="float:right">${e[1]}</span></a></header></article></li>`).join('')}</ul>` // xxxcc make new WC
-  }
+  if (state.list_tags || state.list_cats)
+    return `<bt-histogram histogram=${JSON.stringify(histogram)}></bt-histogram>`
 
   return `
     ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
