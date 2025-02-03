@@ -134,10 +134,6 @@ customElements.define('bt-comment', class extends LitElement {
   .comment-avatar {
     margin: 0 .5em 0 0;
   }
-  .comment-avatar.circle {
-    -webkit-clip-path: none;
-    clip-path: none;
-  }
 }
 .comment-author {
   font-size: 0.9em;
@@ -167,6 +163,12 @@ customElements.define('bt-comment', class extends LitElement {
 }
 .comment-content {
   margin: 1em;
+}
+
+.circle {
+  overflow: clip;
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
 }
 `,
       css_dark(),

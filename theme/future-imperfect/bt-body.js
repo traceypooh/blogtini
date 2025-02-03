@@ -47,6 +47,8 @@ customElements.define('bt-body', class extends LitElement {
     // NOTE: for single page/post pages, this gets replaced w/ the more specific post info
     const share_generic = { url: location.href, title: cfg.title }
 
+    const img_intro = cfg.img_site.startsWith('https://') ? cfg.img_site : `${state.top_dir}${cfg.img_site}`
+
     return html`
 <link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
 <link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
@@ -104,7 +106,7 @@ customElements.define('bt-body', class extends LitElement {
       <img id="blogtini" src="${cfg.site_header}">
       <h1>
         <a href="${state.top_page}">
-          ${cfg.img_site ? html`<img src="${state.top_dir}${cfg.img_site}">` : ''}<br>
+          ${cfg.img_site ? html`<img src="${img_intro}" class="${cfg.img_site_shape}">` : ''}<br>
           ${cfg.title}
         </a>
       </h1>
@@ -284,6 +286,28 @@ customElements.define('bt-body', class extends LitElement {
 /* ==========================================================================
   IDs and Grid
   ========================================================================== */
+#wrapper {
+  display: -ms-grid;
+  display: grid;
+  grid-template-areas: "intro" "main" "sidebar" "footer";
+  grid-template-rows: auto 1fr auto auto;
+  margin: 0 auto;
+  max-width: 90em;
+  min-height: 100vh;
+  transition: opacity 0.35s ease-in-out;
+}
+@media (min-width: 1024px) {
+  #wrapper {
+    grid-template-areas: "intro main" "sidebar main" "footer main" "blank main";
+    grid-template-columns: 22em 1fr;
+    grid-template-rows: auto auto auto 1fr;
+    padding: 0 2.5em;
+  }
+}
+#wrapper.overlay {
+  opacity: 0.25;
+}
+
 #site-intro {
   grid-area: intro;
   align-items: center;
@@ -614,6 +638,54 @@ customElements.define('bt-body', class extends LitElement {
   letter-spacing: 0.25em;
   text-transform: uppercase;
 }
+
+.socnet-icons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 0;
+}
+.socnet-icons li {
+  margin: 0 0.5em;
+  min-width: 20px;
+  list-style-type: none;
+}
+.socnet-icons li a {
+  opacity: 0.6;
+  border: none;
+}
+
+.copyright {
+  color: #ababab;
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 0.5em;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* image clipping styles */
+.circle {
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
+}
+.hexagon {
+  -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.diamond {
+  -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.triangle {
+  -webkit-clip-path: polygon(0 100%, 100% 100%, 50% 0);
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
 `,
       css_buttons(),
       css_headers(),

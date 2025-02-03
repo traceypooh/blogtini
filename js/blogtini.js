@@ -59,6 +59,8 @@ let cfg = {
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
+  // Masks site image in a certain shape. Supported are: circle, triangle, diamond, and hexagon.
+  img_site_shape: 'hexagon',
   posts_per_page: 10,
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
   reading_time: true,

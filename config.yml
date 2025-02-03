@@ -7,7 +7,7 @@ git_provider: github # github or gitlab
 # deployed live site (required).  end with /
 site_url: https://blogtini.com/
 
-img_site: img/profile.png
+img_site: img/profile.jpg
 posts_per_page: 10
 remove_blur: true
 
