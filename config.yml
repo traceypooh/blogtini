@@ -18,7 +18,7 @@ theme: theme/future-imperfect/index.js
 intro:
   rss: true
   social: true
-  paragraph: "Technophile · Optimist · <a href=/biking>Cyclist</a> · <a href=https://archive.org/about/bios.php>Archivist</a> · Design · <a href=/video>Video</a> · TV · Nomad · Docker"
+  paragraph: "Technophile · Optimist · <a href=/biking>Cyclist</a> <i class='fa fa-bicycle'></i> · <a href=https://archive.org/about/bios.php>Archivist <i class='fa fa-landmark'></i></a> · Design · <a href=/video>Video</a> · TV · Nomad · Containers <i class='fab fa-docker'></i>"
 
 menu:
   # Sets the menu items in the navigation bar
