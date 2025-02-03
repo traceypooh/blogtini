@@ -131,9 +131,12 @@ function urlify(url, no_trail_slashes = false) {
  *
  * Example paths: css/index.css, index.js
  *
- * @param {string} path
+ * @param {string} path relative path to fetch. if starts with 'https://', path is returned as is
  */
 function path_to_theme_url(path) {
+  if (path.startsWith('https://'))
+    return path
+
   const theme_dir = cfg.theme.replace(/\/[^/]+\.js$/, '/')
 
   if (theme_dir.startsWith('https://'))
