@@ -210,6 +210,29 @@ customElements.define('bt-body', class extends LitElement {
   static get styles() {
     return [
       css`
+.flyout-menu {
+  background-color: white;
+  border-left: 1px solid rgba(161, 161, 161, 0.3);
+  height: 100%;
+  margin-top: 3.5em;
+  overflow-y: auto;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  transition: 0.35s ease-in-out;
+  z-index: 20;
+}
+.flyout-menu.active {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  right: 0 !important;
+}
+.flyout-menu.active a {
+  border-left: 0;
+}
+.flyout-menu h1 {
+  font-size: 1em;
+}
+
 /* copied from '#share-menu' */
 #theme-menu {
   display: -webkit-box;
@@ -412,6 +435,76 @@ customElements.define('bt-body', class extends LitElement {
   #site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle {
     display: none;
   }
+}
+
+.share-toggle, .search-toggle {
+  display: none;
+}
+@media (min-width: 425px) {
+  .share-toggle,
+  .search-toggle {
+    display: block;
+    text-align: center;
+    width: 61px;
+  }
+  .share-toggle i,
+  .search-toggle i {
+    vertical-align: middle;
+  }
+}
+
+.nav-title {
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-grow: 1;
+  margin: 0;
+}
+.nav-title a {
+  border: 0;
+  font-size: 0.35em;
+  font-weight: 800;
+  margin-left: 1.5em;
+  opacity: 1;
+  padding: 0;
+}
+.nav-title a img {
+  height: 4.8em;
+  width: 12.6em;
+}
+@media (min-width: 1024px) {
+  .nav-title {
+    flex-grow: 0;
+  }
+  .nav-title::after {
+    background: rgba(161, 161, 161, 0.3);
+    content: "";
+    display: block;
+    height: 56px;
+    margin-left: 1.5em;
+    width: 1px;
+  }
+  .nav-title a {
+    min-width: 12.5em;
+  }
+  .nav-title a img {
+    margin-top: -0.2em;
+  }
+}
+
+.nav-toggle {
+  text-align: center;
+  width: 61px;
+}
+@media (min-width: 1024px) {
+  .nav-toggle {
+    display: none;
+  }
+}
+.nav-toggle i {
+  vertical-align: middle;
 }
 
 
