@@ -77,7 +77,7 @@ customElements.define('bt-body', class extends LitElement {
     ${cfg.header.theme ? html`<a href="#theme-menu" class="nav theme-toggle" @click=${this.nav_toggle}><i class="fas fa-palette fa-2x">&nbsp;</i></a>` : ''}
     ${cfg.header.share ? html`<a href="#share-menu" class="nav share-toggle" @click=${this.nav_toggle}><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>` : ''}
     ${cfg.header.language ? html`<a href="#lang-menu" class="nav lang-toggle" @click=${this.nav_toggle} lang="${cfg.language.lang}">${cfg.language.lang}</a>` : ''}
-    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+    <a href="#site-nav-menu" class="nav nav-toggle" @click=${this.nav_toggle}><i class="fas fa-bars fa-2x"></i></a>
   </nav>
   ${cfg.header.search ? html`<menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>` : ''}
   <!-- {{ if .Site.Params.header.languageMenu }}{{ partial "language-menu" . }}{{ end }} -->
