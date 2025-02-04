@@ -800,6 +800,33 @@ customElements.define('bt-body', class extends LitElement {
   clip-path: polygon(0 100%, 100% 100%, 50% 0);
 }
 
+.left span, .right span {
+  display: none;
+}
+@media (min-width: 425px) {
+  .left span, .right span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.left::before, .right::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-decoration: inherit;
+}
+.left::before {
+  content: "\\f053";
+  float: left;
+  padding-right: 0.5em;
+}
+.right::before {
+  content: "\\f054";
+  float: right;
+  padding-left: 0.5em;
+}
+
 img {
   filter: grayscale(var(--img-grayscale-filter));
 }

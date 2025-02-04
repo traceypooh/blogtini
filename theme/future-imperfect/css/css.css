@@ -33,10 +33,6 @@
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
-html {
-  color: #3b3a3a;
-  font-size: 1em;
-  line-height: 1.4; }
 
 /*
 * Remove text-shadow in selection highlight:
@@ -80,44 +76,12 @@ video {
   vertical-align: middle;
   max-width: 100%; }
 
-/* ==========================================================================
-   Theme Basic Tag Styles
-   ========================================================================== */
-body {
-  background: whitesmoke;
-  margin-top: 3.5em;
-  max-width: 100vw;
-  -ms-overflow-style: scrollbar;
-  color: #333333;
-  font-family: "Source Sans Pro", Helvetica, sans-serif;
-  line-height: 1.75em;
-}
-
 /* Box Model */
 *,
 *::before,
 *::after {
   box-sizing: border-box; }
 
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #3b3a3a;
-  font-family: "Raleway", Helvetica, sans-serif;
-  letter-spacing: 0.25em;
-  line-height: 1.65;
-  text-transform: uppercase; }
-  h1 a,
-  h2 a,
-  h3 a,
-  h4 a,
-  h5 a,
-  h6 a {
-    border-bottom: 0; }
 
 blockquote {
   border-left: 4px solid rgba(161, 161, 161, 0.3);
@@ -168,14 +132,6 @@ label {
   font-size: 0.9em;
   font-weight: 700; }
 
-
-::-webkit-input-placeholder,
-:-moz-placeholder,
-::-moz-placeholder,
-:-ms-input-placeholder,
-.formerize-placeholder {
-  color: #ababab;
-  opacity: 1; }
 
 table {
   background-color: white;
@@ -299,32 +255,6 @@ figcaption {
    Classes
    ========================================================================== */
 
-.left span,
-.right span {
-  display: none; }
-  @media (min-width: 425px) {
-    .left span,
-    .right span {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap; } }
-.left::before,
-.right::before {
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-decoration: inherit; }
-
-.left::before {
-  content: "\f053";
-  float: left;
-  padding-right: 0.5em; }
-
-.right::before {
-  content: "\f054";
-  float: right;
-  padding-left: 0.5em; }
-
 .link {
   border-bottom: 1px dotted rgba(161, 161, 161, 0.7);
   display: block;
@@ -346,18 +276,6 @@ figcaption {
 /* ==========================================================================
    Add-Ons
    ========================================================================== */
-/* reCaptcha */
-.g-recaptcha {
-  -webkit-transform: scale(0.955);
-  -ms-transform: scale(0.955);
-  transform: scale(0.955);
-  -webkit-transform-origin: 0 0;
-  -ms-transform-origin: 0 0;
-  transform-origin: 0 0;
-  margin: -0.25em 0 0.25em 0;
-  width: 0; }
-
-
 /* Hide Single Column */
 .hidden-single-column {
   display: none; }
