@@ -4362,6 +4362,8 @@ readers do not read off random characters that represent icons */
   position: static;
   width: auto;
 }
+
+/* NOTE: chrome ignores @font-face when loaded in shadow DOM, so copied to index.css tracey 2025 */
 @font-face {
   font-family: 'Font Awesome 5 Brands';
   font-style: normal;

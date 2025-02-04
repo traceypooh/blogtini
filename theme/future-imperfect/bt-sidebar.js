@@ -56,7 +56,7 @@ customElements.define('bt-sidebar', class extends LitElement {
     </section>
   ` : ''}
 
-  <section style="text-align:center">
+  <section class="tagcloud">
     <header>
       <h1><a href="${state.top_page}?tags">Tags</a></h1>
     </header>
@@ -144,6 +144,12 @@ footer {
   padding: 0;
 }
 
+.tagcloud {
+  text-align: center;
+}
+.tagcloud a {
+  border-bottom: 0;
+}
 `,
     ]
   }

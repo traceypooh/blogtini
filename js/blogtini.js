@@ -173,6 +173,8 @@ async function fetcher(url)  {
 
 
 function main_section(histogram) {
+  // NOTE: keep in mind, anything returned *not* in a web component "wrapper" below, will be in
+  // the unstyled light DOM, for example the `<hr>` below
   if (filter_post)
     return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
 

@@ -51,7 +51,7 @@ customElements.define('bt-body', class extends LitElement {
 
     return html`
 <link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
 
 <header id="site-header">
   <nav id="site-nav">
