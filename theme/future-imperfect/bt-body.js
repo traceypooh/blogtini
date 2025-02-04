@@ -1,9 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import {
-  css_buttons, css_headers, css_links, css_dark,
-} from './index.js'
+import { css_buttons, css_headers, css_links } from './index.js'
 import {
   cfg, state, PR, path_to_theme_url,
 } from '../../js/blogtini.js'
@@ -72,7 +70,10 @@ customElements.define('bt-body', class extends LitElement {
 
       ${cfg.header.search ? html`<a href="#search-input" class="nav link search-toggle" @click=${this.nav_toggle}><i class="fas fa-search">&nbsp;</i>Search</a>` : ''}
 
+      <a href="#scheme" class="nav link scheme-toggle" @click=${this.scheme_toggle}><i class="fas fa-lightbulb">&nbsp;</i>Scheme</a>
+
     </menu>
+    <a href="#scheme" class="nav scheme-toggle" @click=${this.scheme_toggle}><i class="fas fa-lightbulb fa-2x">&nbsp;</i></a>
     ${cfg.header.search ? html`<a href="#search-input" class="nav search-toggle" @click=${this.nav_toggle}><i class="fas fa-search fa-2x">&nbsp;</i></a>` : ''}
     ${cfg.header.theme ? html`<a href="#theme-menu" class="nav theme-toggle" @click=${this.nav_toggle}><i class="fas fa-palette fa-2x">&nbsp;</i></a>` : ''}
     ${cfg.header.share ? html`<a href="#share-menu" class="nav share-toggle" @click=${this.nav_toggle}><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>` : ''}
@@ -193,6 +194,12 @@ customElements.define('bt-body', class extends LitElement {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  scheme_toggle() {
+    const scheme_now = document.documentElement.getAttribute('scheme')
+    document.documentElement.setAttribute('scheme', scheme_now === 'dark' ? 'light' : 'dark')
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   back_to_top(evt) {
     // Click event to scroll to top
     const scrollToTop = () => {
@@ -211,7 +218,7 @@ customElements.define('bt-body', class extends LitElement {
     return [
       css`
 .flyout-menu {
-  background-color: white;
+  background: var(--background1);
   border-left: 1px solid rgba(161, 161, 161, 0.3);
   height: 100%;
   margin-top: 3.5em;
@@ -366,7 +373,7 @@ customElements.define('bt-body', class extends LitElement {
 }
 
 #site-header {
-  background-color: white;
+  background: var(--background1);
   border-bottom: 1px solid rgba(161, 161, 161, 0.3);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   height: 3.5em;
@@ -426,29 +433,31 @@ customElements.define('bt-body', class extends LitElement {
   flex-basis: 100%;
   order: 1;
 }
-#site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle {
+#site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle, #site-nav .flyout-menu .scheme-toggle {
   display: block;
   flex-basis: 100%;
   order: 3;
 }
 @media (min-width: 425px) {
-  #site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle {
+  #site-nav .flyout-menu .share-toggle, #site-nav .flyout-menu .search-toggle, #site-nav .flyout-menu .scheme-toggle {
     display: none;
   }
 }
 
-.share-toggle, .search-toggle {
+.share-toggle, .search-toggle, .scheme-toggle {
   display: none;
 }
 @media (min-width: 425px) {
   .share-toggle,
-  .search-toggle {
+  .search-toggle,
+  .scheme-toggle {
     display: block;
     text-align: center;
     width: 61px;
   }
   .share-toggle i,
-  .search-toggle i {
+  .search-toggle i,
+  .scheme-toggle i {
     vertical-align: middle;
   }
 }
@@ -764,7 +773,7 @@ customElements.define('bt-body', class extends LitElement {
 }
 
 .copyright {
-  color: #ababab;
+  color: var(--color2);
   font-family: "Raleway", Helvetica, sans-serif;
   font-size: 0.5em;
   font-weight: 400;
@@ -791,11 +800,13 @@ customElements.define('bt-body', class extends LitElement {
   clip-path: polygon(0 100%, 100% 100%, 50% 0);
 }
 
+img {
+  filter: grayscale(var(--img-grayscale-filter));
+}
 `,
       css_buttons(),
       css_headers(),
       css_links(),
-      css_dark(),
     ]
   }
 })

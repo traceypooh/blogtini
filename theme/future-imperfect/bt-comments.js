@@ -3,7 +3,7 @@ import {
   fetcher, state, cfg, path_to_theme_url,
 } from '../../js/blogtini.js'
 import {
-  css_dark, css_headers, css_buttons, css_post, css_forms,
+  css_headers, css_buttons, css_post, css_forms,
 } from './index.js'
 
 
@@ -303,7 +303,6 @@ customElements.define('bt-comments', class extends LitElement {
   background: rgba(184, 46, 110, 0.25);
 }
 `,
-      css_dark(),
     ]
   }
 })

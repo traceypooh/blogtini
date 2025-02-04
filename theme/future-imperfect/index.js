@@ -1,5 +1,4 @@
-import { css, unsafeCSS } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { dark_mode } from '../../js/blogtini.js'
+import { css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 import './bt-body.js'
 import './bt-sidebar.js'
@@ -16,18 +15,11 @@ import './bt-histogram.js'
 
 
 function css_buttons() {
-  const xxx = dark_mode() ? `
-.button {
-  color: #ddd;
-  background-color: #111;
-}
-` : ''
-
   return css`
 .button {
-  background-color: transparent;
+  color: var(--color1);
+  background-color: var(--background1);
   border: 1px solid rgba(161, 161, 161, 0.3);
-  color: #3b3a3a;
   cursor: pointer;
   display: inline-block;
   font-family: "Raleway", Helvetica, sans-serif;
@@ -61,8 +53,6 @@ input[type="button"]:hover:active,
 .button:hover:active {
   background-color: rgba(46, 184, 172, 0.05);
 }
-
-${unsafeCSS(xxx)}
 `
 }
 
@@ -81,8 +71,6 @@ a:hover {
 }
 
 function css_headers() {
-  const color = dark_mode() ? '#ddd' : '#3b3a3a'
-
   return css`
 h1,
 h2,
@@ -90,7 +78,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: ${unsafeCSS(color)};
+  color: var(--color1);
   font-family: "Raleway", Helvetica, sans-serif;
   letter-spacing: 0.25em;
   line-height: 1.65;
@@ -129,7 +117,7 @@ h1 {
 function css_post() {
   return css`
 .post {
-  background: white;
+  background: var(--background2);
   margin: 1.5em auto;
   padding: 1em;
   max-width: 55em;
@@ -187,59 +175,6 @@ footer .button { /* xxx was .post footer .button */
 `
 }
 
-
-function css_dark() {
-  if (!dark_mode())
-    return css``
-
-  return css`
-#site-header,
-#site-header .flyout-menu,
-#site-nav-menu,
-.mini-post header,
-.content table,
-.single  table,
-.button {
-  color: #ddd;
-  background-color: #111;
-}
-.content table th,
-.content table tr:nth-child(even),
-.single  table th,
-.single  table tr:nth-child(even) {
-  color: #ddd;
-  background-color: #222;
-}
-.content table tbody tr td,
-.single  table tbody tr td {
-  background-color: transparent;
-}
-
-article.post,
-article .post,
-.mini-post,
-.comments.post,
-.comment header {
-  color: #ddd;
-  background-color: #222;
-}
-.pagination a,
-.asciiover pre,
-#comment-form input,
-#comment-form textarea,
-#contact input,
-#contact textarea {
-  color: #ddd;
-}
-img {
-  filter: grayscale(50%);
-}
-
-a {
-  color: inherit;
-}
-`
-}
 
 function css_hljs() {
   return css`
@@ -437,7 +372,6 @@ export {
   css_buttons,
   css_headers,
   css_links,
-  css_dark,
   css_footer,
   css_post,
   css_title,

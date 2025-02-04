@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { datetime, path_to_theme_url } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_buttons, css_headers, css_links,
+  css_post, css_footer, css_title, css_buttons, css_headers, css_links,
 } from './index.js'
 
 
@@ -72,7 +72,7 @@ customElements.define('bt-comment', class extends LitElement {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
-  background: #ededed;
+  background: var(--background2);
   align-items: center;
   border-radius: 50px 0 0 50px;
 }
@@ -170,8 +170,11 @@ customElements.define('bt-comment', class extends LitElement {
   -webkit-clip-path: circle(50% at 50% 50%);
   clip-path: circle(50% at 50% 50%);
 }
+
+img {
+  filter: grayscale(--img-grayscale-filter);
+}
 `,
-      css_dark(),
     ]
   }
 })

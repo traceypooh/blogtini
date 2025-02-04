@@ -1,11 +1,6 @@
-import {
-  LitElement, html, css, unsafeCSS,
-} from 'https://esm.ext.archive.org/lit@3.2.1'
-import {
-  url2post, urlify,
-  datetime, dark_mode,
-} from '../../js/blogtini.js'
-import { css_headers, css_links, css_dark } from './index.js'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { url2post, urlify, datetime } from '../../js/blogtini.js'
+import { css_headers, css_links } from './index.js'
 
 customElements.define('bt-post-mini', class extends LitElement {
   static get properties() {
@@ -28,13 +23,11 @@ customElements.define('bt-post-mini', class extends LitElement {
   }
 
   static get styles() {
-    const xxx = dark_mode() ? 'background-color: #222;' : '' // for dark mode border color
     return [
       css_headers(),
       css`
 :host {
-  background: white;
-  ${unsafeCSS(xxx)}
+  background: var(--background1);
   border: 1px solid rgba(161, 161, 161, 0.3);
   display: -webkit-box;
   display: -ms-flexbox;
@@ -78,10 +71,8 @@ header time {
   letter-spacing: 0.25em;
   text-transform: uppercase;
 }
-
 `,
       css_links(),
-      css_dark(),
     ]
   }
 })

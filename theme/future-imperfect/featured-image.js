@@ -1,9 +1,7 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
-  LitElement, html, css, unsafeCSS,
-} from 'https://esm.ext.archive.org/lit@3.2.1'
-import {
-  url2post, cfg, state, urlify, PR, dark_mode, imgurl,
+  url2post, cfg, state, urlify, PR, imgurl,
 } from '../../js/blogtini.js'
 
 
@@ -63,11 +61,7 @@ customElements.define('featured-image', class extends LitElement {
   }
 
   static get styles() {
-    const xxx =  dark_mode() ? 'img { filter: grayscale(50%); }' : ''
-
     return css`
-${unsafeCSS(xxx)}
-
 .image {
   border: 0;
   display: grid;
@@ -175,6 +169,10 @@ img[src*="#top"] {
 .image.single:after,
 .image.single:before {
   display: none;
+}
+
+img {
+  filter: grayscale(var(--img-grayscale-filter));
 }
 `
   }

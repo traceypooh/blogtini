@@ -46,21 +46,44 @@ button, input, optgroup, select, textarea {
 }
 
 
+/* light/dark theme colors */
+
+/* Global variables */
+:root {
+  --color1: #333333;
+  --color2: #3b3b3b;
+  --background1: whitesmoke; /*f5*/
+  --background2: #f4f4f4;
+  --img-grayscale-filter: 0%;
+}
+
+/* Dark mode changes */
+[scheme="dark"] {
+  --color1: #ddd;
+  --color2: #bbbbbb;
+  --background1: #111;
+  --background2: #222; /* rgb(34,34,34) */
+  --img-grayscale-filter: 30%;
+}
+[scheme="dark"] a {
+  color: inherit;
+}
+
+
 /* Now the <html> & <body> (only things not in web components and shadow DOM) */
 
 html {
-  color: #3b3a3a;
   font-size: 1em;
   line-height: 1.4;
   margin: 0;
 }
 
 body {
-  background: whitesmoke;
+  background: var(--background1);
+  color: var(--color1);
   margin: 3.5em 0 0 0;
   max-width: 100vw; /* xxx in use? */
   -ms-overflow-style: scrollbar;
-  color: #333333;
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   line-height: 1.75em;
 }
@@ -73,24 +96,4 @@ hr {
   border: 0;
   border-bottom: 1px solid rgba(161, 161, 161, 0.3);
   margin: 2em 0;
-}
-
-
-/* dark mode overrides -- these inherit into shaodw DOM components */
-body.dark {
-  color: #ddd;
-  background-color: #111;
-}
-
-body.dark h1,
-body.dark h2,
-body.dark h3,
-body.dark h4,
-body.dark h5,
-body.dark h6 {
-  color: #ddd;
-}
-
-body.dark a {
-  color: inherit;
 }

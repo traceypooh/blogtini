@@ -677,7 +677,7 @@ function dark_mode() {
   const hour = new Date().getHours()
   const dark = (hour < 7 || hour > 17) && globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches
   if (dark)
-    document.querySelector('body').classList.add('dark')
+    document.documentElement.setAttribute('scheme', 'dark')
   return dark
 }
 
@@ -837,7 +837,6 @@ export {
   urlify,
   datetime,
   markdown_to_html,
-  dark_mode,
   PR,
   imgurl,
   fetcher,

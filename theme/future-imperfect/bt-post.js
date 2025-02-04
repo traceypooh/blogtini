@@ -4,7 +4,7 @@ import {
   summarize_markdown, url2post, cfg, urlify, path_to_theme_url,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_dark, css_footer, css_title, css_buttons,
+  css_post, css_footer, css_title, css_buttons, css_links,
 } from './index.js'
 
 
@@ -59,7 +59,7 @@ customElements.define('bt-post', class extends LitElement {
       css_title(),
       css_footer(),
       css_buttons(),
-      css_dark(),
+      css_links(),
     ]
   }
 })

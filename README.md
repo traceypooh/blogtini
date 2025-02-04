@@ -73,4 +73,6 @@ You can choose to use your own domain name (typically ~$20 USD/year) for a short
 ## To Do / Fixmes
 - `git grep xxxxx` highest priorities
 - `git grep xxx`
-- xxx switch light/dark to css vars that pass into WC
+- remove final `$(` xxx
+- staticman (reduced down) via netlify edge functions xxx
+- /contact make work & document xxx
