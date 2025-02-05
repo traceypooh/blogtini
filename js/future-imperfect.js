@@ -1,6 +1,3 @@
-// deno-lint-ignore-file
-/* eslint-disable */
-import $ from 'https://esm.ext.archive.org/jquery@3.7.1'
 import lunr from 'https://esm.ext.archive.org/lunr@2.3.9'
 import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 
@@ -10,29 +7,37 @@ import { summarize_markdown } from './text.js'
 // Flyout Menu Functions
 
 // Search
-let idx;                // Lunr index
-let resultDetails = {}; // Will hold the data for the search results (titles and summaries)
-let $searchResults;     // The element on the page holding search results
-let $searchInput;       // The search box element
-let site_cfg;           // config from main blogtini.js
+let idx                // Lunr index
+let $searchResults     // The element on the page holding search results
+let $searchInput       // The search box element
+let site_cfg           // config from main blogtini.js
+const resultDetails = {} // Will hold the data for the search results (titles and summaries)
 
 function search_setup(docs, cfg) {
-  site_cfg = cfg;
+  site_cfg = cfg
   for (const doc of docs)
     resultDetails[doc.url] = doc
 
   // Click anywhere outside a flyout to close
-  $(document).on("click", function(e) { // xxxxxxxxxxxx
-    if ($(e.target).is(".lang-toggle, .lang-toggle span, #lang-menu, .share-toggle, .share-toggle i, .theme-toggle, .theme-toggle i, #share-menu, #theme-menu, .search-toggle, .search-toggle i, #search-input, #search-results .mini-post, .nav-toggle, .nav-toggle i, #site-nav") === false) {
-      $(".menu").removeClass("active");
-      $("#wrapper").removeClass('overlay');
+  document.addEventListener('click', (e) => {
+    const windowWidth = window.innerWidth
+    if (e.clientX < windowWidth - 177) {
+      const btbod = document.querySelector('bt-body')?.shadowRoot
+      if (btbod) {
+        // esp. when search is open, additionally require the click be below bottom of search input
+        const search_bottom = btbod.querySelector('#search-input')?.getBoundingClientRect()?.bottom
+        if (e.clientY > search_bottom) {
+          btbod.querySelector('.menu.active')?.classList.remove('active')
+          btbod.querySelector('#wrapper')?.classList.remove('overlay')
+        }
+      }
     }
-  });
+  })
 
   // Get dom objects for the elements we'll be interacting with
   const btbody = document.querySelector('bt-body')?.shadowRoot
-  $searchResults = btbody?.querySelector('#search-results');
-  $searchInput   = btbody?.querySelector('#search-input');
+  $searchResults = btbody?.querySelector('#search-results')
+  $searchInput   = btbody?.querySelector('#search-input')
 
   // Build the index so Lunr can search it.  The `ref` field will hold the URL
   // to the page/post.  title, excerpt, and body will be fields searched.
@@ -47,32 +52,35 @@ function search_setup(docs, cfg) {
     // Loop through all documents and add them to index so they can be searched
     for (const doc of docs)
       this.add(doc)
-  });
+  })
 
   // Register handler for the search input field
-  registerSearchHandler();
-};
+  // eslint-disable-next-line no-use-before-define
+  registerSearchHandler()
+}
 
 function registerSearchHandler() {
-  $searchInput.oninput = function(event) {
-    var query = event.target.value;
-    var results = search(query);  // Perform the search
+  $searchInput.oninput = (event) => {
+    const query = event.target.value
+    // eslint-disable-next-line no-use-before-define
+    const results = search(query)  // Perform the search
 
     // Render search results
-    renderSearchResults(results);
+    // eslint-disable-next-line no-use-before-define
+    renderSearchResults(results)
 
     // Remove search results if the user empties the search phrase input field
-    if ($searchInput.value == '') {
-      $searchResults.innerHTML = '';
+    if ($searchInput.value === '') {
+      $searchResults.innerHTML = ''
     }
   }
 }
 
 function renderSearchResults(results) {
   // Create a list of results
-  var container = document.createElement('div');
+  const container = document.createElement('div')
   if (results.length > 0) {
-    results.forEach(function(result) {
+    results.forEach((result) => {
       // Create result item
       container.innerHTML += `
         <article class="mini-post">
@@ -90,24 +98,24 @@ function renderSearchResults(results) {
             </main>
           </a>
         </article>`
-    });
+    })
 
     // Remove any existing content so results aren't continually added as the user types
     while ($searchResults.hasChildNodes()) {
       $searchResults.removeChild(
-        $searchResults.lastChild
-      );
+        $searchResults.lastChild,
+      )
     }
   } else {
-    $searchResults.innerHTML = '<article class="mini-post"><main><p>No Results Found...</p></main></a></article>';
+    $searchResults.innerHTML = '<article class="mini-post"><main><p>No Results Found...</p></main></a></article>'
   }
 
   // Render the list
-  $searchResults.innerHTML = container.innerHTML;
+  $searchResults.innerHTML = container.innerHTML
 }
 
 function search(query) {
-  return idx.search(query);
+  return idx.search(query)
 }
 
 export default search_setup
