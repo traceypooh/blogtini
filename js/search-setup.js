@@ -27,8 +27,8 @@ function search_setup(docs, cfg) {
         // esp. when search is open, additionally require the click be below bottom of search input
         const search_bottom = btbod.querySelector('#search-input')?.getBoundingClientRect()?.bottom
         if (e.clientY > search_bottom) {
-          btbod.querySelector('.menu.active')?.classList.remove('active')
           btbod.querySelector('#wrapper')?.classList.remove('overlay')
+          btbod.querySelectorAll('.menu.active').forEach((e) => e.classList.remove('active'))
         }
       }
     }
