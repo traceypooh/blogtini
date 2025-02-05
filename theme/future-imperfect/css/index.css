@@ -53,7 +53,7 @@ button, input, optgroup, select, textarea {
   --color1: #333333;
   --color2: #3b3b3b;
   --background1: whitesmoke; /*f5*/
-  --background2: #f4f4f4;
+  --background2: #fff;
   --img-grayscale-filter: 0%;
 }
 

@@ -28,7 +28,7 @@ function search_setup(docs, cfg) {
         const search_bottom = btbod.querySelector('#search-input')?.getBoundingClientRect()?.bottom
         if (e.clientY > search_bottom) {
           btbod.querySelector('#wrapper')?.classList.remove('overlay')
-          btbod.querySelectorAll('.menu.active').forEach((e) => e.classList.remove('active'))
+          btbod.querySelectorAll('.menu.active').forEach((o) => o.classList.remove('active'))
         }
       }
     }

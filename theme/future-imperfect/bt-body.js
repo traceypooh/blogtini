@@ -1,7 +1,9 @@
 /* eslint-disable no-use-before-define */
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { css_buttons, css_headers, css_links } from './index.js'
+import {
+  css_buttons, css_headers, css_links, css_forms,
+} from './index.js'
 import {
   cfg, state, PR, path_to_theme_url,
 } from '../../js/blogtini.js'
@@ -666,49 +668,8 @@ customElements.define('bt-body', class extends LitElement {
   opacity: 1;
   z-index: 0;
 }
-.search-results .mini-post {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  width: 90%;
-}
-@media (min-width: 425px) {
-  .search-results .mini-post {
-    width: 75%;
-  }
-}
-@media (min-width: 768px) {
-  .search-results .mini-post {
-    width: 50%;
-  }
-}
-.search-results .mini-post a {
-  border-bottom: 0;
-}
-.search-results .mini-post a:hover {
-  color: inherit;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  transition: box-shadow 0.2s ease-in-out;
-}
-@media (min-width: 768px) {
-  .search-results .mini-post header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid rgba(161, 161, 161, 0.3);
-  }
-  .search-results .mini-post header h2 {
-    flex-grow: 1;
-    font-size: 1em;
-  }
-}
-.search-results .mini-post main {
-  padding: 0 1.25em .1em;
-}
-
-
 .mini-post {
-  background: white;
+  background: var(--background2);
   border: 1px solid rgba(161, 161, 161, 0.3);
   display: -webkit-box;
   display: -ms-flexbox;
@@ -716,32 +677,25 @@ customElements.define('bt-body', class extends LitElement {
   display: flex;
   flex-direction: column;
   margin-bottom: 1em;
-  width: 100%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  width: 90%;
 }
-@media (min-width: 768px) {
-  .mini-post {
-    width: 49%;
-  }
+.mini-post a {
+  border-bottom: 0;
 }
-@media (min-width: 1024px) {
-  .mini-post {
-    width: 100%;
-  }
+.mini-post a:hover {
+  color: inherit;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  transition: box-shadow 0.2s ease-in-out;
+}
+.mini-post main {
+  padding: 0 1.25em .1em;
 }
 .mini-post header {
+  background: var(--background1);
   min-height: 4em;
   padding: 0.5em 1.25em;
   position: relative;
-}
-@media (min-width: 768px) {
-  .mini-post header {
-    border-top: 1px solid rgba(161, 161, 161, 0.3);
-  }
-}
-@media (min-width: 1024px) {
-  .mini-post header {
-    border: 0;
-  }
 }
 .mini-post header h2 {
   font-size: 0.7em;
@@ -751,6 +705,35 @@ customElements.define('bt-body', class extends LitElement {
   font-size: 0.6em;
   letter-spacing: 0.25em;
   text-transform: uppercase;
+}
+
+@media (min-width: 425px) {
+  .mini-post {
+    width: 75%;
+  }
+}
+@media (min-width: 768px) {
+  .mini-post {
+    width: 50%;
+  }
+  .mini-post header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(161, 161, 161, 0.3);
+    border-bottom: 1px solid rgba(161, 161, 161, 0.3);
+  }
+  .mini-post header h2 {
+    flex-grow: 1;
+    font-size: 1em;
+  }
+}
+@media (min-width: 1024px) {
+  .mini-post header {
+    border: 0;
+  }
 }
 
 .socnet-icons {
@@ -834,6 +817,7 @@ img {
       css_buttons(),
       css_headers(),
       css_links(),
+      css_forms(), // for search results
     ]
   }
 })
