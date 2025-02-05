@@ -8,7 +8,7 @@ import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
-import search_setup from './future-imperfect.js'
+import search_setup from './search-setup.js'
 import { markdown_to_html, summarize_markdown } from './text.js'
 
 
