@@ -95,13 +95,13 @@ customElements.define('bt-sidebar', class extends LitElement {
 header h1 {
   font-size: 1em;
 }
-#site-sidebar > * { /* chexxx */
+#site-sidebar > * {
   border-top: 1px solid rgba(161, 161, 161, 0.3);
   margin: 3em 2em 0 2em;
   padding-top: 3em;
 }
 @media (min-width: 1024px) {
-  #site-sidebar > *:first-child { /* chexxx */
+  #site-sidebar > *:first-child {
     margin-top: 0;
   }
 }

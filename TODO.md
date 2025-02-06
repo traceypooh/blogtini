@@ -1,6 +1,4 @@
 
-xxx socnet icons hover should blue color
-
 
 add storj, codepen, etc.
 
@@ -10,8 +8,6 @@ xxx add either:
 <meta property="og:type" content="article">
 ```
 
-xxx move <style> to bottom to avoid leaks:    fgrep '<style>' $(finddot html)
-xxx autogen rss
 xxx mobile size tables
 
 Your posts or directories of posts, should ideally natural sort in time order, examples:
@@ -114,7 +110,6 @@ js
 
 
 - 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
-- xxx SEO!?
 - xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
 - import xxx from 'https://esm.archive.org/blogtini'
 - xxx can still use site w/o .md copied into webroot via api

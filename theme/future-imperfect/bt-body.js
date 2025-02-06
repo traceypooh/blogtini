@@ -31,8 +31,8 @@ customElements.define('bt-body', class extends LitElement {
   render() {
     const page_is_home = !state.filter_tag && !state.filter_cat
     const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
-    const page_left = state.page > 0 ? state.page - 1 : null
-    const page_rite = state.page_more ? state.page + 1 : null
+    const page_left = state.page > 0 ? state.page - 1 : null // xxxx on bt-post-full should show..
+    const page_rite = state.page_more ? state.page + 1 : null // xxxx .. prior/next-in time post
 
     const page_sep = page_is_home ? '?' : '/'
     const page_left_url = `${page_base}${page_left ? `${page_sep}page/${1 + page_left}` : ''}`
@@ -50,7 +50,7 @@ customElements.define('bt-body', class extends LitElement {
     const img_intro = cfg.img_site.startsWith('https://') ? cfg.img_site : `${state.top_dir}${cfg.img_site}`
 
     return html`
-<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
+<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/>
 <link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
 
 <header id="site-header">
@@ -601,7 +601,12 @@ customElements.define('bt-body', class extends LitElement {
   align-items: center;
   margin: 1.5em auto;
   padding: 1em;
-  max-width: 55em;
+  max-width: 100vw; /* bug fix for mobile width and 2 wider than avg titles */
+}
+@media (min-width: 1024px) {
+  .pagination {
+    max-width: 60vw; /* bug fix for mobile width and 2 wider than avg titles */
+  }
 }
 .pagination .button {
   margin: 1em;
@@ -630,21 +635,11 @@ customElements.define('bt-body', class extends LitElement {
   transform: translateY(-10px);
 }
 
-/* MAIN THEME OVERRIDES */ /* chexxx */
 
 #site-nav .flyout-menu::-webkit-scrollbar {
   height: 0 !important; /* scrollbar in the nav looks like a mistake */
 }
 
-/* bug fix for mobile width and 2 wider than avg titles */
-.pagination {
-  max-width: 100vw;
-}
-@media (min-width: 1024px) {
-  .pagination {
-    max-width: 60vw;
-  }
-}
 
 /* search results */
 .search-results {
