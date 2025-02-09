@@ -12,6 +12,7 @@ import './bt-comments.js'
 import './bt-comment.js'
 import './bt-share.js'
 import './bt-histogram.js'
+import './bt-contact.js'
 
 
 function css_buttons() {
@@ -309,7 +310,7 @@ textarea {
 input,
 select,
 textarea {
-  color: #333333;
+  color: var(--color1);
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   line-height: 1.75em;
 }
@@ -319,7 +320,7 @@ input[type="submit"],
 input[type="reset"],
 input[type="button"],
 label {
-  color: #3b3a3a;
+  color: var(--color2);
   display: block;
   font-size: 0.9em;
   font-weight: 700; }

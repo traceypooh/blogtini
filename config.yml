@@ -44,7 +44,7 @@ menu:
 
     - name:              Contact
       identifier:        contact
-      url:               /contact/
+      url:               /?contact
       pre:               <i class='far fa-envelope'></i>
       weight:            6
 
@@ -86,3 +86,8 @@ staticman:
   enabled:  true
   api:      staticman.ext.archive.org  # without trailing slash, defaults to 'staticman3.herokuapp.com'
   branch:   main
+
+contact:
+  # You can sign up for your own free email relay for your 'contact me' page: https://formspree.io/
+  email_service: https://formspree.io/f/mgedbred
+  answer_time: 24

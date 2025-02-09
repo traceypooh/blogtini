@@ -82,6 +82,9 @@ let cfg = {
   social: {},
   social_share: ['twitter', 'facebook', 'pinterest', 'email'],
   remove_blur: true,
+  contact: {
+    answer_time: 24,
+  },
 }
 
 
@@ -180,6 +183,9 @@ function main_section(histogram) {
 
   if (state.list_tags || state.list_cats)
     return `<bt-histogram histogram=${JSON.stringify(histogram)}></bt-histogram>`
+
+  if (state.is_homepage && location.search?.startsWith('?contact'))
+    return '<bt-contact></bt-contact>'
 
   return `
     ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
