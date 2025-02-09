@@ -178,14 +178,16 @@ async function fetcher(url)  {
 function main_section(histogram) {
   // NOTE: keep in mind, anything returned *not* in a web component "wrapper" below, will be in
   // the unstyled light DOM, for example the `<hr>` below
-  if (filter_post)
-    return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
-
   if (state.list_tags || state.list_cats)
     return `<bt-histogram histogram=${JSON.stringify(histogram)}></bt-histogram>`
 
   if (state.is_homepage && location.search?.startsWith('?contact'))
     return '<bt-contact></bt-contact>'
+
+  state.show_previous_and_next = true
+
+  if (filter_post)
+    return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
 
   return `
     ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
@@ -602,8 +604,16 @@ function storage_loop() {
         // local file:// dev
         ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
-      if (!match && STORAGE.docs.length !== 1)
+      if (!match && STORAGE.docs.length !== 1) {
+        // note prior and next posts
+        if (!state.filter_post_url)
+          state.filter_post_url_prior = urlify(post.url)
+        if (state.filter_post_url && !state.filter_post_url_next)
+          state.filter_post_url_next = urlify(post.url)
+
         continue
+      }
+      state.filter_post_url = urlify(post.url)
     }
 
     if (filter_post) {
@@ -611,7 +621,6 @@ function storage_loop() {
       head_insert_json_ld(post)
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(post.title, imgurl(post, true, false))
-      state.filter_post_url = urlify(post.url)
     } else if (filter_tag.length) {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx

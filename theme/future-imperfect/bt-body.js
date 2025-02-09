@@ -5,7 +5,7 @@ import {
   css_buttons, css_headers, css_links, css_forms,
 } from './index.js'
 import {
-  cfg, state, PR, path_to_theme_url,
+  cfg, state, PR, path_to_theme_url, url2post,
 } from '../../js/blogtini.js'
 
 
@@ -31,12 +31,27 @@ customElements.define('bt-body', class extends LitElement {
   render() {
     const page_is_home = !state.filter_tag && !state.filter_cat
     const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
-    const page_left = state.page > 0 ? state.page - 1 : null // xxxx on bt-post-full should show..
-    const page_rite = state.page_more ? state.page + 1 : null // xxxx .. prior/next-in time post
-
     const page_sep = page_is_home ? '?' : '/'
-    const page_left_url = `${page_base}${page_left ? `${page_sep}page/${1 + page_left}` : ''}`
-    const page_rite_url = `${page_base}${page_sep}page/${1 + page_rite}`
+
+    let page_left = state.page > 0 ? state.page - 1 : null
+    let page_rite = state.page_more ? state.page + 1 : null
+    let page_left_url = `${page_base}${page_left ? `${page_sep}page/${1 + page_left}` : ''}`
+    let page_rite_url = `${page_base}${page_sep}page/${1 + page_rite}`
+    let page_left_title = 'Prior Page'
+    let page_rite_title = 'Next Page'
+
+    if (state.filter_post_url && state.show_previous_and_next) {
+      page_left = state.filter_post_url_prior
+      page_rite = state.filter_post_url_next
+      if (page_left) {
+        page_left_url = state.filter_post_url_prior
+        page_left_title = url2post(state.filter_post_url_prior).title ?? page_left_title
+      }
+      if (page_rite) {
+        page_rite_url = state.filter_post_url_next
+        page_rite_title = url2post(state.filter_post_url_next).title ?? page_rite_title
+      }
+    }
 
     const navurl = (e) => {
       const url =
@@ -129,12 +144,13 @@ customElements.define('bt-body', class extends LitElement {
 
     <slot></slot>
 
-    <div class="pagination">
-      ${page_left !== null ? html`<a href="${page_left_url}"
-        class="button left"><span>Previous Page</span></a>` : ''}
-      ${page_rite !== null ? html`<a href="${page_rite_url}"
-        class="button right"><span>Next Page</span></a>` : ''}
-    </div>
+    ${state.show_previous_and_next ? html`
+      <div class="pagination">
+        ${page_left ? html`<a href="${page_left_url}"
+          class="button left"><span>${page_left_title}</span></a>` : ''}
+        ${page_rite ? html`<a href="${page_rite_url}"
+          class="button right"><span>${page_rite_title}</span></a>` : ''}
+      </div>` : ''}
 
   </main>
   <bt-sidebar
