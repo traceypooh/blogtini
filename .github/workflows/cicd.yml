@@ -4,3 +4,6 @@ on:
 jobs:
   blogtini:
     uses: traceypooh/blogtini/.github/workflows/blogtini.yml@main
+
+  lint:
+    uses: internetarchive/dyno/.github/workflows/lint.yml@main
