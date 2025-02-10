@@ -32,14 +32,10 @@ during each "pre commit" hook (above), you'll need to have the
     - including `comment: <script src="../theme.js" type="module" charset="utf-8"></script>`
   - you can then have the nice url `https://example.com/2022/01/i-baked-a-pie/` where the included JS transforms the markdown to markup
 - your `/sitemap.xml` can reference each of your directory urls
-- manage your `/sitemap.xml` manually or run the `/bin/sitemap` script any time your create or delete a post.  The `/bin/sitemap` script can be found on the blogtini website.
+- manage your `/sitemap.xml` manually or run the `/bin/sitemap` script any time you create or delete a post.
+  The [/bin/sitemap](https://github.com/traceypooh/blogtini/blob/main/bin/sitemap) script is on the blogtini website.
 - have `/theme.js` do an `import` of whatever theme you desire
 
-
-### Blog source repository that uses markdown files
-- /2022/01/i-baked-a-pie.md
-  - `jekyll` will automatically transform your markdown to markup and to an url like `https://example.com/2022/01/i-baked-a-pie.html`
-  - **tracey is working with `jekyll` to get https://example.com/2022/01/i-baked-a-pie.md urls to also get copied in verbatim from your source -- so the original markdown with front matter can be used and parsed**
 
 
 
@@ -72,6 +68,7 @@ You can choose to use your own domain name (typically ~$20 USD/year) for a short
 
 ## To Do / Fixmes
 - `git grep xxxxx` highest priorities
-- `git grep xxx`
+- `git grep xxxx` medium priorities
+- `git grep xxx` priorities
 - staticman (reduced down) via netlify edge functions xxx
 - document `?contact` xxx

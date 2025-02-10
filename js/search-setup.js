@@ -20,7 +20,7 @@ function search_setup(docs, cfg) {
 
   // Click anywhere outside a flyout to close
   document.addEventListener('click', (e) => {
-    const windowWidth = window.innerWidth
+    const windowWidth = globalThis.innerWidth
     if (e.clientX < windowWidth - 177) {
       const btbod = document.querySelector('bt-body')?.shadowRoot
       if (btbod) {

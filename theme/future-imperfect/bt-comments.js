@@ -104,7 +104,7 @@ customElements.define('bt-comments', class extends LitElement {
     // The comments can be in any order -- so a reply to a parent might be seen befor the parent.
     // So we will loop over list of comments and insert what we can, repeatedly.
     // We know we are done when a loop over any remaining comments to insert ends up inserting 0.
-    // eslint-disable-next-line no-empty
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
     while (this.comments.reduce((sum, e) => sum + this.comment_insert(e), 0)) {}
 
     for (const com of this.comments) {
@@ -173,12 +173,9 @@ customElements.define('bt-comments', class extends LitElement {
     form.querySelector('#comment-form-submitted').classList.remove('hidden') // show "submitted"
 
     // Construct form action URL form JS to avoid spam
-    const { api } = cfg.staticman
-    const gitProvider = cfg.git_provider
-    const username = cfg.user
-    const { repo } = cfg
-    const { branch } = cfg.staticman
-    const url = ['https:/', api, 'v3/entry', gitProvider, username, repo, branch, 'comments'].join('/')
+    const url = [
+      'https:/', cfg.staticman.api, 'v3/entry', cfg.git_provider, cfg.user, cfg.repo, cfg.staticman.branch, 'comments',
+    ].join('/')
 
     // Convert form fields to a JSON-friendly string
     const formObj = Object.fromEntries(new FormData(form))
