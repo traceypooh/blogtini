@@ -72,3 +72,4 @@ You can choose to use your own domain name (typically ~$20 USD/year) for a short
 - `git grep xxx` priorities
 - staticman (reduced down) via netlify edge functions xxx
 - document `?contact` xxx
+- document github action xxx

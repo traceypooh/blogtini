@@ -669,10 +669,13 @@ function add_interactivity() {
 
 
 function add_css(file) {
+  // eslint-disable-next-line max-len
+  // <link rel="preload" href="YOUR_CSS_CDN_URL" as="style" onload="this.onload=null;this.rel='stylesheet'" onerror="this.onerror=null;this.rel='stylesheet'" media="print">
   const { head } = document
   const e = document.createElement('link')
   e.type = 'text/css'
   e.rel = 'stylesheet'
+  e.crossorigin = 'anonymous'
   e.href = file
   head.appendChild(e)
 }
