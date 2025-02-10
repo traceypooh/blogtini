@@ -1,6 +1,6 @@
 import { vrsort } from 'https://av.prod.archive.org/js/util/strings.js'
 import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { css_links, css_headers } from './index.js'
+import { css_links, css_headers, css_normalize } from './index.js'
 import { state } from '../../js/blogtini.js'
 
 customElements.define('bt-histogram', class extends LitElement {
@@ -21,6 +21,7 @@ customElements.define('bt-histogram', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
       css_headers(),
       css_links(),
     ]

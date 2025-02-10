@@ -189,7 +189,9 @@ function main_section(histogram) {
     return `<bt-post-full url="${state.filter_post_url}"></bt-post-full>`
 
   return `
-    ${state.show_top_content ? '<bt-post-full url="homepage/"></bt-post-full> <hr>' : ''}
+    ${state.show_top_content
+    ? '<bt-post-full url="homepage/"></bt-post-full> <hr style="height:1px;padding:0;border:0;border-bottom:1px solid #a1a1a166;margin:2em 0">'
+    : ''}
 
     <bt-posts>
       ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}

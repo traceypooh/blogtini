@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { datetime, path_to_theme_url } from '../../js/blogtini.js'
+import { datetime } from '../../js/blogtini.js'
 import {
-  css_post, css_footer, css_title, css_buttons, css_headers, css_links,
+  css_post, css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome,
+  css_normalize,
 } from './index.js'
 
 
@@ -20,8 +21,6 @@ customElements.define('bt-comment', class extends LitElement {
 
   render() {
     return html`
-<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
-
 <article id="${this.id}" class="comment" style="${this.replID ? 'margin-left:150px' : ''}">
   <header>
     <img class="comment-avatar circle" src="https://www.gravatar.com/avatar/${this.email}?s=100" alt="${this.name}'s Gravatar">
@@ -58,6 +57,8 @@ customElements.define('bt-comment', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
+      css_fontawesome(),
       css_post(), // xxxcc figure these out
       css_title(),
       css_footer(),

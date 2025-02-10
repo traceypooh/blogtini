@@ -2,10 +2,10 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
-  css_buttons, css_headers, css_links, css_forms,
+  css_buttons, css_headers, css_links, css_forms, css_normalize, css_theme, css_fontawesome,
 } from './index.js'
 import {
-  cfg, state, PR, path_to_theme_url, url2post,
+  cfg, state, PR, url2post,
 } from '../../js/blogtini.js'
 
 
@@ -65,9 +65,6 @@ customElements.define('bt-body', class extends LitElement {
     const img_intro = cfg.img_site.startsWith('https://') ? cfg.img_site : `${state.top_dir}${cfg.img_site}`
 
     return html`
-<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/>
-<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
-
 <header id="site-header">
   <nav id="site-nav">
     <h1 class="nav-title">
@@ -234,6 +231,9 @@ customElements.define('bt-body', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
+      css_theme(),
+      css_fontawesome(),
       css`
 .flyout-menu {
   background: var(--background1);

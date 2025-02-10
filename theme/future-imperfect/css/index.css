@@ -1,48 +1,53 @@
-@import 'fonts.css';
+/* NOTE: chrome ignores @font-face in shadow DOM, so these live here, loading into light DOM */
 
-/* First, some github.com/necolas/normalize.css styles that inherit into shadow DOM components */
-
-/* Correct the font size and margin on `h1` elements within `section` and */
-/* `article` contexts in Chrome, Firefox, and Safari. */
-h1 {
-  font-size: 2em;
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Raleway'), local('Raleway-Regular'), url(../fonts/raleway-regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Raleway ExtraBold'), local('Raleway-ExtraBold'), url(../fonts/raleway-black.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Raleway Black'), local('Raleway-Black'), url(../fonts/raleway-black.woff2) format('woff2');
 }
 
-/* 1. Correct the inheritance and scaling of font size in all browsers. */
-/* 2. Correct the odd `em` font sizing in all browsers. */
-pre {
-  font-family: monospace, monospace; /* 1 */
-  font-size: 1em; /* 2 */
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(../fonts/source-sans-pro.woff2) format('woff2');
 }
 
-/* Add the correct font weight in Chrome, Edge, and Safari. */
-b, strong {
-  font-weight: bolder;
-}
 
-/* 1. Correct the inheritance and scaling of font size in all browsers. */
-/* 2. Correct the odd `em` font sizing in all browsers. */
-code, kbd, samp {
-  font-family: monospace, monospace; /* 1 */
-  font-size: 1em; /* 2 */
+@font-face {
+  font-family: 'Font Awesome 5 Brands';
+  font-style: normal;
+  font-weight: normal;
+  font-display: auto;
+  src: url(../fonts/fa-brands-400.woff2) format('woff2');
 }
-
-/* Add the correct font size in all browsers. */
-small {
-  font-size: 80%;
+@font-face {
+  font-family: 'Font Awesome 5 Free';
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto;
+  src: url(../fonts/fa-regular-400.woff2) format('woff2');
 }
-
-/* Prevent `sub` and `sup` elements from affecting the line height in all browsers. */
-sub, sup {
-  font-size: 75%;
-  line-height: 0;
-}
-
-/* Change the font styles in all browsers. */
-button, input, optgroup, select, textarea {
-  font-family: inherit;
-  font-size: 100%;
-  line-height: 1.15;
+@font-face {
+  font-family: 'Font Awesome 5 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: auto;
+  src: url(../fonts/fa-solid-900.woff2) format('woff2');
 }
 
 
@@ -86,14 +91,4 @@ body {
   -ms-overflow-style: scrollbar;
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   line-height: 1.75em;
-}
-
-/* this is only element (home page) in light DOM */
-hr {
-  display: block;
-  height: 1px;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid rgba(161, 161, 161, 0.3);
-  margin: 2em 0;
 }

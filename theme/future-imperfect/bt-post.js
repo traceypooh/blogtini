@@ -1,10 +1,10 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
-  summarize_markdown, url2post, cfg, urlify, path_to_theme_url,
+  summarize_markdown, url2post, cfg, urlify,
 } from '../../js/blogtini.js'
 import {
-  css_post, css_footer, css_title, css_buttons, css_links,
+  css_post, css_footer, css_title, css_buttons, css_links, css_normalize, css_theme,
 } from './index.js'
 
 
@@ -21,8 +21,6 @@ customElements.define('bt-post', class extends LitElement {
     const summary = summarize_markdown(post.body_raw, cfg.summary_length)
 
     return html`
-<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
-
   <article class="post">
     <bt-post-header .post=${post}></bt-post-header>
     <div class="content">
@@ -43,6 +41,8 @@ customElements.define('bt-post', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
+      css_theme(),
       css_post(),
       css`
 /* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */

@@ -1,9 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { fetcher, state, cfg } from '../../js/blogtini.js'
 import {
-  fetcher, state, cfg, path_to_theme_url,
-} from '../../js/blogtini.js'
-import {
-  css_headers, css_buttons, css_post, css_forms,
+  css_headers, css_buttons, css_post, css_forms, css_normalize, css_fontawesome,
 } from './index.js'
 
 
@@ -23,7 +21,6 @@ customElements.define('bt-comments', class extends LitElement {
       this.comments_insert()
 
     return html`
-  <link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/>
   <div class="comments post">
     <div>
       <h2 id="say-something">Say Something</h2>
@@ -247,6 +244,8 @@ customElements.define('bt-comments', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
+      css_fontawesome(),
       css_buttons(),
       css_headers(),
       css_post(),

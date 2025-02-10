@@ -1,11 +1,11 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
+import { url2post, markdown_to_html, cfg } from '../../js/blogtini.js'
 import {
-  url2post, markdown_to_html, cfg, path_to_theme_url,
-} from '../../js/blogtini.js'
-import {
-  css_post, css_footer, css_title, css_hljs, css_headers, css_buttons, css_links,
+  css_post, css_footer, css_title, css_hljs, css_headers, css_buttons, css_links, css_normalize,
+  css_theme,
+  css_fontawesome,
 } from './index.js'
 
 customElements.define('bt-post-full', class extends LitElement {
@@ -30,9 +30,6 @@ customElements.define('bt-post-full', class extends LitElement {
     const comments_entryid = new URL(relative_path, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '')
 
     return html`
-<link href="${path_to_theme_url('css/css.css')}" rel="stylesheet" type="text/css"/><!-- xxx -->
-<link href="${path_to_theme_url('css/fontawesome.css')}" rel="stylesheet" type="text/css"/><!-- xxx eg: bottom of homepage -->
-
     <article>
       <div class="post single">
         ${this.post.type === 'homepage' ? '' : html`
@@ -87,6 +84,9 @@ customElements.define('bt-post-full', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
+      css_theme(),
+      css_fontawesome(), //  eg: bottom of homepage
       css`
 img {
   filter: grayscale(var(--img-grayscale-filter));

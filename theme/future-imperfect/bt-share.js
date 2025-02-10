@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cfg } from '../../js/blogtini.js'
-import { css_links } from './index.js'
+import { css_links, css_normalize } from './index.js'
 
 customElements.define('bt-share', class extends LitElement {
   static get properties() {
@@ -74,6 +74,7 @@ customElements.define('bt-share', class extends LitElement {
   static get styles() {
     // NOTE! conditional styling based on optional `class="mainline"` in `<bt-share>` element
     return [
+      css_normalize(),
       css_links(),
       css`
 @charset "UTF-8";

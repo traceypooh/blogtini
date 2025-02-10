@@ -2,7 +2,9 @@ import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   cfg, urlify, datetime, PR,
 } from '../../js/blogtini.js'
-import { css_headers, css_links, css_title } from './index.js'
+import {
+  css_headers, css_links, css_normalize, css_title,
+} from './index.js'
 
 
 customElements.define('bt-post-header', class extends LitElement {
@@ -36,6 +38,7 @@ customElements.define('bt-post-header', class extends LitElement {
 
   static get styles() {
     return [
+      css_normalize(),
       css_links(),
       css_headers(),
       css_title(),
