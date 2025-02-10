@@ -446,8 +446,7 @@ function markdown_parse(markdown) {
   const chunks = markdown.split('\n---')
 
   // Normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
-  // Also, another user wanted some arbitrary HTML for the first line, eg:
-  //   https://github.com/traceypooh/blogtini/issues/8
+  // Also, another user wanted some arbitrary HTML for the first line, eg: GH-8
   // So skip a top line starting with '<' that is before the frontmater start
   if (chunks[0].trim().startsWith('<')) chunks.shift()
 
