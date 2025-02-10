@@ -184,8 +184,8 @@ customElements.define('bt-body', class extends LitElement {
       to_top_arrow.style.opacity = 1
 
     // For any scroll event, check if window isnt top, then display button
-    window.addEventListener('scroll', () => {
-      to_top_arrow.style.opacity = window.scrollY ? 1 : 0
+    globalThis.addEventListener('scroll', () => {
+      to_top_arrow.style.opacity = globalThis.scrollY ? 1 : 0
     })
   }
 
@@ -223,8 +223,8 @@ customElements.define('bt-body', class extends LitElement {
     const scrollToTop = () => {
       const c = document.documentElement.scrollTop || document.body.scrollTop
       if (c > 0) {
-        window.requestAnimationFrame(scrollToTop)
-        window.scrollTo(0, c - c / 15)
+        globalThis.requestAnimationFrame(scrollToTop)
+        globalThis.scrollTo(0, c - c / 15)
       }
     }
     evt.preventDefault()

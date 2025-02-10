@@ -104,7 +104,7 @@ customElements.define('bt-comments', class extends LitElement {
     // The comments can be in any order -- so a reply to a parent might be seen befor the parent.
     // So we will loop over list of comments and insert what we can, repeatedly.
     // We know we are done when a loop over any remaining comments to insert ends up inserting 0.
-    // eslint-disable-next-line no-empty
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
     while (this.comments.reduce((sum, e) => sum + this.comment_insert(e), 0)) {}
 
     for (const com of this.comments) {
