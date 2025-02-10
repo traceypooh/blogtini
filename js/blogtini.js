@@ -23,8 +23,6 @@ const state = {
   tags: {},
   cats: {},
   urls_filtered: [],
-  use_github_api_for_files: null,
-  try_github_api_tree: false,
   num_posts: 0,
   filedev: location?.protocol === 'file:',
   localdev: location?.hostname === 'localhost',
@@ -117,8 +115,9 @@ function urlize(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
   return (cgi ? `../${url}` : `../${url}/`)
 
   /*
-  xxx when state.filedev mode, change links like:  src="./"  src="../"  href="./"  href="../"
-  that end in "/" to "/index.html".  use same method for emitting urls, eg: site header /favorites/, / home, etc..., recent posts, etc.
+  xxx when state.filedev mode, change links like:  src="./"  src="../"  href="./"  href="../" that
+  xxx .. end in "/" to "/index.html".  use same method for emitting urls, eg:
+  xxx .. site header /favorites/, / home, etc..., recent posts, etc.
 
   xxx when in top page / tags / cats mode, change links like:  src="../"  href="../"  to  "./"
   */
@@ -242,13 +241,6 @@ async function main() {
   }
 
   if (state.is_homepage) {
-    if (SEARCH.match(/^\?20\d\d-\d\d-\d\d-/)) {
-      // prior SPA type blogtini method.  so now do a soft 404
-      // https://developers.google.com/search/docs/advanced/javascript/javascript-seo-basics#avoid-soft-404s
-      window.location.href = '/not-found' // redirect to 404 page on the server
-      return
-    }
-
     // eslint-disable-next-line no-use-before-define
     head_insert_titles('Blogtini') // xxx
   } else if (state.list_tags) {
@@ -323,12 +315,6 @@ ${body_contents}
   }
 
 
-/*
-cfg.repo = 'blogtini'
-cfg.user = 'ajaquith'; cfg.repo = 'securitymetrics'; cfg.branch = 'master'
-log('xxxx testitos', await find_posts_from_github_api_tree()); return
-*/
-
   if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
     // eslint-disable-next-line no-use-before-define
     await storage_create()
@@ -348,7 +334,7 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
   await import(path_to_theme_url(cfg.theme))
 
 
-  window.onunhandledrejection = (unhandled_rejection) => {
+  globalThis.onunhandledrejection = (unhandled_rejection) => {
     document.querySelector('body').style.display = 'block' // SSR step hides body until now
     // eslint-disable-next-line no-console
     console.error({ unhandled_rejection })
@@ -356,59 +342,47 @@ log('xxxx testitos', await find_posts_from_github_api_tree()); return
 }
 
 
-async function storage_create() { // xxx
+async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
   STORAGE.docs = STORAGE.docs || {}
 
-  for (const pass of [1, 0]) {
+  // eslint-disable-next-line no-use-before-define
+  const latest = await find_posts()
+
+  let proms = []
+  let files = []
+  for (let n = 0; n < latest.length; n++) {
+    const url = latest[n]
+    // NOTE: the final match is for a demo single page named /index.html => /
+    const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(\/)$/)
+    const file = state.sitemap_htm ? latest[n] : mat[2]
+
+    const contents = await fetcher(file)
+    files.push(file)
+
+    const url2 = (state.filedev || state.localdev) && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
+
+    const fetchee = ((state.sitemap_htm && !url2.startsWith('https://') && !url2.startsWith('http://')
+      ? state.pathrel
+      : '')).concat(url2).concat(state.filedev && url2.endsWith('/') ? 'index.html' : '')
+    log({ file, url2, fetchee })
+
+    proms.push(contents || fetch(fetchee))
+
+    if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
+      continue // keep building up requests
+
+    // now make the requests in parallel and wait for them all to answer.
+    const vals = await Promise.all(proms)
+    const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
+
     // eslint-disable-next-line no-use-before-define
-    const latest = pass ? await find_posts() : await find_posts_from_github_api_tree()
+    await parse_posts(file2markdown)
 
-    let proms = []
-    let files = []
-    for (let n = 0; n < latest.length; n++) {
-      const url = latest[n]
-      // NOTE: the final match is for a demo single page named /index.html => /
-      const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(\/)$/)
-      const file = state.sitemap_htm ? latest[n] : mat[2]
-
-      // very first markdown file fetch -- let's autodetect if we can load markdown files directly
-      // from the website or need to fallback to the github raw url
-      let contents
-      if (state.use_github_api_for_files === null) {
-        contents = await fetcher(file)
-        state.use_github_api_for_files = !contents
-      }
-      files.push(file)
-
-      const url2 = (state.filedev || state.localdev) && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
-
-      const fetchee = // eslint-disable-next-line no-nested-ternary
-      (state.use_github_api_for_files
-        ? `https://raw.githubusercontent.com/${cfg.user}/${cfg.repo}/${cfg.branch}/`
-        : (state.sitemap_htm && !url2.startsWith('https://') && !url2.startsWith('http://') ? state.pathrel : '')
-      ).concat(url2).concat(state.filedev && url2.endsWith('/') ? 'index.html' : '')
-      log({ file, url2, fetchee })
-
-      proms.push(contents || fetch(fetchee))
-
-      if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
-        continue // keep building up requests
-
-      // now make the requests in parallel and wait for them all to answer.
-      const vals = await Promise.all(proms)
-      const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
-
-      // eslint-disable-next-line no-use-before-define
-      await parse_posts(file2markdown)
-
-      files = []
-      proms = []
-    }
-    log({ state })
-    if (state.num_posts)
-      break
+    files = []
+    proms = []
   }
+  log({ state })
 
   STORAGE.docs = Object.values(krsort(STORAGE.docs))
 
@@ -427,7 +401,8 @@ function url_to_base(url) {
 }
 
 
-function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in sitemap.xml are the same, compute the post-to-top pathrel/top_page
+function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all "starts" in
+  /*                           sitemap.xml are the same, compute the post-to-top pathrel/top_page */
   for (const url of urls) {
     const base = url_to_base(url)
     if (base) {
@@ -447,9 +422,6 @@ async function find_posts() {
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     .filter((e) => e !== '')
 
-  state.try_github_api_tree = false
-  state.use_github_api_for_files = false
-
   if (sitemap_urls) {
     log({ sitemap_urls })
     FILES.push(...sitemap_urls)
@@ -467,29 +439,6 @@ async function find_posts() {
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
-}
-
-
-async function find_posts_from_github_api_tree() {
-  const listing = await fetcher(
-    `https://api.github.com/repos/${cfg.user}/${cfg.repo}/git/trees/${cfg.branch}?recursive=true`,
-  )
-  // xxx NOTE: tree listing has sha details on branch and each file and more. useful?
-  const files = listing?.tree?.map((e) => e.path) ?? []
-  log({ files })
-
-  // prefer one of these, in this order:
-  // - prefer posts/  (excluding any README.md)
-  // - 2###.*.md/markdown files
-  // - any .md/markdown files  (excluding any README.md)
-  // - /README.md
-
-  let mds = files.filter((e) => e.startsWith('posts/') && !e.endsWith('README.md'))
-  mds = mds.length ? mds : files.filter((e) => `/${e}`.match(/\/2\d\d\d[^/]+\.(md|markdown)$/))
-  mds = mds.length ? mds : files.filter((e) => e.match(/\.(md|markdown)$/) && !e.endsWith('README.md'))
-  mds = mds.length ? mds : files.filter((e) => e === 'README.md')
-
-  return mds.sort().reverse() // xxx assumes file*names*, reverse sorted, is latest post first...
 }
 
 
@@ -659,16 +608,6 @@ function storage_add(post) { // xxx use snippet
 }
 
 
-// deno-lint-ignore no-unused-vars
-function slugify(str) {
-  return str.toLowerCase()
-    .replace(/'s/g, 's')
-    .replace(/[^a-z0-9-]/g, '-') // xxx i18l
-    .replace(/--+/g, '-')
-    .replace(/^-/, '')
-    .replace(/-$/, '')
-}
-
 function date2ymd(date) {
   return [
     date.getUTCFullYear(),
@@ -813,11 +752,21 @@ function head_insert_json_ld(post) {
 }
 
 
-// deno-lint-ignore no-unused-vars
+/*
 function head_insert_specifics() {
   // document.getElementsByTagName('meta')['keywords'].content = 'updated keywords xxx'
   // document.getElementsByTagName('meta')['description'].content = 'updated description xxx'
-}
+} */
+
+/*
+function slugify(str) {
+  return str.toLowerCase()
+    .replace(/'s/g, 's')
+    .replace(/[^a-z0-9-]/g, '-') // xxx i18l
+    .replace(/--+/g, '-')
+    .replace(/^-/, '')
+    .replace(/-$/, '')
+} */
 
 
 const url2post_map = {}

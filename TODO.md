@@ -45,7 +45,6 @@ xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse a
 xxx JS/CSS versioning..
 
 github.com cookie: dotcom_user
-https://jekyll.github.io/github-metadata/site.github/
 
 minimum:
 setup GH account
@@ -136,14 +135,3 @@ js
   - eg: https://api.github.com/repos/stefma/hugo-fresh/contents/exampleSite/content/blog
         https://github.com/StefMa/hugo-fresh/tree/master/exampleSite/content/blog
         https://hugo-fresh.vercel.app/blog/index.xml   ** BUT! :) **
-
-
-jekyll (GitHub Pages) plugins:
-  https://pages.github.com/versions/
-  https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll#plugins
-
-   could be useful vv, but not in accept list ^^ :(
-  https://github.com/jekyll/jekyll-sitemap
-  https://github.com/jekyll/jekyll-feed
-
-  https://jekyll.github.io/github-metadata/site.github/
