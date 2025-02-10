@@ -44,7 +44,7 @@ const STORAGE_KEY = url_to_base(location?.href ?? '') ?? 'blogtini'
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
-const HEADLINE = '<!DOCTYPE html><html><head><style>body{display:none}</style>'
+const HTML_TOP_LINE = '<!DOCTYPE html><html><head><style>body{display:none}</style>'
 
 // defaults
 // eslint-disable-next-line import/no-mutable-exports
@@ -273,7 +273,7 @@ async function main() {
     if (!Deno.args.length) return
     const fi = Deno.args[0]
     const body = Deno.readTextFileSync(fi)
-    if (!body.startsWith(HEADLINE)) {
+    if (!body.startsWith(HTML_TOP_LINE)) {
       // eslint-disable-next-line no-use-before-define
       const [frontmatter] = markdown_parse(body)
 
@@ -281,8 +281,8 @@ async function main() {
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(frontmatter.title ?? 'blogtini', imgurl({ featured: frontmatter.featured }, true, false))
 
-      const headline = `${HEADLINE}${document.head.innerHTML.trim()}</head><body>\n`
-      Deno.writeTextFileSync(fi, `${headline}${body}`)
+      const html_top_line = `${HTML_TOP_LINE}${document.head.innerHTML.trim()}</head><body>\n`
+      Deno.writeTextFileSync(fi, `${html_top_line}${body}`)
     }
     Deno.exit()
   }
@@ -445,8 +445,11 @@ async function find_posts() {
 function markdown_parse(markdown) {
   const chunks = markdown.split('\n---')
 
-  // normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
-  if (chunks[0].trim().startsWith(HEADLINE)) chunks.shift()
+  // Normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
+  // Also, another user wanted some arbitrary HTML for the first line, eg:
+  //   https://github.com/traceypooh/blogtini/issues/8
+  // So skip a top line starting with '<' that is before the frontmater start
+  if (chunks[0].trim().startsWith('<')) chunks.shift()
 
   const front_matter = chunks.shift()
   const body_raw = chunks.join('\n---')
