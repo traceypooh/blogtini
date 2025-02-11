@@ -72,6 +72,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    # Run only on main or master branch, and not on `git tag` events pushed to our repo
+    if: ${{ github.event_name != 'tag' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') }}
     needs: build
     steps:
       - name: Deploy to GitHub Pages
