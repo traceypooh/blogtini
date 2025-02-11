@@ -8,8 +8,8 @@ import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
-import search_setup from './search-setup.js'
-import { markdown_to_html, summarize_markdown } from './text.js'
+import search_setup from './js/search-setup.js'
+import { markdown_to_html, summarize_markdown } from './js/text.js'
 
 
 // eslint-disable-next-line no-console
@@ -131,13 +131,25 @@ function urlify(url, no_trail_slashes = false) {
  * Returns an absolute or relative url for a theme asset;
  * depending on the `config.yml` value of `theme`.
  *
- * Example paths: css/index.css, index.js
+ * Example paths: fonts/raleway-regular.woff2, index.js
  *
  * @param {string} path relative path to fetch. if starts with 'https://', path is returned as is
  */
 function path_to_theme_url(path) {
   if (path.startsWith('https://'))
     return path
+
+  if (path === 'index.css') {
+    // OK so IFF someone is using https://deno.land/x/blogtini theme urls for versioning/semver,
+    // the main problem there is it won't serve CSS files due to CORS blocking.
+    // We only have minimal CSS that rarely changes in the only `.css` file in use for main theme,
+    // so (for now at least), just load it from the main deploy location that is CORS open.
+    const mat = cfg.theme.match(/https:\/\/deno\.land\/x\/blogtini[^/]+\/(.*)\/index\.js$/)
+    if (mat) {
+      // eg: https://deno.land/x/blogtini@1.0.2/theme/future-imperfect/index.js
+      return `https://blogtini.com/${mat[1]}/index.css`
+    }
+  }
 
   const theme_dir = cfg.theme.replace(/\/[^/]+\.js$/, '/')
 
@@ -270,7 +282,7 @@ async function main() {
 
   if (globalThis.Deno) {
     /* eg:
-      deno run -A  js/blogtini.js  index.html
+      deno run -A  index.js  index.html
     */
     if (!Deno.args.length) return
     const fi = Deno.args[0]
@@ -279,7 +291,7 @@ async function main() {
       // eslint-disable-next-line no-use-before-define
       const [frontmatter] = markdown_parse(body)
 
-      await import('./dom.js')
+      await import('./js/dom.js')
       // eslint-disable-next-line no-use-before-define
       head_insert_titles(frontmatter.title ?? 'blogtini', imgurl({ featured: frontmatter.featured }, true, false))
 
@@ -297,7 +309,7 @@ async function main() {
 
 
   // eslint-disable-next-line no-use-before-define
-  add_css(path_to_theme_url('css/index.css'))
+  add_css(path_to_theme_url('index.css'))
 
   state.show_top_content = state.is_homepage && body_contents && !location.search
   if (state.show_top_content) {

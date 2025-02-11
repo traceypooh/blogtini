@@ -1,4 +1,4 @@
-import './dom.js'
+import '../js/dom.js'
 
 import { render } from 'npm:@lit-labs/ssr/lib/render-lit-html.js'
 import { collectResultSync } from 'npm:@lit-labs/ssr/lib/render-result.js'
@@ -16,7 +16,7 @@ async function demo() {
     /**
   eg:
 
-  clear -x; deno run -A --location https://blogtini.com/2023-06-blogtini-dwebcamp/ js/blogtini.js
+  clear -x; deno run -A --location https://blogtini.com/2023-06-blogtini-dwebcamp/ index.js
 
     */
 
