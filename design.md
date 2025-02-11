@@ -8,7 +8,7 @@
 
 # theme.js
 ```js
-import 'https://blogtini.com/js/blogtini.js'
+import 'https://blogtini.com/index.js'
 import 'https://blogtini.com/js/theme/future-imperfect/index.js'
   ↘ import './bt-body.js'
   ↘️ import './bt-posts.js'
@@ -117,7 +117,7 @@ customElements.define('bt-posts', class extends LitElement {
 
 # bt-post.js
 ```js
-import { url2post, markdown_to_html } from 'https://blogtini.com/js/blogtini.js'
+import { url2post, markdown_to_html } from 'https://blogtini.com/index.js'
 import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 customElements.define('bt-post', class extends LitElement {

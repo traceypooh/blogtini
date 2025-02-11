@@ -1,1 +1,1 @@
-import './js/blogtini.js'
+import './index.js'

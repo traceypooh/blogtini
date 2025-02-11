@@ -9,6 +9,6 @@ for FILE in $(
 ); do
   (
     set -x
-    deno run -A  $mydir/../js/blogtini.js  $FILE
+    deno run -A  $mydir/../index.js  $FILE
   )
 done

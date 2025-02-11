@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { cfg } from '../../js/blogtini.js'
+import { cfg } from '../../index.js'
 import { css_links, css_normalize } from './index.js'
 
 customElements.define('bt-share', class extends LitElement {

@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   cfg, urlify, datetime, PR,
-} from '../../js/blogtini.js'
+} from '../../index.js'
 import {
   css_headers, css_links, css_normalize, css_title,
 } from './index.js'

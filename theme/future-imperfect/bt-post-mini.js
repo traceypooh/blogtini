@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { url2post, urlify, datetime } from '../../js/blogtini.js'
+import { url2post, urlify, datetime } from '../../index.js'
 import { css_headers, css_links, css_normalize } from './index.js'
 
 customElements.define('bt-post-mini', class extends LitElement {

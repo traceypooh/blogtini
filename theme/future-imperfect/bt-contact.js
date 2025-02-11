@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   css_buttons, css_forms, css_headers, css_normalize, css_post,
 } from './index.js'
-import { cfg } from '../../js/blogtini.js'
+import { cfg } from '../../index.js'
 
 customElements.define('bt-contact', class extends LitElement {
   // eslint-disable-next-line class-methods-use-this

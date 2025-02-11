@@ -10,7 +10,7 @@ import { summarize_markdown } from './text.js'
 let idx                // Lunr index
 let $searchResults     // The element on the page holding search results
 let $searchInput       // The search box element
-let site_cfg           // config from main blogtini.js
+let site_cfg           // config from main index.js
 const resultDetails = {} // Will hold the data for the search results (titles and summaries)
 
 function search_setup(docs, cfg) {

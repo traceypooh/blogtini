@@ -2,7 +2,7 @@ import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/uns
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   url2post, cfg, state, urlify, PR, imgurl,
-} from '../../js/blogtini.js'
+} from '../../index.js'
 
 
 customElements.define('featured-image', class extends LitElement {

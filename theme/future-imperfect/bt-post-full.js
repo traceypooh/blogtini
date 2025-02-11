@@ -1,7 +1,7 @@
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
-import { url2post, markdown_to_html, cfg } from '../../js/blogtini.js'
+import { url2post, markdown_to_html, cfg } from '../../index.js'
 import {
   css_post, css_footer, css_title, css_hljs, css_headers, css_buttons, css_links, css_normalize,
   css_theme,

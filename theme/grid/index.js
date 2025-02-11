@@ -4,7 +4,7 @@ import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/uns
 import { css_links } from '../future-imperfect/index.js'
 import {
   summarize_markdown, url2post, cfg, imgurl,
-} from '../../js/blogtini.js'
+} from '../../index.js'
 
 
 customElements.define('bt-posts', class extends LitElement {

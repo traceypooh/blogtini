@@ -24,8 +24,6 @@
   <meta property="og:url" content="https://blogtini.com" />
   <!-- xxx SPA meta & make specific or auto-make page dynaically for any website?? -->
 
-  <!-- css link not *technically* necessary, but paints page faster, less content shift, for crawlers -->
-  <link href="theme/future-imperfect/css/index.css" rel="stylesheet" type="text/css"/>
   <script type="module" src="theme.js"></script>
 </head>
 <body class="homepage" style="display:none">
@@ -60,7 +58,7 @@ categories:
 tags:
   - markdown
   - javascript
-comment:  <script src="https://blogtini.com/js/blogtini.js" type="module" charset="utf-8"></script>
+comment:  <script src="https://blogtini.com/index.js" type="module" charset="utf-8"></script>
 ---
 # Blogtini!
 
@@ -83,8 +81,8 @@ Here is a list:
 
 ## Take it to the next level
 For multiple posts & pages:
-- Change the `https://blogtini.com/js/blogtini.js` in your markdown file(s) to `./theme.js`
-- Create a `theme.js` file with `import 'https://blogtini.com/js/blogtini.js'`
+- Change the `https://blogtini.com/index.js` in your markdown file(s) to `./theme.js`
+- Create a `theme.js` file with `import 'https://blogtini.com/index.js'`
 - Now you can change the `theme.js` contents to another theme anytime you like and your entire site will change with one line change :)
 - Create directory names that "sort in reverse order", to make a `sitemap.xml` file easier.
 - We like directory and filenames like:

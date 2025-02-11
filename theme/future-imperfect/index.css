@@ -4,19 +4,19 @@
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 400;
-  src: local('Raleway'), local('Raleway-Regular'), url(../fonts/raleway-regular.woff2) format('woff2');
+  src: local('Raleway'), local('Raleway-Regular'), url(./fonts/raleway-regular.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 800;
-  src: local('Raleway ExtraBold'), local('Raleway-ExtraBold'), url(../fonts/raleway-black.woff2) format('woff2');
+  src: local('Raleway ExtraBold'), local('Raleway-ExtraBold'), url(./fonts/raleway-black.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 900;
-  src: local('Raleway Black'), local('Raleway-Black'), url(../fonts/raleway-black.woff2) format('woff2');
+  src: local('Raleway Black'), local('Raleway-Black'), url(./fonts/raleway-black.woff2) format('woff2');
 }
 
 
@@ -24,7 +24,7 @@
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 400;
-  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(../fonts/source-sans-pro.woff2) format('woff2');
+  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(./fonts/source-sans-pro.woff2) format('woff2');
 }
 
 
@@ -33,21 +33,21 @@
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(../fonts/fa-brands-400.woff2) format('woff2');
+  src: url(./fonts/fa-brands-400.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 400;
   font-display: auto;
-  src: url(../fonts/fa-regular-400.woff2) format('woff2');
+  src: url(./fonts/fa-regular-400.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(../fonts/fa-solid-900.woff2) format('woff2');
+  src: url(./fonts/fa-solid-900.woff2) format('woff2');
 }
 
 

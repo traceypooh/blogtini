@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { datetime } from '../../js/blogtini.js'
+import { datetime } from '../../index.js'
 import {
   css_post, css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome,
   css_normalize,

@@ -2,7 +2,7 @@ import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/uns
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   summarize_markdown, url2post, cfg, urlify,
-} from '../../js/blogtini.js'
+} from '../../index.js'
 import {
   css_post, css_footer, css_title, css_buttons, css_links, css_normalize, css_theme,
 } from './index.js'

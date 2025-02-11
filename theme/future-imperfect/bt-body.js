@@ -6,7 +6,7 @@ import {
 } from './index.js'
 import {
   cfg, state, PR, url2post,
-} from '../../js/blogtini.js'
+} from '../../index.js'
 
 
 customElements.define('bt-body', class extends LitElement {

@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { fetcher, state, cfg } from '../../js/blogtini.js'
+import { fetcher, state, cfg } from '../../index.js'
 import {
   css_headers, css_buttons, css_post, css_forms, css_normalize, css_fontawesome,
 } from './index.js'
