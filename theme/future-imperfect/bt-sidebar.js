@@ -10,7 +10,6 @@ customElements.define('bt-sidebar', class extends LitElement {
   static get properties() {
     return {
       tags: { type: Object },
-      // xxx could support cfg.sidebar.categories_by_count option..
       categories: { type: Object },
       recent_posts: { type: Object },
     }

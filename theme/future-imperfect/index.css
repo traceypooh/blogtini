@@ -87,7 +87,6 @@ body {
   background: var(--background1);
   color: var(--color1);
   margin: 3.5em 0 0 0;
-  max-width: 100vw; /* xxx in use? */
   -ms-overflow-style: scrollbar;
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   line-height: 1.75em;

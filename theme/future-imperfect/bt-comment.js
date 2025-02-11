@@ -59,7 +59,6 @@ customElements.define('bt-comment', class extends LitElement {
     return [
       css_normalize(),
       css_fontawesome(),
-      css_post(), // xxxcc figure these out
       css_title(),
       css_footer(),
       css_buttons(),

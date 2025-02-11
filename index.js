@@ -539,7 +539,7 @@ async function parse_posts(markdowns) {
 }
 
 function storage_loop() {
-  showdown.setFlavor('github') // xxx?
+  showdown.setFlavor('github')
 
   state.newest = STORAGE.newest
 

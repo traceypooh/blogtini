@@ -42,7 +42,8 @@ nav search box that prefills google search site:xxx AND ..
 
 
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
-xxx JS/CSS versioning..
+
+document JS/CSS versioning xxx
 
 github.com cookie: dotcom_user
 
