@@ -1,0 +1,59 @@
+---
+title: Blogtini Turns One!
+date: 2025-02-14
+categories:
+  - website
+  - features
+tags:
+  - blogtini
+  - markdown
+  - javascript
+  - comments
+  - email
+  - versions
+featured: comments.jpg
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+Blogtini is now feature complete with everything working!  See below for the major features finally finished.
+
+
+# Comments
+
+We use [Staticman](https://github.com/eduardoboucas/staticman) for comments.
+
+We've created a free lightweight setup for comments using https://netlify.com "serverless edge" functions.  More information can be seen here: https://github.com/traceypooh/staticmin
+
+
+# Contact (email) blog maintainer
+
+The contact form is setup -- https://formspree.io is a good option to use and this blog uses it as an example.
+
+
+# Versioning
+
+Releases now get tagged (eg: `1.0.4`) and published to: https://deno.land/x/blogtini
+
+So now blog sites can opt to use a pegged version in their `config.yml` like this:
+```yml
+theme: https://deno.land/x/blogtini@1.0.3/theme/future-imperfect/index.js
+```
+and in their site's top-level `theme.js` can use the same corresponding version there:
+```js
+import 'https://deno.land/x/blogtini@1.0.3/index.js'
+```
+
+
+# Light/dark mode
+
+Light/dark mode is improved with multiple cosmetic bugs fixed.
+
+There is a new [💡] icon in the top nav bar to toggle between light & dark modes if desired.
+(Otherwise, local time & system preferences are used).
+
+
+# Styling & CSS
+
+This is an internal detail -- but now all markup is created via Web Components, and all the CSS is "inline" inside the web components JS files.  This allows for clean versioning of all CSS, since all the JS files are versioned.
+
+
+**❤️ Happy Saint Valentine's Day! ❤️**
