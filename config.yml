@@ -80,11 +80,11 @@ social:
 social_share: ['twitter', 'facebook', 'pinterest']
 
 staticman:
-  # https://staticman.net/docs/getting-started
-  # If using GitHub, go to https://github.com/apps/staticman-net
-  # If using GitLab, just add the GitLab bot, NO need to hit `/connect/v3/...`
+  # https://staticman.net/docs/getting-started (self-hosted, gitlab, other)
+  # https://github.com/traceypooh/staticmin (github with netlify)
+  # If using GitHub, setup GitHub App by going to https://github.com/apps/staticman-net
   enabled:  true
-  api:      staticman.ext.archive.org  # without trailing slash, defaults to 'staticman3.herokuapp.com'
+  api:      blogtini.netlify.app
   branch:   main
 
 contact:
