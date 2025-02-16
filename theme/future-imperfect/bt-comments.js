@@ -170,9 +170,10 @@ customElements.define('bt-comments', class extends LitElement {
     form.querySelector('#comment-form-submitted').classList.remove('hidden') // show "submitted"
 
     // Construct form action URL form JS to avoid spam
-    const url = cfg.staticman?.api.endsWith('.netlify.app')
+    const url = (cfg.staticman?.api.endsWith('.netlify.app') ||
+      cfg.staticman?.api.startsWith('http://localhost:')
       ? `https://${cfg.staticman.api}/?username=${cfg.user}&repository=${cfg.repo}`
-      : ['https:/', cfg.staticman.api, 'v3/entry', cfg.git_provider, cfg.user, cfg.repo, cfg.staticman.branch, 'comments'].join('/')
+      : ['https:/', cfg.staticman.api, 'v3/entry', cfg.git_provider, cfg.user, cfg.repo, cfg.staticman.branch, 'comments'].join('/')).replace(/^https:\/\/http:\/\//, 'http://')
 
     // Convert form fields to a JSON-friendly string
     const formObj = Object.fromEntries(new FormData(form))
