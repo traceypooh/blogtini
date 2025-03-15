@@ -5,7 +5,7 @@ import {
 } from '../../index.js'
 import {
   css_post, css_footer, css_title, css_buttons, css_links, css_normalize, css_theme,
-} from './index.js'
+} from './css.js'
 
 
 customElements.define('bt-post', class extends LitElement {
@@ -39,12 +39,11 @@ customElements.define('bt-post', class extends LitElement {
   `
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_theme(),
-      css_post(),
-      css`
+  static styles = [
+    css_normalize,
+    css_theme,
+    css_post,
+    css`
 /* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
 .post .content {
   /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */
@@ -56,10 +55,9 @@ customElements.define('bt-post', class extends LitElement {
   hyphens: auto;
 }
 `,
-      css_title(),
-      css_footer(),
-      css_buttons(),
-      css_links(),
-    ]
-  }
+    css_title,
+    css_footer,
+    css_buttons,
+    css_links,
+  ]
 })

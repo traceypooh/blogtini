@@ -6,7 +6,7 @@ import {
   css_post, css_footer, css_title, css_hljs, css_headers, css_buttons, css_links, css_normalize,
   css_theme,
   css_fontawesome,
-} from './index.js'
+} from './css.js'
 
 customElements.define('bt-post-full', class extends LitElement {
   static get properties() {
@@ -82,23 +82,21 @@ customElements.define('bt-post-full', class extends LitElement {
   }
 
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_theme(),
-      css_fontawesome(), //  eg: bottom of homepage
-      css`
+  static styles = [
+    css_normalize,
+    css_theme,
+    css_fontawesome, //  eg: bottom of homepage
+    css`
 img {
   filter: grayscale(var(--img-grayscale-filter));
 }
       `,
-      css_post(),
-      css_headers(),
-      css_title(),
-      css_footer(),
-      css_buttons(),
-      css_links(),
-      css_hljs(),
-    ]
-  }
+    css_post,
+    css_headers,
+    css_title,
+    css_footer,
+    css_buttons,
+    css_links,
+    css_hljs,
+  ]
 })

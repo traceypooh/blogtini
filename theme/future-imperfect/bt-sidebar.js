@@ -3,7 +3,7 @@ import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cfg, state, urlify } from '../../index.js'
 import {
   css_buttons, css_headers, css_links, css_normalize,
-} from './index.js'
+} from './css.js'
 
 
 customElements.define('bt-sidebar', class extends LitElement {
@@ -84,13 +84,12 @@ customElements.define('bt-sidebar', class extends LitElement {
 </section>`
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_buttons(),
-      css_links(),
-      css_headers(),
-      css`
+  static styles = [
+    css_normalize,
+    css_buttons,
+    css_links,
+    css_headers,
+    css`
 :host {
   grid-area: sidebar;
 }
@@ -153,6 +152,5 @@ footer {
   border-bottom: 0;
 }
 `,
-    ]
-  }
+  ]
 })

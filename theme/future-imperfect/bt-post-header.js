@@ -4,7 +4,7 @@ import {
 } from '../../index.js'
 import {
   css_headers, css_links, css_normalize, css_title,
-} from './index.js'
+} from './css.js'
 
 
 customElements.define('bt-post-header', class extends LitElement {
@@ -36,13 +36,12 @@ customElements.define('bt-post-header', class extends LitElement {
   `
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_links(),
-      css_headers(),
-      css_title(),
-      css`
+  static styles = [
+    css_normalize,
+    css_links,
+    css_headers,
+    css_title,
+    css`
 *, *::before, *::after { /* xxx */
   box-sizing: border-box;
 }
@@ -98,8 +97,6 @@ header p {
 .meta time {
   font-size: 1.2em;
   font-weight: 800;
-}
-      `,
-    ]
-  }
+}`,
+  ]
 })

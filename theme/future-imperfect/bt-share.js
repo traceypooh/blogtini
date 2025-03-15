@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { cfg } from '../../index.js'
-import { css_links, css_normalize } from './index.js'
+import { css_links, css_normalize } from './css.js'
 
 customElements.define('bt-share', class extends LitElement {
   static get properties() {
@@ -71,12 +71,11 @@ customElements.define('bt-share', class extends LitElement {
     })
   }
 
-  static get styles() {
+  static styles = [
+    css_normalize,
+    css_links,
     // NOTE! conditional styling based on optional `class="mainline"` in `<bt-share>` element
-    return [
-      css_normalize(),
-      css_links(),
-      css`
+    css`
 @charset "UTF-8";
 :host {
   display: -webkit-box;
@@ -214,6 +213,5 @@ p {
   content: "";
 }
 `,
-    ]
-  }
+  ]
 })

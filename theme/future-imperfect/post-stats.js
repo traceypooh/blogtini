@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { state } from '../../index.js'
-import { css_links, css_normalize } from './index.js'
+import { css_links, css_normalize } from './css.js'
 
 customElements.define('post-stats', class extends LitElement {
   static get properties() {
@@ -30,11 +30,10 @@ customElements.define('post-stats', class extends LitElement {
 </ul>`
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_links(),
-      css`
+  static styles = [
+    css_normalize,
+    css_links,
+    css`
 @charset "UTF-8";
 
 :host {
@@ -109,6 +108,5 @@ li a {
   content: "\\f02c";
 }
 `,
-    ]
-  }
+  ]
 })

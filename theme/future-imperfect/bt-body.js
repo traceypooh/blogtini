@@ -3,7 +3,7 @@ import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/uns
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   css_buttons, css_headers, css_links, css_forms, css_normalize, css_theme, css_fontawesome,
-} from './index.js'
+} from './css.js'
 import {
   cfg, state, PR, url2post,
 } from '../../index.js'
@@ -228,12 +228,11 @@ customElements.define('bt-body', class extends LitElement {
     return false
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_theme(),
-      css_fontawesome(),
-      css`
+  static styles = [
+    css_normalize,
+    css_theme,
+    css_fontawesome,
+    css`
 .flyout-menu {
   background: var(--background1);
   border-left: 1px solid rgba(161, 161, 161, 0.3);
@@ -824,12 +823,11 @@ img {
   filter: grayscale(var(--img-grayscale-filter));
 }
 `,
-      css_buttons(),
-      css_headers(),
-      css_links(),
-      css_forms(), // for search results
-    ]
-  }
+    css_buttons,
+    css_headers,
+    css_links,
+    css_forms, // for search results
+  ]
 })
 
 

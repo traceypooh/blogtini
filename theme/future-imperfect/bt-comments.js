@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { fetcher, state, cfg } from '../../index.js'
 import {
   css_headers, css_buttons, css_post, css_forms, css_normalize, css_fontawesome,
-} from './index.js'
+} from './css.js'
 
 
 customElements.define('bt-comments', class extends LitElement {
@@ -242,15 +242,14 @@ customElements.define('bt-comments', class extends LitElement {
     form.querySelector('.submit-failed').classList.add('hidden') // hide submission status
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_fontawesome(),
-      css_buttons(),
-      css_headers(),
-      css_post(),
-      css_forms(),
-      css`
+  static styles = [
+    css_normalize,
+    css_fontawesome,
+    css_buttons,
+    css_headers,
+    css_post,
+    css_forms,
+    css`
 @charset "UTF-8";
 #comment-form input,
 #comment-form textarea {
@@ -299,6 +298,5 @@ customElements.define('bt-comments', class extends LitElement {
   background: rgba(184, 46, 110, 0.25);
 }
 `,
-    ]
-  }
+  ]
 })

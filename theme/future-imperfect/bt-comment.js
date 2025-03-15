@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { datetime } from '../../index.js'
 import {
   css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome, css_normalize,
-} from './index.js'
+} from './css.js'
 
 
 customElements.define('bt-comment', class extends LitElement {
@@ -54,16 +54,15 @@ customElements.define('bt-comment', class extends LitElement {
     }))
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_fontawesome(),
-      css_title(),
-      css_footer(),
-      css_buttons(),
-      css_headers(),
-      css_links(),
-      css`
+  static styles = [
+    css_normalize,
+    css_fontawesome,
+    css_title,
+    css_footer,
+    css_buttons,
+    css_headers,
+    css_links,
+    css`
 @charset "UTF-8";
 /* Staticman Comments - Content */
 .comment header {
@@ -174,6 +173,5 @@ img {
   filter: grayscale(--img-grayscale-filter);
 }
 `,
-    ]
-  }
+  ]
 })

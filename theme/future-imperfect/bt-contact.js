@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
   css_buttons, css_forms, css_headers, css_normalize, css_post,
-} from './index.js'
+} from './css.js'
 import { cfg } from '../../index.js'
 
 customElements.define('bt-contact', class extends LitElement {
@@ -30,18 +30,16 @@ customElements.define('bt-contact', class extends LitElement {
     `
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_buttons(),
-      css_headers(),
-      css_post(),
-      css_forms(),
-      css`
+  static styles = [
+    css_normalize,
+    css_buttons,
+    css_headers,
+    css_post,
+    css_forms,
+    css`
       input, textarea {
         box-sizing: border-box;
       }
-      `,
-    ]
-  }
+    `,
+  ]
 })

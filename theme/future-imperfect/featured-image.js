@@ -60,8 +60,7 @@ customElements.define('featured-image', class extends LitElement {
     ${unsafeHTML(PR`<center>${post.featuredcaption}</center>`)}`
   }
 
-  static get styles() {
-    return css`
+  static styles = css`
 .image {
   border: 0;
   display: grid;
@@ -175,5 +174,4 @@ img {
   filter: grayscale(var(--img-grayscale-filter));
 }
 `
-  }
 })

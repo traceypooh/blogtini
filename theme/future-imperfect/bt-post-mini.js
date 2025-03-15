@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { url2post, urlify, datetime } from '../../index.js'
-import { css_headers, css_links, css_normalize } from './index.js'
+import { css_headers, css_links, css_normalize } from './css.js'
 
 customElements.define('bt-post-mini', class extends LitElement {
   static get properties() {
@@ -22,11 +22,10 @@ customElements.define('bt-post-mini', class extends LitElement {
   </article>`
   }
 
-  static get styles() {
-    return [
-      css_normalize(),
-      css_headers(),
-      css`
+  static styles = [
+    css_normalize,
+    css_headers,
+    css`
 :host {
   background: var(--background1);
   border: 1px solid rgba(161, 161, 161, 0.3);
@@ -73,7 +72,6 @@ header time {
   text-transform: uppercase;
 }
 `,
-      css_links(),
-    ]
-  }
+    css_links,
+  ]
 })
