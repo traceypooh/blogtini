@@ -1,4 +1,4 @@
-import { vrsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { vrsort } from 'https://av.archive.org/js/util/strings.js'
 import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { css_links, css_headers, css_normalize } from './css.js'
 import { state } from '../../index.js'

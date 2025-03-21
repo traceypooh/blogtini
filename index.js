@@ -4,7 +4,7 @@ import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
-import { krsort } from 'https://av.prod.archive.org/js/util/strings.js'
+import { krsort } from 'https://av.archive.org/js/util/strings.js'
 
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
