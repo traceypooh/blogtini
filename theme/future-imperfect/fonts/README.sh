@@ -19,4 +19,4 @@ done
 # later pulled all the fontawesome *non* .woff2 files (huge, slow, mostly just IE now..)
 # and moved `webfonts/*` to `fonts/`
 
-# NOTE: `droid-sans.ttf` got copied in from a poohbot.com star wars page and not presently used
+# NOTE: `droid-sans.ttf` got copied in from a traceypooh.com star wars page and not presently used
