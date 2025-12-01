@@ -26,8 +26,16 @@ function rss() { # xxx <description> using snippet??
 
   for htm in $(list-posts); do
     echo -n .
-    grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- | grep -Fv '<!DOCTYPE html><html><head><style>body{display:none}</style>' >| .yml
+    grep -EB100000 -m2 -- --- $htm | grep -Ev -- ^--- | grep -Fv '<!DOCTYPE html><html><head><style>body{display:none}</style>' |cat >| .yml
+    if [ ! -s .yml ]; then
+      # skip html files w/o frontmatter
+      continue
+    fi
     YMD=$(yq -r .date .yml | cut -b1-10)
+    if [ "$YMD" = "null" ]; then
+      # skip html files w/o frontmatter dates
+      continue
+    fi
     PUBDATE=$(pubDate $YMD)
     # echo YMD=$YMD PUBDATE=$PUBDATE
     dir=$(dirname -- "$htm")
