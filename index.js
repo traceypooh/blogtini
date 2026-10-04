@@ -375,8 +375,8 @@ async function storage_create() {
   let files = []
   for (let n = 0; n < latest.length; n++) {
     const url = latest[n]
-    // NOTE: the final match is for a demo single page named /index.html => /
-    const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(\/)$/)
+    // NOTE: the final match is for a demo single page in a dir (eg: /index.html => /, /test/post/)
+    const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(.*\/)$/)
     const file = state.sitemap_htm ? latest[n] : mat[2]
 
     const contents = await fetcher(file)
