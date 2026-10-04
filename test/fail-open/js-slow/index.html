@@ -1,0 +1,10 @@
+<!DOCTYPE html><title>JS slow</title><meta property="og:image" content="x.jpg"><style>body{animation:h 3s}@keyframes h{0%,to{visibility:hidden}}</style>
+---
+title: JS slow
+date: 2026-10-03
+comment: <script src="../reveal.js?ms=5000" type="module"></script>
+---
+
+# JS renders at ~5s
+
+Expect: blank for ~3s, then this raw markdown for ~2s, then the rendered page swaps in. Check CLS.

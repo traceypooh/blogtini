@@ -4,12 +4,10 @@ import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
-import { krsort } from 'https://av.archive.org/js/util/strings.js'
-
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
 import search_setup from './js/search-setup.js'
-import { markdown_to_html, summarize_markdown } from './js/text.js'
+import { markdown_to_html, summarize_markdown, krsort } from './js/text.js'
 
 
 // eslint-disable-next-line no-console
