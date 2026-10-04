@@ -1,7 +1,8 @@
 
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
-import { css_links } from '../future-imperfect/index.js'
+import '../future-imperfect/index.js' // grid builds on it -- it just redefines how posts list
+import { css_links } from '../future-imperfect/css.js'
 import {
   summarize_markdown, url2post, cfg, imgurl,
 } from '../../index.js'
@@ -50,7 +51,7 @@ ${unsafeHTML(summary)}
 
   static get styles() {
     return [
-      css_links(),
+      css_links,
       css`
 :host {
   border: 1px solid gray;
