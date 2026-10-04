@@ -18,8 +18,14 @@ It writes:
 
 Our GitHub Action runs it for you on each push.  To run it locally, from the top of your site repo:
 ```sh
+deno run --reload=https://blogtini.com --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
+  --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
+```
+or, if you have a blogtini checkout next to your site repo:
+```sh
 ../blogtini/bin/build
 ```
+(In this blogtini repo itself, it's just `./bin/build`.)
 
 ## Hooks
 Whenever someone comments on your site, we run a small script (just the comments part of the build).

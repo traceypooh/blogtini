@@ -1,8 +1,10 @@
+#!/usr/bin/env -S deno run -A
 // Measures CLS (Google's layout-shift score) for each test page, with JS on and off.
-// No npm deps: serves this dir, drives headless Chrome over the DevTools protocol (needs node 22+).
+// No npm deps: serves this dir, drives headless Chrome over the DevTools protocol.
 //
-//   node test/fail-open/cls.mjs
-//   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node test/fail-open/cls.mjs
+//   test/fail-open/cls.js
+//   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' test/fail-open/cls.js
+import process from 'node:process'
 import { createServer } from 'node:http'
 import { readFile, mkdtemp } from 'node:fs/promises'
 import { spawn } from 'node:child_process'

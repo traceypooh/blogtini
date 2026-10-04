@@ -1,3 +1,12 @@
 {
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "lint": {
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": [
+        "no-import-prefix",
+        "no-unversioned-import"
+      ]
+    }
+  }
 }

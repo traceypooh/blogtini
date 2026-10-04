@@ -6,8 +6,8 @@
   <li><a href="nojs-prewrap/">nojs-prewrap</a> — same, line breaks kept</li>
   <li><a href="js-fast/">js-fast</a> — JS renders at 1s, markdown never seen</li>
   <li><a href="js-slow/">js-slow</a> — JS at 5s: raw markdown at 3s, swapped at 5s; check CLS</li>
-  <li><a href="shift-control/">shift-control</a> — not a fail-open test: a page that definitely shifts, so <code>cls.mjs</code> can prove it measures</li>
+  <li><a href="shift-control/">shift-control</a> — not a fail-open test: a page that definitely shifts, so <code>cls.js</code> can prove it measures</li>
 </ul>
-<p>CLS for every page, JS on and off: <code>node test/fail-open/cls.mjs</code>
-(on a Mac: <code>CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node test/fail-open/cls.mjs</code>)</p>
+<p>CLS for every page, JS on and off: <code>test/fail-open/cls.js</code>
+(on a Mac: <code>CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' test/fail-open/cls.js</code>)</p>
 <p>Also try nojs with JS disabled in DevTools (Cmd-Shift-P → "Disable JavaScript") on js-fast: should behave like nojs.</p>
