@@ -419,6 +419,14 @@ async function posts_from_feed() {
   const items = [...doc.querySelectorAll('item')]
   if (doc.querySelector('parsererror') || !items.length) return false
 
+  // a feed w/o markdown bodies (eg: our pre-v2 `bin/rss`, or another tool's) can't drive summaries & search,
+  // so find & fetch each post instead
+  const CONTENT = 'http://purl.org/rss/1.0/modules/content/'
+  if (!items.some((e) => e.getElementsByTagNameNS(CONTENT, 'encoded').length)) {
+    log('index.xml has no <content:encoded> bodies, ignoring it')
+    return false
+  }
+
   if (!STORAGE.base)
     setup_base(items.map((e) => e.querySelector('link')?.textContent ?? ''))
 
@@ -438,7 +446,7 @@ async function posts_from_feed() {
       url: text('link'),
       title: text('title'),
       date: date.toISOString(),
-      body_raw: ns('http://purl.org/rss/1.0/modules/content/', 'encoded')?.textContent ?? '',
+      body_raw: ns(CONTENT, 'encoded')?.textContent ?? '',
       tags: cats('tag'),
       categories: cats('category'),
       featured: ns(MEDIA, 'content')?.getAttribute('url') ?? '',
@@ -446,8 +454,9 @@ async function posts_from_feed() {
     }
     const [type] = cats('type')
     if (type) post.type = type
+    // (keep `body_raw` even when empty -- eg: a photo-only post -- like `markdown_to_post()` does)
     for (const key of Object.keys(post))
-      if (post[key] === '') delete post[key]
+      if (post[key] === '' && key !== 'body_raw') delete post[key]
 
 
     storage_add(post)
