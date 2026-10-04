@@ -43,7 +43,8 @@ function markdown_parse(markdown) {
   const body_raw = chunks.join('\n---')
 
   try {
-    const parsed = yml.load(front_matter)
+    // `json: true` -- a duplicate key's last value wins (instead of throwing), eg: a commented-out copy
+    const parsed = yml.load(front_matter, { json: true })
     return [parsed, body_raw]
     /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
   } catch {}
