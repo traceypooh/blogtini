@@ -31,15 +31,16 @@ The contact form is setup -- https://formspree.io is a good option to use and th
 
 # Versioning
 
-Releases now get tagged (eg: `1.0.4`) and published to: https://deno.land/x/blogtini
+Releases now get tagged (eg: `1.0.5`).
 
-So now blog sites can opt to use a pegged version in their `config.yml` like this:
-```yml
-theme: https://deno.land/x/blogtini@1.0.3/theme/future-imperfect/index.js
-```
-and in their site's top-level `theme.js` can use the same corresponding version there:
+Blog sites can opt to use a **specific version** of blogtini, in their site's top-level `theme.js` like this:
 ```js
-import 'https://deno.land/x/blogtini@1.0.3/index.js'
+import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.5/index.js'
+```
+
+Optionally, sites can pick a non-default theme from the same version in their `config.yml`, eg:
+```yml
+theme: https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.5/theme/future-imperfect/index.js
 ```
 
 

@@ -141,18 +141,6 @@ function path_to_theme_url(path) {
   if (path.startsWith('https://'))
     return path
 
-  if (path === 'index.css') {
-    // OK so IFF someone is using https://deno.land/x/blogtini theme urls for versioning/semver,
-    // the main problem there is it won't serve CSS files due to CORS blocking.
-    // We only have minimal CSS that rarely changes in the only `.css` file in use for main theme,
-    // so (for now at least), just load it from the main deploy location that is CORS open.
-    const mat = cfg.theme.match(/https:\/\/deno\.land\/x\/blogtini[^/]+\/(.*)\/index\.js$/)
-    if (mat) {
-      // eg: https://deno.land/x/blogtini@1.0.2/theme/future-imperfect/index.js
-      return `https://blogtini.com/${mat[1]}/index.css`
-    }
-  }
-
   const theme_dir = cfg.theme.replace(/\/[^/]+\.js$/, '/')
 
   if (theme_dir.startsWith('https://'))
@@ -712,7 +700,9 @@ function add_interactivity() {
       log({ theme })
 
       state.theme_change_number += 1
-      await import(`../theme/${theme}/index.js?${state.theme_change_number}`)
+      // build the url in a variable first, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it
+      const theme_url = `../theme/${theme}/index.js?${state.theme_change_number}`
+      await import(theme_url)
 
       bt_body()
 
