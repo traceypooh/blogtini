@@ -248,7 +248,8 @@ async function main() {
 
   state.pathrel = state.is_homepage || globalThis.Deno ? '' : '../' // xxxx generalize
   state.top_dir = base ?? state.pathrel
-  state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '')
+  // './' not '' -- `href=""` (or `href="#post5"`) would stay on the current `?page/2` or `?tags/x` page
+  state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '') || './'
 
   if (!globalThis.Deno) {
     dark_mode()

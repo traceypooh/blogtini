@@ -29,7 +29,8 @@ customElements.define('bt-body', class extends LitElement {
 
   render() {
     const page_is_home = !state.filter_tag && !state.filter_cat
-    const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
+    // drop any `#post5` (sidebar "See More") first -- else `?page/2` would land inside the hash & go nowhere
+    const page_base = location.href.split('#')[0].replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
     const page_sep = page_is_home ? '?' : '/'
 
     let page_left = state.page > 0 ? state.page - 1 : null
