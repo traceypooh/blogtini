@@ -11,8 +11,10 @@ img_site: img/profile.jpg
 posts_per_page: 10
 remove_blur: true
 
-# Absolute url, or relative url (subdir) from your site's top page directory. Default to first example:
-# theme: https://blogtini.com/theme/future-imperfect/index.js
+# A theme name that comes with blogtini (same version as your blogtini `index.js`), eg: grid
+# or an absolute url, or relative url (subdir) from your site's top page directory.
+# Default: the future-imperfect theme alongside your blogtini `index.js`
+# theme: grid
 theme: theme/future-imperfect/index.js
 
 intro:

@@ -285,6 +285,10 @@ async function main() {
   if (tmp)
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
+  // a bare theme name (eg: `grid`) is one shipped alongside this `index.js` -- so it follows a pinned version
+  if (cfg.theme.match(/^[\w-]+$/))
+    cfg.theme = theme_url(cfg.theme)
+
 
   if (globalThis.Deno)
     return // the build step's head lines, index.xml, etc. are now in `bin/build.js`
