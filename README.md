@@ -51,6 +51,31 @@ git config --local core.hooksPath bin/
 - have `/theme.js` do an `import` of whatever theme you desire
 
 
+## Releases
+https://github.com/traceypooh/blogtini/releases
+
+You can find the [Draft a new release] button at the top right, to enter notes for a release,
+if you dont have the `gh` pkg/binary installed.
+
+Commit the files like normal.
+
+### make a release in one shot *with* `gh`:
+to allow markdown headers for longer release notes, `;` for comment lines in commit message that drop
+```sh
+V=1.0.7 &&\
+  which gh &&\
+  git -c core.commentChar=';' tag -a ${V?} &&\
+  git push --follow-tags &&\
+  gh release create ${V?}  --verify-tag --title ${V?} --notes-from-tag
+```
+
+### make a release in one shot *without* `gh`:
+to allow markdown headers for longer release notes, `;` for comment lines in commit message that drop
+```sh
+V=1.0.7 &&\
+  git -c core.commentChar=';' tag -a ${V?} &&\
+  git push --follow-tags
+```
 
 
 ## Local development
