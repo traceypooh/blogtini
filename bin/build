@@ -1,25 +1,14 @@
-#!/bin/sh -eux
+#!/bin/sh -eu
 
-# blogtini build step (for github actions).
-# runs in alpine linux container with `deno` binary installed
+# blogtini build step.  See `build.js` for what it does.
+#
+# GitHub Actions run this in an alpine linux container with the `deno` binary installed.
+# You can run it locally, too, from the top of your site repo, eg:  ../blogtini/bin/build
 
-# get other needed packages
-apk add zsh yq jq git
+deno run --no-lock --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
+  --allow-import=esm.ext.archive.org:443 "$(dirname "$0")/build.js" "$@"
 
-# create sitemap
-if [ ! -e sitemap.xml ]; then
-  git config --global --add safe.directory /github/workspace
-  ./_blogtini/bin/sitemap
+# in GitHub Actions only: cleanup, remove `.git/` etc. before the site gets uploaded
+if [ "${GITHUB_ACTIONS:-}" = true ]; then
+  rm -rf  _blogtini  .[^.]*
 fi
-
-# update comments JSON files from any merged-in comments
-./_blogtini/bin/comments
-
-# make RSS top page
-./_blogtini/bin/rss
-
-# setup SEO headers
-./_blogtini/bin/seo
-
-# cleanup, remove .git/ etc..
-rm -rf  _blogtini  .[^.]*

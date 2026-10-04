@@ -1,3 +1,4 @@
+import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
@@ -20,6 +21,34 @@ function summarize(str, maxlen = 500) {
 
 function summarize_markdown(str, maxlen = 500) {
   return summarize(markdown_to_html(str), maxlen)
+}
+
+
+/**
+ * Splits a post/page file into its parsed front matter and markdown body.
+ * Shared by the browser and `bin/build.js`, so they always agree.
+ *
+ * @param {string} markdown  whole file contents
+ * @returns {array} [front matter object, markdown body] -- or [undefined, undefined] if unparseable
+ */
+function markdown_parse(markdown) {
+  const chunks = markdown.split('\n---')
+
+  // Normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
+  // Also, another user wanted some arbitrary HTML for the first line, eg: GH-8
+  // So skip a top line starting with '<' that is before the frontmater start
+  if (chunks[0].trim().startsWith('<')) chunks.shift()
+
+  const front_matter = chunks.shift()
+  const body_raw = chunks.join('\n---')
+
+  try {
+    const parsed = yml.load(front_matter)
+    return [parsed, body_raw]
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+
+  return [undefined, undefined]
 }
 
 
@@ -118,6 +147,6 @@ function vrsort(map) {
 
 
 export {
-  markdown_to_html, summarize, summarize_markdown,
+  markdown_to_html, summarize, summarize_markdown, markdown_parse,
   friendly_truncate, krsort, vsort, vrsort,
 }

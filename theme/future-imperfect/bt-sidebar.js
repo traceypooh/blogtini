@@ -36,7 +36,7 @@ customElements.define('bt-sidebar', class extends LitElement {
         <bt-post-mini url="${urlify(url)}"></bt-post-mini>`)}
       ${more ? html`
       <footer>
-        <a href="${state.top_page}?page/2" class="button">See More</a>
+        <a href="${cfg.view_more_posts_link || `${state.top_page}#post${cfg.sidebar.post_amount}`}" class="button">See More</a>
       </footer>` : ''}
     </section>
   ` : ''}

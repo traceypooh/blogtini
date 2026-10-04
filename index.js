@@ -7,7 +7,9 @@ import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 // adds header click actions, etc.
 // eslint-disable-next-line import/no-named-as-default
 import search_setup from './js/search-setup.js'
-import { markdown_to_html, summarize_markdown, krsort } from './js/text.js'
+import {
+  markdown_to_html, summarize_markdown, markdown_parse, krsort,
+} from './js/text.js'
 
 
 // eslint-disable-next-line no-console
@@ -42,8 +44,6 @@ const STORAGE_KEY = url_to_base(location?.href ?? '') ?? 'blogtini'
 const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
-const HTML_TOP_LINE = '<!DOCTYPE html><html><head><style>body{display:none}</style>'
-
 // defaults
 // eslint-disable-next-line import/no-mutable-exports
 let cfg = {
@@ -70,6 +70,8 @@ let cfg = {
     language: false,
     theme: true,
   },
+  // sidebar "See More" button.  default: homepage, scrolled to the post after the sidebar's recent posts
+  view_more_posts_link: '',
   sidebar: {
     post_amount: 5,
     categories: true,
@@ -204,7 +206,7 @@ function main_section(histogram) {
     : ''}
 
     <bt-posts>
-      ${state.urls_filtered.map((url) => `<bt-post url="${urlify(url)}"></bt-post>`).join('')}
+      ${state.urls_filtered.map((url, idx) => `<bt-post id="post${state.page * cfg.posts_per_page + idx}" url="${urlify(url)}"></bt-post>`).join('')}
     </bt-posts>`
 }
 
@@ -278,26 +280,8 @@ async function main() {
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
 
-  if (globalThis.Deno) {
-    /* eg:
-      deno run -A  index.js  index.html
-    */
-    if (!Deno.args.length) return
-    const fi = Deno.args[0]
-    const body = Deno.readTextFileSync(fi)
-    if (!body.startsWith(HTML_TOP_LINE)) {
-      // eslint-disable-next-line no-use-before-define
-      const [frontmatter] = markdown_parse(body)
-
-      await import('./js/dom.js')
-      // eslint-disable-next-line no-use-before-define
-      head_insert_titles(frontmatter.title ?? 'blogtini', imgurl({ featured: frontmatter.featured }, true, false))
-
-      const html_top_line = `${HTML_TOP_LINE}${document.head.innerHTML.trim()}</head><body>\n`
-      Deno.writeTextFileSync(fi, `${html_top_line}${body}`)
-    }
-    Deno.exit()
-  }
+  if (globalThis.Deno)
+    return // the build step's head lines, index.xml, etc. are now in `bin/build.js`
 
 
   log({
@@ -347,9 +331,29 @@ ${body_contents}
 
 
   globalThis.onunhandledrejection = (unhandled_rejection) => {
-    document.querySelector('body').style.display = 'block' // SSR step hides body until now
+    reveal()
     // eslint-disable-next-line no-console
     console.error({ unhandled_rejection })
+  }
+}
+
+
+/**
+ * Shows the body, now that we've rendered it.
+ * The build's head line hides it with a 3s CSS animation (so it shows even w/o JS) and `pre-wrap`
+ * (so raw markdown keeps its line breaks w/o JS) -- undo both.
+ * Older built pages & homepages hide with `display:none` instead -- undo that, too.
+ */
+function reveal() {
+  const { style } = document.querySelector('body')
+  style.animation = 'none'
+  style.whiteSpace = 'normal'
+  style.display = 'block'
+
+  // eg: sidebar "See More" goes to `#post5`.  The browser looked for it before we rendered it -- so scroll now
+  if (!state.scrolled_to_hash && location.hash.match(/^#post\d+$/)) {
+    state.scrolled_to_hash = true
+    document.getElementById(location.hash.slice(1))?.scrollIntoView()
   }
 }
 
@@ -358,8 +362,9 @@ async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
   STORAGE.docs = STORAGE.docs || {}
 
+  // the build step's index.xml has every post already -- else find & fetch each post
   // eslint-disable-next-line no-use-before-define
-  const latest = await find_posts()
+  const latest = await posts_from_feed() ? [] : await find_posts()
 
   let proms = []
   let files = []
@@ -399,6 +404,58 @@ async function storage_create() {
   STORAGE.docs = Object.values(krsort(STORAGE.docs))
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(STORAGE))
+}
+
+
+/**
+ * Loads every post & page from the build step's `index.xml` feed (see `bin/build.js`):
+ * one request, no per-post fetches.
+ *
+ * @returns {boolean} true if the feed was found and loaded
+ */
+async function posts_from_feed() {
+  const xml = await fetcher(`${state.top_dir}index.xml`)
+  if (!xml) return false
+
+  const doc = new DOMParser().parseFromString(xml, 'application/xml')
+  const items = [...doc.querySelectorAll('item')]
+  if (doc.querySelector('parsererror') || !items.length) return false
+
+  if (!STORAGE.base)
+    setup_base(items.map((e) => e.querySelector('link')?.textContent ?? ''))
+
+  for (const item of items) {
+    const text = (tag) => item.querySelector(tag)?.textContent.trim() ?? ''
+    const cats = (domain) => [...item.querySelectorAll(`category[domain="${domain}"]`)]
+      .map((e) => e.textContent.trim().replace(/ /g, '-').toLowerCase())
+    // namespaced elements, eg: <content:encoded>
+    const ns = (uri, tag) => item.getElementsByTagNameNS(uri, tag)[0]
+    const MEDIA = 'http://search.yahoo.com/mrss/'
+
+    const date = new Date(text('pubDate'))
+    if (isNaN(date)) continue
+
+    // same shape as `markdown_to_post()` makes
+    const post = {
+      url: text('link'),
+      title: text('title'),
+      date: date.toISOString(),
+      body_raw: ns('http://purl.org/rss/1.0/modules/content/', 'encoded')?.textContent ?? '',
+      tags: cats('tag'),
+      categories: cats('category'),
+      featured: ns(MEDIA, 'content')?.getAttribute('url') ?? '',
+      featuredcaption: ns(MEDIA, 'description')?.textContent.trim() ?? '',
+    }
+    const [type] = cats('type')
+    if (type) post.type = type
+    for (const key of Object.keys(post))
+      if (post[key] === '') delete post[key]
+
+    // eslint-disable-next-line no-use-before-define
+    storage_add(post)
+  }
+  log('loaded posts from index.xml', items.length)
+  return true
 }
 
 
@@ -454,27 +511,6 @@ async function find_posts() {
 }
 
 
-function markdown_parse(markdown) {
-  const chunks = markdown.split('\n---')
-
-  // Normally we are "headless" -- but the optional GH Action SSR step can add a <head> for SEO...
-  // Also, another user wanted some arbitrary HTML for the first line, eg: GH-8
-  // So skip a top line starting with '<' that is before the frontmater start
-  if (chunks[0].trim().startsWith('<')) chunks.shift()
-
-  const front_matter = chunks.shift()
-  const body_raw = chunks.join('\n---')
-
-  try {
-    const parsed = yml.load(front_matter)
-    return [parsed, body_raw]
-    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
-  } catch {}
-
-  return [undefined, undefined]
-}
-
-
 function markdown_to_post(markdown, url = location.pathname) {
   const [json, body_raw] = markdown_parse(markdown)
   if (!json) {
@@ -508,7 +544,7 @@ function markdown_to_post(markdown, url = location.pathname) {
   const post = {
     url, title, date, body_raw, tags, categories, featured,
   }
-  for (const key of ['featuredcaption', 'class'])
+  for (const key of ['featuredcaption'])
     if (key in json) post[key] = json[key]
   // keep stored hashmap small as possible - delete key/val where val is empty
   for (const key of Object.keys(post))
@@ -631,11 +667,15 @@ function date2ymd(date) {
 }
 
 function datetime(date) {
-  const fmt = typeof date === 'string' && (date.length <= 10 || date.endsWith('T00:00:00.000Z'))
-    ? 'MMMM D, YYYY'
-    : 'dddd, MMM D, YYYY h:mm A'
+  // front matter dates w/o a time, eg: `date: 2023-06-15`, arrive as UTC midnight.  Show that day --
+  // not "Wednesday, Jun 14, 2023 5:00 PM", which is what UTC midnight is in local time west of UTC.
+  // (They arrive as a `Date` from js-yaml, or an ISO string from index.xml or localStorage)
+  const d = new Date(date)
+  if (isNaN(d)) return String(date ?? '')
+  if ((typeof date === 'string' && date.length <= 10) || d.toISOString().endsWith('T00:00:00.000Z'))
+    return dayjs(date2ymd(d)).format('MMMM D, YYYY') // dayjs reads 'YYYY-MM-DD' as local midnight
 
-  return dayjs(date).format(fmt)
+  return dayjs(d).format('dddd, MMM D, YYYY h:mm A')
 }
 
 /**
@@ -819,4 +859,5 @@ export {
   imgurl,
   fetcher,
   path_to_theme_url,
+  reveal,
 }

@@ -8,19 +8,26 @@ Site live at:
 - https://blogtini.com
 - https://traceypooh.github.io/blogtini/
 
+## Build (optional)
+The [bin/build](bin/build) step ([bin/build.js](bin/build.js), needs only [deno](https://deno.com)) makes your site
+better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
+It writes:
+- `index.xml` -- RSS feed of every post & page.  Also your sitemap and the client's content/search index.
+- a tiny head line atop each post (title, image, and a style that shows the text even w/o JS)
+- `comments/` JSON files
+
+Our GitHub Action runs it for you on each push.  To run it locally, from the top of your site repo:
+```sh
+../blogtini/bin/build
+```
+
 ## Hooks
-- Whenever you create or delete a post, we want your `sitemap` updated.
-- Whenever someone comments on your site, we run a small script.
+Whenever someone comments on your site, we run a small script (just the comments part of the build).
 
 Thus, we suggest you use our "pre commit" and "post merge" `git` 'hooks' to automate the above "housekeeping".  You can set them up like this:
 ```sh
 git config --local core.hooksPath bin/
 ```
-
-### RSS
-If you'd like a RSS `index.xml` file generated with the [bin/sitemap](bin/sitemap) script,
-during each "pre commit" hook (above), you'll need to have the
-[yq](https://github.com/mikefarah/yq#install) script installed on your machine.
 
 
 
@@ -31,9 +38,10 @@ during each "pre commit" hook (above), you'll need to have the
   - start with front matter
     - including `comment: <script src="../theme.js" type="module" charset="utf-8"></script>`
   - you can then have the nice url `https://example.com/2022/01/i-baked-a-pie/` where the included JS transforms the markdown to markup
-- your `/sitemap.xml` can reference each of your directory urls
-- manage your `/sitemap.xml` manually or run the `/bin/sitemap` script any time you create or delete a post.
-  The [/bin/sitemap](https://github.com/traceypooh/blogtini/blob/main/bin/sitemap) script is on the blogtini website.
+- the [build](#build-optional) step lists every post in your `/index.xml`.  Or, w/o a build, either:
+  - make/manage your own RSS `/index.xml` -- each `<item>` needs `<title>`, `<link>`, `<pubDate>`, and your
+    markdown body in `<content:encoded>` (for summaries & search).  See the build's output for the full shape.
+  - manage a `/sitemap.xml` that references each of your directory urls
 - have `/theme.js` do an `import` of whatever theme you desire
 
 

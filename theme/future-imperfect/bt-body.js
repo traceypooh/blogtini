@@ -5,7 +5,7 @@ import {
   css_buttons, css_headers, css_links, css_forms, css_normalize, css_theme, css_fontawesome,
 } from './css.js'
 import {
-  cfg, state, PR, url2post,
+  cfg, state, PR, url2post, reveal,
 } from '../../index.js'
 
 
@@ -22,7 +22,7 @@ customElements.define('bt-body', class extends LitElement {
   updated() {
     // eslint-disable-next-line no-promise-executor-return
     new Promise((r) => requestAnimationFrame(r)).then(() => {
-      document.querySelector('body').style.display = 'block' // SSR step hides body until now
+      reveal() // build step's head line hides body until now
     })
   }
 

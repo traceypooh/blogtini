@@ -3,15 +3,15 @@
 mydir=${0:a:h}
 cd $mydir/..
 
-./bin/sitemap
+./bin/build comments
 
-UPDATED=$(git diff  --name-only  sitemap.xml  comments/)
+UPDATED=$(git diff  --name-only  comments/)
 
 if [ "$UPDATED" != "" ]; then
 	echo '
 	Some files have changed, please `git add` and `git commit`:
 
 '
-	git diff  sitemap.xml  comments/
+	git diff  comments/
 	exit 1
 fi

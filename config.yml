@@ -49,6 +49,9 @@ menu:
       weight:            6
 
 
+# Sidebar "See More" button link.  Default: homepage, scrolled to the post after the sidebar's recent posts
+# view_more_posts_link: /?page/2
+
 sidebar:
   about: blogtini is a nonstop dance party.  so you dont have to.  thanks for dropping by today.  you look nice.
   post_amount: 5
