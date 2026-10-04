@@ -14,7 +14,7 @@ customElements.define('bt-post-header', class extends LitElement {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   wordcount(str) {
     return str?.match(/(\w+)/g).length ?? 0
   }

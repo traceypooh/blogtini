@@ -20,7 +20,7 @@ async function demo() {
 
     */
 
-    // eslint-disable-next-line import/no-self-import
+
     const ret = await import('./ssr.js')
     globalThis.render = ret.render
     globalThis.html = ret.html

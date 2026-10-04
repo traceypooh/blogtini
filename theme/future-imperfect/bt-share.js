@@ -23,50 +23,50 @@ customElements.define('bt-share', class extends LitElement {
 
     return cfg.social_share.map((social) => {
       switch (social) {
-      case 'twitter':
-        return html`
+        case 'twitter':
+          return html`
           <a href="//twitter.com/share?text=${title}&amp;url=${permalink}"
               target="_blank" rel="noopener" class="share-btn twitter">
             <p>Twitter</p>
           </a>`
-      case 'facebook':
-        return html`
+        case 'facebook':
+          return html`
           <a href="//www.facebook.com/sharer/sharer.php?u=${permalink}"
               target="_blank" rel="noopener" class="share-btn facebook">
             <p>Facebook</p>
           </a>`
-      case 'pinterest':
-        return html`
+        case 'pinterest':
+          return html`
           <a href="//www.pinterest.com/pin/create/button/?url=${permalink}&amp;description=${title}"
               target="_blank" rel="noopener" class="share-btn pinterest">
             <p>Pinterest</p>
           </a>`
-      case 'reddit':
-        return html`
+        case 'reddit':
+          return html`
           <a href="//www.reddit.com/submit?url=${permalink}&amp;title=${title}"
               target="_blank" rel="noopener" class="share-btn reddit">
             <p>Reddit</p>
           </a>`
-      case 'linkedin':
-        return html`
+        case 'linkedin':
+          return html`
           <a href="//www.linkedin.com/shareArticle?url=${permalink}&amp;title=${title}"
               target="_blank" rel="noopener" class="share-btn linkedin">
             <p>LinkedIn</p>
           </a>`
-      case 'email':
-        return html`
+        case 'email':
+          return html`
           <a href="mailto:?subject=See post from: ${by}&amp;body=${permalink}"
               target="_blank" class="share-btn email" data-proofer-ignore>
             <p>Email</p>
           </a>`
-      case 'vk':
-        return html`
+        case 'vk':
+          return html`
           <a href="//vk.com/share.php?url=${permalink}&amp;title=${title}"
               target="_blank" rel="noopener" class="share-btn vk">
             <p>VK</p>
           </a>`
-      default:
-        return html``
+        default:
+          return html``
       }
     })
   }

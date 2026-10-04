@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
@@ -18,7 +18,7 @@ customElements.define('bt-body', class extends LitElement {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   updated() {
     // eslint-disable-next-line no-promise-executor-return
     new Promise((r) => requestAnimationFrame(r)).then(() => {
@@ -26,7 +26,7 @@ customElements.define('bt-body', class extends LitElement {
     })
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     const page_is_home = !state.filter_tag && !state.filter_cat
     const page_base = location.href.replace(/\/page\/\d+/, '').replace(/(\?.*$)/, page_is_home ? '' : '$1')
@@ -95,17 +95,21 @@ customElements.define('bt-body', class extends LitElement {
   </nav>
   ${cfg.header.search ? html`<menu id="search" class="menu"><input id="search-input" class="search-input menu"></input><div id="search-results" class="search-results menu"></div></menu>` : ''}
   <!-- {{ if .Site.Params.header.languageMenu }}{{ partial "language-menu" . }}{{ end }} -->
-  ${cfg.header.share ? html`
+  ${cfg.header.share
+    ? html`
     <menu id="share-menu" class="flyout-menu menu">
       <h1>Share Post</h1>
       <bt-share .post=${share_generic}></bt-share>
-    </menu>` : ''}
-  ${cfg.header.theme ? html`
+    </menu>`
+    : ''}
+  ${cfg.header.theme
+    ? html`
     <menu id="theme-menu" class="flyout-menu menu">
       <h1>Choose a theme</h1>
       <a href="#"><p>  future imperfect    </a>
       <a href="#"><p>  grid                </a>
-    </menu>` : ''}
+    </menu>`
+    : ''}
 </header>
 
 <div id="wrapper">
@@ -128,25 +132,33 @@ customElements.define('bt-body', class extends LitElement {
 
     ${unsafeHTML(PR`<main><p>${cfg.intro?.paragraph}</p></main>`)}
 
-    ${cfg.intro?.rss || cfg.intro?.social ? html`
+    ${cfg.intro?.rss || cfg.intro?.social
+      ? html`
       <footer>
         <ul class="socnet-icons">
           ${cfg.intro?.rss ? rss_icon() : ''}
           ${cfg.intro?.social ? socnet_icon() : ''}
-        </ul>` : ''}
+        </ul>`
+      : ''}
       </footer>
   </section>
   <main id="site-main">
 
     <slot></slot>
 
-    ${state.show_previous_and_next ? html`
+    ${state.show_previous_and_next
+      ? html`
       <div class="pagination">
-        ${page_left ? html`<a href="${page_left_url}"
-          class="button left"><span>${page_left_title}</span></a>` : ''}
-        ${page_rite ? html`<a href="${page_rite_url}"
-          class="button right"><span>${page_rite_title}</span></a>` : ''}
-      </div>` : ''}
+        ${page_left
+          ? html`<a href="${page_left_url}"
+          class="button left"><span>${page_left_title}</span></a>`
+          : ''}
+        ${page_rite
+          ? html`<a href="${page_rite_url}"
+          class="button right"><span>${page_rite_title}</span></a>`
+          : ''}
+      </div>`
+      : ''}
 
   </main>
   <bt-sidebar
@@ -156,11 +168,13 @@ customElements.define('bt-body', class extends LitElement {
   ></bt-sidebar>
 
   <footer id="site-footer">
-    ${cfg.footer?.rss || cfg.footer?.social ? html`
+    ${cfg.footer?.rss || cfg.footer?.social
+      ? html`
       <ul class="socnet-icons">
         ${cfg.footer?.rss ? rss_icon() : ''}
         ${cfg.footer?.social ? socnet_icon() : ''}
-      </ul>` : ''}
+      </ul>`
+      : ''}
     <p class="copyright">
       ${cfg.copyright ?? html`\u00A9 ${state.newest?.slice(0, 4) ?? ''} ${cfg.author ?? cfg.title}`}
       <br>
@@ -185,7 +199,7 @@ customElements.define('bt-body', class extends LitElement {
     })
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   nav_toggle(evt) {
     const menu = evt.currentTarget.hash // eg: `#theme-menu`
 
@@ -207,13 +221,13 @@ customElements.define('bt-body', class extends LitElement {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   scheme_toggle() {
     const scheme_now = document.documentElement.getAttribute('scheme')
     document.documentElement.setAttribute('scheme', scheme_now === 'dark' ? 'light' : 'dark')
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   back_to_top(evt) {
     // Click event to scroll to top
     const scrollToTop = () => {
@@ -833,18 +847,21 @@ img {
 
 function SOC(str, svc) {
   const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
+  return (val === '' || val === undefined || val === null
+    ? '' :
     `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="noopener"></a></li>`)
 }
 function SOCME(str, svc) {
   // like `SOC()` but with `rel="me"`
   const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
+  return (val === '' || val === undefined || val === null
+    ? '' :
     `<li><a ${str[0]}${val}${str[1]} target="_blank" rel="me"></a></li>`)
 }
 function SOC2(str, arg, svc) {
   const val = cfg.social[svc]
-  return (val === '' || val === undefined || val === null ? '' :
+  return (val === '' || val === undefined || val === null
+    ? '' :
     `<li><a ${str[0]}${arg}${str[1]}${val}${str[2]} target="_blank" rel="noopener"></a></li>`)
 }
 

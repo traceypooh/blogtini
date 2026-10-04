@@ -27,21 +27,26 @@ customElements.define('bt-sidebar', class extends LitElement {
     return html`
 <section id="site-sidebar">
 
-  ${cfg.sidebar.post_amount ? html`
+  ${cfg.sidebar.post_amount
+    ? html`
     <section class="recent_posts">
       <header>
         <h1>Recent Posts</h1>
       </header>
       ${(this.recent_posts || []).map((url) => html`
         <bt-post-mini url="${urlify(url)}"></bt-post-mini>`)}
-      ${more ? html`
+      ${more
+        ? html`
       <footer>
         <a href="${cfg.view_more_posts_link || `${state.top_page}#post${cfg.sidebar.post_amount}`}" class="button">See More</a>
-      </footer>` : ''}
+      </footer>`
+        : ''}
     </section>
-  ` : ''}
+  `
+    : ''}
 
-  ${cfg.sidebar.categories ? html`
+  ${cfg.sidebar.categories
+    ? html`
     <section>
       <header>
         <h1>
@@ -50,12 +55,13 @@ customElements.define('bt-sidebar', class extends LitElement {
       </header>
       <ul>
         ${Object.entries(this.categories ?? {}).map((entry) => {
-    const [cat, cnt] = entry
-    return html`<li><a href="${state.top_page}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${cnt}</span></li>`
-  })}
+          const [cat, cnt] = entry
+          return html`<li><a href="${state.top_page}?categories/${cat}">${cat.toLowerCase()}</a> <span class="count">${cnt}</span></li>`
+        })}
       </ul>
     </section>
-  ` : ''}
+  `
+    : ''}
 
   <section class="tagcloud">
     <header>
@@ -63,15 +69,16 @@ customElements.define('bt-sidebar', class extends LitElement {
     </header>
 
     ${Object.entries(this.tags ?? {}).map((entry) => {
-    const [tag, cnt] = entry
-    const weight = (Math.log(cnt) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
-    const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
-    return html`<a href="${state.top_page}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
-  })}
+      const [tag, cnt] = entry
+      const weight = (Math.log(cnt) - Math.log(cnt_min)) / (Math.log(cnt_max) - Math.log(cnt_min))
+      const size = (rem_min + ((rem_max - rem_min) * weight)).toFixed(1)
+      return html`<a href="${state.top_page}?tags/${tag}" style="font-size: ${size}rem">${tag.toLowerCase()}</a> `
+    })}
 
   </section>
 
-  ${cfg.sidebar.about ? html`
+  ${cfg.sidebar.about
+    ? html`
     <section id="mini-bio">
       <header>
         <h1>About</h1>
@@ -80,7 +87,8 @@ customElements.define('bt-sidebar', class extends LitElement {
       <footer>
         <a href="${state.top_dir}about" class="button">Learn More</a>
       </footer>
-    </section>` : ''}
+    </section>`
+    : ''}
 </section>`
   }
 

@@ -23,7 +23,6 @@ customElements.define('featured-image', class extends LitElement {
     let stretch = cfg.image_stretch ?? ''
 
     if (post.featured) {
-      // eslint-disable-next-line max-len
       // xxx original: {{- $src = (path.Join "img" (cond (eq .Params.featuredpath "date") (.Page.Date.Format "2006/01") (.Params.featuredpath)) .Params.featured) | relURL -}}
       src = imgurl(post, false, true)
       alt = post.featuredalt
@@ -41,10 +40,10 @@ customElements.define('featured-image', class extends LitElement {
       return ''
     }
 
-    // eslint-disable-next-line no-nested-ternary
+
     const cls = (stretch === 'vertical' || stretch === 'v'
       ? 'class="stretchV"'
-      // eslint-disable-next-line no-nested-ternary
+
       : (stretch === 'horizontal' || stretch === 'h'
         ? 'class="stretchH"'
         : (stretch === 'cover' || stretch === 'c'

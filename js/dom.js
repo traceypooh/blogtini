@@ -5,7 +5,7 @@ globalThis.document = doc.window.document
 globalThis.CSSStyleSheet = doc.window.CSSStyleSheet
 
 
-// eslint-disable-next-line import/first, import/no-unresolved
+// eslint-disable-next-line import/first
 import { HTMLElement, customElements } from 'npm:@lit-labs/ssr-dom-shim'
 
 globalThis.HTMLElement = HTMLElement

@@ -30,7 +30,7 @@ customElements.define('bt-comment', class extends LitElement {
           ${this.website ? html`<a rel="nofollow external" href="${this.website.match(/^https*:\/\//) ? this.website : `https://${this.website}`}">${this.name}</a>` : this.name}
         </h3>
         <a class="comment-date" href="#${this.id}" title="Permalink to this comment">
-          ${'' /* eslint-disable-next-line no-use-before-define */}
+          ${''}
           <time datetime="${this.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.date)}</time>
         </a>
       </div>

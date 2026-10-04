@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
 import { css_links } from '../future-imperfect/index.js'
@@ -19,7 +19,7 @@ customElements.define('bt-posts', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }

@@ -1,11 +1,11 @@
 
-/* eslint-disable no-continue */
+
 import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
 import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
 // adds header click actions, etc.
-// eslint-disable-next-line import/no-named-as-default
+
 import search_setup from './js/search-setup.js'
 import {
   markdown_to_html, summarize_markdown, markdown_parse, krsort,
@@ -35,17 +35,19 @@ const state = {
   filter_tag,
   filter_cat,
 }
-const filter_post = (state.is_homepage ? '' :
+const filter_post = (state.is_homepage
+  ? '' :
   `${location?.origin}${location?.pathname}`.replace(/\/index\.html$/, '/'))
 
-// eslint-disable-next-line no-use-before-define
+
 const STORAGE_KEY = url_to_base(location?.href ?? '') ?? 'blogtini'
 
-const STORAGE = SEARCH.match(/[&?]recache=1/i) ? {} :
+const STORAGE = SEARCH.match(/[&?]recache=1/i)
+  ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
 // defaults
-// eslint-disable-next-line import/no-mutable-exports
+
 let cfg = {
   user: '',
   repo: '',
@@ -202,8 +204,8 @@ function main_section(histogram) {
 
   return `
     ${state.show_top_content
-    ? '<bt-post-full url="homepage/"></bt-post-full> <hr style="height:1px;padding:0;border:0;border-bottom:1px solid #a1a1a166;margin:2em 0">'
-    : ''}
+      ? '<bt-post-full url="homepage/"></bt-post-full> <hr style="height:1px;padding:0;border:0;border-bottom:1px solid #a1a1a166;margin:2em 0">'
+      : ''}
 
     <bt-posts>
       ${state.urls_filtered.map((url, idx) => `<bt-post id="post${state.page * cfg.posts_per_page + idx}" url="${urlify(url)}"></bt-post>`).join('')}
@@ -221,7 +223,7 @@ function bt_body() {
   for (const tag of Object.keys(state.tags).sort())
     tags_histogram[tag] = state.tags[tag].length
 
-  // eslint-disable-next-line no-nested-ternary, max-len
+
   const histogram = state.list_tags ? tags_histogram : (state.list_cats ? categories_histogram : null)
 
   document.querySelector('body').innerHTML =
@@ -238,7 +240,7 @@ async function main() {
 
   // see if this is an (atypical) "off site" page/post, compared to the main site
   const body_contents = globalThis.document?.querySelector('body').innerHTML.trim()
-  // eslint-disable-next-line no-use-before-define
+
   const [my_frontmatter] = markdown_parse(body_contents ?? '')
   const base = my_frontmatter?.base
 
@@ -247,21 +249,17 @@ async function main() {
   state.top_page = state.top_dir.concat(state.filedev ? 'index.html' : '')
 
   if (!globalThis.Deno) {
-    // eslint-disable-next-line no-use-before-define
     dark_mode()
 
-    // eslint-disable-next-line no-use-before-define
+
     head_insert_generics()
   }
 
   if (state.is_homepage) {
-    // eslint-disable-next-line no-use-before-define
     head_insert_titles('Blogtini') // xxx
   } else if (state.list_tags) {
-    // eslint-disable-next-line no-use-before-define
     head_insert_titles('Tags')
   } else if (state.list_cats) {
-    // eslint-disable-next-line no-use-before-define
     head_insert_titles('Categories')
   }
 
@@ -272,8 +270,7 @@ async function main() {
   }
 
 
-  if (!STORAGE.base)
-    STORAGE.base = base
+  STORAGE.base ||= base
 
   tmp = yml.load(await fetcher(`${state.top_dir}config.yml`))
   if (tmp)
@@ -290,15 +287,14 @@ async function main() {
   // log('STORAGE', JSON.parse(localStorage.getItem(STORAGE_KEY)))
 
 
-  // eslint-disable-next-line no-use-before-define
   add_css(path_to_theme_url('index.css'))
 
   state.show_top_content = state.is_homepage && body_contents && !location.search
   if (state.show_top_content) {
     // NOTE: the front matter below wont get used -- but we need a title & date
-    // eslint-disable-next-line no-use-before-define
+
     const date = date2ymd(new Date())
-    // eslint-disable-next-line no-use-before-define
+
     state.homepage_post = markdown_to_post(`
 ---
 title:
@@ -312,16 +308,16 @@ ${body_contents}
 
 
   if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
-    // eslint-disable-next-line no-use-before-define
+
     await storage_create()
 
-  // eslint-disable-next-line no-use-before-define
+
   storage_loop()
 
-  // eslint-disable-next-line no-use-before-define
+
   bt_body()
 
-  // eslint-disable-next-line no-use-before-define
+
   add_interactivity()
 
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
@@ -363,7 +359,7 @@ async function storage_create() {
   STORAGE.docs = STORAGE.docs || {}
 
   // the build step's index.xml has every post already -- else find & fetch each post
-  // eslint-disable-next-line no-use-before-define
+
   const latest = await posts_from_feed() ? [] : await find_posts()
 
   let proms = []
@@ -393,7 +389,7 @@ async function storage_create() {
     const vals = await Promise.all(proms)
     const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
 
-    // eslint-disable-next-line no-use-before-define
+
     await parse_posts(file2markdown)
 
     files = []
@@ -451,7 +447,7 @@ async function posts_from_feed() {
     for (const key of Object.keys(post))
       if (post[key] === '') delete post[key]
 
-    // eslint-disable-next-line no-use-before-define
+
     storage_add(post)
   }
   log('loaded posts from index.xml', items.length)
@@ -534,7 +530,7 @@ function markdown_to_post(markdown, url = location.pathname) {
   }
 
   // hugo uses 'images' array - xxx reconcile & copy over related 0th element featuredalt, etc.
-  // eslint-disable-next-line no-nested-ternary
+
   const featured = json.featured?.trim() || json.featured_image?.trim() || (json.images
     ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
     : '')
@@ -567,7 +563,7 @@ async function parse_posts(markdowns) {
       url,
     )
     if (post)
-      // eslint-disable-next-line no-use-before-define
+
       storage_add(post)
   }
 }
@@ -599,9 +595,9 @@ function storage_loop() {
         url_no_args === `${filter_post}/` ||
         // deal with IPFS immutable (and unknowable a priori) CID
         (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
-         filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
+          filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
         // local file:// dev
-        ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
+          ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
       )
       if (!match && STORAGE.docs.length !== 1) {
         // note prior and next posts
@@ -616,15 +612,12 @@ function storage_loop() {
     }
 
     if (filter_post) {
-      // eslint-disable-next-line no-use-before-define
       head_insert_json_ld(post)
-      // eslint-disable-next-line no-use-before-define
+
       head_insert_titles(post.title, imgurl(post, true, false))
     } else if (filter_tag.length) {
-      // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
     } else if (filter_cat.length) {
-      // eslint-disable-next-line no-use-before-define
       head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
     }
 
@@ -651,7 +644,7 @@ function storage_add(post) { // xxx use snippet
 
   state.num_posts += 1
 
-  // eslint-disable-next-line no-use-before-define
+
   const ymd = date2ymd(new Date(post.date))
   if (!STORAGE.newest || ymd > STORAGE.newest)
     STORAGE.newest = ymd
@@ -842,7 +835,7 @@ function url2post(url = '') {
 
 if (!globalThis.blogtini_imported) {
   globalThis.blogtini_imported = true // avoid any inadvertent double import
-  // eslint-disable-next-line no-void
+
   void main()
 }
 

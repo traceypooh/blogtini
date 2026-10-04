@@ -123,7 +123,7 @@ function posts(cfg, site) {
     const nl = text.indexOf('\n')
     const line1 = text.slice(0, nl)
     if ((line1.startsWith('<!DOCTYPE html><title>') && line1.endsWith(STYLE)) ||
-        (line1.startsWith(OLD_HEAD_START) && line1.endsWith('</head><body>')))
+      (line1.startsWith(OLD_HEAD_START) && line1.endsWith('</head><body>')))
       text = text.slice(nl + 1)
 
     // posts & pages start with front matter.  anything else is someone else's html -- leave it be
@@ -174,9 +174,13 @@ function rss(cfg, site, items) {
       <link>${esc(link)}</link>
       <guid>${esc(link)}</guid>
       <pubDate>${date.toUTCString()}</pubDate>${cats.map((e) => `\n      ${e}`).join('')}${
-      desc ? `\n      <description>${esc(desc)}</description>` : ''}${
-      // eslint-disable-next-line no-nested-ternary
-      !img ? '' : !fm.featuredcaption ? `\n      <media:content url="${esc(img)}" medium="image"/>` : `
+        desc ? `\n      <description>${esc(desc)}</description>` : ''}${
+
+        !img
+          ? ''
+          : !fm.featuredcaption
+            ? `\n      <media:content url="${esc(img)}" medium="image"/>`
+            : `
       <media:content url="${esc(img)}" medium="image">
         <media:description>${esc(fm.featuredcaption)}</media:description>
       </media:content>`}

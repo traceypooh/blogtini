@@ -212,7 +212,7 @@ customElements.define('bt-comments', class extends LitElement {
     xhr.send(formData)
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   showAlert(form, msg) {
     if (msg === 'success') {
       form.querySelector('.submit-success').classList.remove('hidden')  // show submit success message
@@ -230,7 +230,7 @@ customElements.define('bt-comments', class extends LitElement {
     form.querySelector('.reply-notice .reply-name').innerText = ''
     form.querySelector('.reply-notice').classList.add('hidden') // hide reply target display
     // empty all hidden fields whose name starts from "reply"
-    // eslint-disable-next-line no-return-assign
+
     Array.from(form.elements).filter((e) => e.name.indexOf('fields[reply') === 0).forEach((e) => e.value = '')
   }
 

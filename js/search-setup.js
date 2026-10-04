@@ -55,18 +55,18 @@ function search_setup(docs, cfg) {
   })
 
   // Register handler for the search input field
-  // eslint-disable-next-line no-use-before-define
+
   registerSearchHandler()
 }
 
 function registerSearchHandler() {
   $searchInput.oninput = (event) => {
     const query = event.target.value
-    // eslint-disable-next-line no-use-before-define
+
     const results = search(query)  // Perform the search
 
     // Render search results
-    // eslint-disable-next-line no-use-before-define
+
     renderSearchResults(results)
 
     // Remove search results if the user empties the search phrase input field

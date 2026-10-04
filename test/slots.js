@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 
 customElements.define('bt-page', class extends LitElement {
@@ -30,7 +30,7 @@ customElements.define('bt-page', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }
@@ -50,7 +50,7 @@ customElements.define('bt-header', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }
@@ -68,7 +68,7 @@ customElements.define('bt-sidebar', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }
@@ -84,7 +84,7 @@ customElements.define('bt-posts', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }
@@ -105,7 +105,7 @@ customElements.define('bt-post', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`blahg: <slot></slot>`
   }
@@ -123,7 +123,7 @@ customElements.define('bt-footer', class extends LitElement {
 `
   }
 
-  // eslint-disable-next-line class-methods-use-this
+
   render() {
     return html`<slot></slot>`
   }

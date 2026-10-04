@@ -4,7 +4,6 @@ import {
 } from './css.js'
 
 customElements.define('bt-blank', class extends LitElement {
-  // eslint-disable-next-line class-methods-use-this
   render() {
     return html`<slot></slot>`
   }

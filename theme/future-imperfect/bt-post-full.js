@@ -32,7 +32,9 @@ customElements.define('bt-post-full', class extends LitElement {
     return html`
     <article>
       <div class="post single">
-        ${this.post.type === 'homepage' ? '' : html`
+        ${this.post.type === 'homepage'
+          ? ''
+          : html`
           <bt-post-header .post=${this.post}></bt-post-header>
           <bt-share class="mainline" .post=${this.post}></bt-share>
           <featured-image url=${this.url} single=true></featured-image>`}
@@ -41,18 +43,22 @@ customElements.define('bt-post-full', class extends LitElement {
           ${unsafeHTML(body)}
         </div>
 
-        ${this.post.type === 'post' ? html`
+        ${this.post.type === 'post'
+          ? html`
         <footer>
           <post-stats
             categories=${JSON.stringify(this.post.categories)}
             tags=${JSON.stringify(this.post.tags)}>
           </post-stats>
-        </footer>` : ''}
+        </footer>`
+          : ''}
       </div>
 
-      ${this.post.type === 'post' && cfg.staticman?.enabled ? html`
+      ${this.post.type === 'post' && cfg.staticman?.enabled
+        ? html`
         <bt-comments entryid=${comments_entryid}></bt-comments>
-      ` : ''}
+      `
+        : ''}
     </article>
   `
   }

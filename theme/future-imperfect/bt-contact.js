@@ -5,7 +5,6 @@ import {
 import { cfg } from '../../index.js'
 
 customElements.define('bt-contact', class extends LitElement {
-  // eslint-disable-next-line class-methods-use-this
   render() {
     return html`
     <article class="post">
