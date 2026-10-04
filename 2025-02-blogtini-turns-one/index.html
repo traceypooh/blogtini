@@ -31,16 +31,17 @@ The contact form is setup -- https://formspree.io is a good option to use and th
 
 # Versioning
 
-Releases now get tagged (eg: `1.0.5`).
+Releases now get tagged (eg: `1.0.6`).
 
 Blog sites can opt to use a **specific version** of blogtini, in their site's top-level `theme.js` like this:
 ```js
-import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.5/index.js'
+import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.6/index.js?bundle=false'
 ```
+(The default theme then comes from that same version, too.)
 
 Optionally, sites can pick a non-default theme from the same version in their `config.yml`, eg:
 ```yml
-theme: https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.5/theme/future-imperfect/index.js
+theme: https://esm.ext.archive.org/gh/traceypooh/blogtini@1.0.6/theme/future-imperfect/index.js?bundle=false
 ```
 
 

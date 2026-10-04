@@ -46,6 +46,22 @@ const STORAGE = SEARCH.match(/[&?]recache=1/i)
   ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
+/**
+ * Returns the absolute url of a theme shipped alongside *this* `index.js` --
+ * so a site pinning a blogtini version (eg: `blogtini@1.0.5/index.js`) gets that version's theme, too.
+ *
+ * esm.sh-style mirrors (eg: esm.ext.archive.org/gh/) run us from a rebuilt `.../es2022/index.nobundle.mjs`,
+ * so map back to the repo url, w/ `?bundle=false` -- so theme and `index.js` share one `cfg` & `state`.
+ *
+ * @param {string} theme eg: 'future-imperfect'
+ */
+function theme_url(theme) {
+  const esm = import.meta.url.match(/^(https:\/\/.*\/gh\/[^/]+\/[^/]+@[^/]+)\/es20\d\d\/index\.nobundle\.mjs$/)
+  if (esm)
+    return `${esm[1]}/theme/${theme}/index.js?bundle=false`
+  return new URL(`theme/${theme}/index.js`, import.meta.url).href
+}
+
 // defaults
 
 let cfg = {
@@ -53,7 +69,7 @@ let cfg = {
   repo: '',
   branch: 'main', // xxxx autodetect or 'master'
   site_url: 'https://example.com/',
-  theme: 'https://blogtini.com/theme/future-imperfect/index.js',
+  theme: theme_url('future-imperfect'),
   title: 'welcome to my blog',
   attribution: "Theme: <a href='https://github.com/pacollins/hugo-future-imperfect-slim' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br>A <a href='https://html5up.net/future-imperfect' target='_blank' rel='noopener'>HTML5 UP port</a> | Powered by <a href='https://blogtini.com/'  target='_blank' rel='noopener'>blogtini.com</a>",
   img_site: '',
@@ -135,15 +151,17 @@ function urlify(url, no_trail_slashes = false) {
  *
  * Example paths: fonts/raleway-regular.woff2, index.js
  *
- * @param {string} path relative path to fetch. if starts with 'https://', path is returned as is
+ * @param {string} path relative path to fetch. if an absolute url (eg: 'https://'), path is returned as is
  */
 function path_to_theme_url(path) {
-  if (path.startsWith('https://'))
+  const absolute = /^[a-z][a-z0-9+.-]*:\/\//i
+  if (path.match(absolute))
     return path
 
-  const theme_dir = cfg.theme.replace(/\/[^/]+\.js$/, '/')
+  // (ignore any `?query` -- eg: `?bundle=false` from esm.sh-style mirrors)
+  const theme_dir = cfg.theme.replace(/\?.*$/, '').replace(/\/[^/]+\.js$/, '/')
 
-  if (theme_dir.startsWith('https://'))
+  if (theme_dir.match(absolute))
     return `${theme_dir}${path}`
 
   // compute paths from hostname
@@ -700,9 +718,9 @@ function add_interactivity() {
       log({ theme })
 
       state.theme_change_number += 1
-      // build the url in a variable first, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it
-      const theme_url = `../theme/${theme}/index.js?${state.theme_change_number}`
-      await import(theme_url)
+      // (a variable, not an inline template, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it)
+      const url = theme_url(theme)
+      await import(`${url}${url.includes('?') ? '&' : '?'}${state.theme_change_number}`)
 
       bt_body()
 
