@@ -10,7 +10,7 @@ const t0 = performance.now()
 const raw = document.body.innerHTML
 const vis_at_start = getComputedStyle(document.body).visibility
 
-await new Promise((r) => setTimeout(r, ms))
+await new Promise((r) => { setTimeout(r, ms) })
 
 const vis_before_render = getComputedStyle(document.body).visibility
 document.body.style.animation = 'none'

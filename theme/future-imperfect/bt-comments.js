@@ -15,7 +15,7 @@ customElements.define('bt-comments', class extends LitElement {
 
   render() {
     if (typeof this.comments === 'undefined')
-      this.comments_get()
+      void this.comments_get()
 
     if (this.comments && this.comments.length)
       this.comments_insert()
@@ -186,7 +186,7 @@ customElements.define('bt-comments', class extends LitElement {
         xhrObj[key.slice(0, a)][key.slice(a + 1, -1)] = value
       } else { // key = "options[reCaptcha][*]"
         // define xhrObj.options.reCaptcha if it doesn't exist
-        xhrObj.options.reCaptcha = xhrObj.options.reCaptcha || {}
+        xhrObj.options.reCaptcha ||= {}
         xhrObj.options.reCaptcha[key.slice(b + 11, -1)] = value
       }
     })

@@ -4,6 +4,8 @@
 //
 //   test/fail-open/cls.js
 //   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' test/fail-open/cls.js
+
+/* eslint-disable no-console */ // a CLI script: printing results is the point
 import process from 'node:process'
 import { createServer } from 'node:http'
 import { readFile, mkdtemp } from 'node:fs/promises'
@@ -44,7 +46,7 @@ async function devtools_ws() {
       const tab = tabs.find((t) => t.type === 'page')
       if (tab) return tab.webSocketDebuggerUrl
     } catch { /* not up yet */ }
-    await new Promise((r) => setTimeout(r, 200))
+    await new Promise((r) => { setTimeout(r, 200) })
   }
   throw Error(`chrome never came up: ${CHROME}`)
 }
@@ -62,11 +64,12 @@ ws.onmessage = (e) => {
   const shift = msg.method === 'PerformanceTimeline.timelineEventAdded' && msg.params.event.layoutShiftDetails
   if (shift && !shift.hadRecentInput) {
     cls += shift.value
-    shifts++
+    shifts += 1
   }
 }
 const send = (method, params = {}) => new Promise((r) => {
-  pending[++id] = r
+  id += 1
+  pending[id] = r
   ws.send(JSON.stringify({ id, method, params }))
 })
 
@@ -80,7 +83,7 @@ for (const js of [true, false]) {
     shifts = 0
     const nav = await send('Page.navigate', { url: `${base}${page}/` })
     if (nav.error || nav.result?.errorText) throw Error(`navigate ${page}: ${JSON.stringify(nav)}`)
-    await new Promise((r) => setTimeout(r, WAIT_MS))
+    await new Promise((r) => { setTimeout(r, WAIT_MS) })
     const { result } = (await send('Runtime.evaluate', {
       expression: 'getComputedStyle(document.body).visibility + " | " + document.body.textContent.trim().slice(0, 20)',
     })).result

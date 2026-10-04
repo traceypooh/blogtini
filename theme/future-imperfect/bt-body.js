@@ -21,7 +21,7 @@ customElements.define('bt-body', class extends LitElement {
 
   updated() {
     // eslint-disable-next-line no-promise-executor-return
-    new Promise((r) => requestAnimationFrame(r)).then(() => {
+    void new Promise((r) => requestAnimationFrame(r)).then(() => {
       reveal() // build step's head line hides body until now
     })
   }

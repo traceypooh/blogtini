@@ -1,3 +1,6 @@
+// bt-blank.js is a starter template for new bt-*.js components (not loaded).  This reference (just a comment
+// at runtime) gets it into TypeScript's project, so eslint can parse it:
+/// <reference path="./bt-blank.js" />
 import './bt-body.js'
 import './bt-sidebar.js'
 import './bt-post.js'

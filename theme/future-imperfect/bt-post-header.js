@@ -26,12 +26,14 @@ customElements.define('bt-post-header', class extends LitElement {
       <h2><a href="${urlify(this.post.url)}">${this.post.title}</a></h2>
       ${PR`<p>${this.post.description}</p>` /* chexxx */}
     </div>
-    ${this.post.type === 'post' ? html`
+    ${this.post.type === 'post'
+      ? html`
       <div class="meta">
         <time datetime="${this.post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.post.date)}</time>
         ${PR`<p>${this.post.author}</p>` /* chexxx */}
         ${cfg.reading_time ? html`<p>${Math.round((212 + this.wordcount(this.post.body_raw)) / 213)}-Minute Read</p>` : ''}
-      </div>` : ''}
+      </div>`
+      : ''}
   </header>
   `
   }

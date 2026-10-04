@@ -224,7 +224,9 @@ function bt_body() {
     tags_histogram[tag] = state.tags[tag].length
 
 
-  const histogram = state.list_tags ? tags_histogram : (state.list_cats ? categories_histogram : null)
+  const histogram = state.list_tags
+    ? tags_histogram
+    : (state.list_cats ? categories_histogram : null)
 
   document.querySelector('body').innerHTML =
     `<bt-body
@@ -356,7 +358,7 @@ function reveal() {
 
 async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
-  STORAGE.docs = STORAGE.docs || {}
+  STORAGE.docs ||= {}
 
   // the build step's index.xml has every post already -- else find & fetch each post
 
@@ -575,11 +577,11 @@ function storage_loop() {
 
   for (const post of STORAGE.docs) {
     for (const tag of post.tags) {
-      state.tags[tag] = state.tags[tag] || []
+      state.tags[tag] ||= []
       state.tags[tag].push(post.url)
     }
     for (const cat of post.categories) {
-      state.cats[cat] = state.cats[cat] || []
+      state.cats[cat] ||= []
       state.cats[cat].push(post.url)
     }
 

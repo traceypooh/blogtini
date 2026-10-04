@@ -81,7 +81,7 @@ customElements.define('bt-post-full', class extends LitElement {
     // add code highlighting
     const codes = this.shadowRoot.querySelectorAll('pre code')
     if (codes.length) {
-      import('https://esm.ext.archive.org/highlightjs@9.16.2').then(
+      void import('https://esm.ext.archive.org/highlightjs@9.16.2').then(
         (esm) => codes.forEach(esm.default.highlightBlock),
       )
     }
