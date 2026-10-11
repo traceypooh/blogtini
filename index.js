@@ -42,6 +42,9 @@ const filter_post = (state.is_homepage
 
 const STORAGE_KEY = url_to_base(location?.href ?? '') ?? 'blogtini'
 
+// how many posts to fetch at once, when there's no index.xml w/ every post in it
+const FETCH_BATCH = 10
+
 const STORAGE = SEARCH.match(/[&?]recache=1/i)
   ? {} :
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
@@ -113,7 +116,8 @@ function urlize(url) { // xxx only handles post or cgi; xxx assumes posts are 1-
     // eslint-disable-next-line no-param-reassign
     url = url.replace(RegExp(`^${STORAGE.base}`), '')
 
-  if (url.startsWith('https://'))
+  // (http, too -- eg: a post's own url, from adding itself to the cache, in localhost dev)
+  if (url.startsWith('https://') || url.startsWith('http://'))
     return url
 
   // eslint-disable-next-line no-param-reassign
@@ -246,6 +250,11 @@ function bt_body() {
 async function main() {
   let tmp
 
+  // this page's own file -- in parallel w/ everything else, until we need it
+  const self_prom = !globalThis.Deno && (filter_post || state.is_homepage)
+    ? fetch_self()
+    : Promise.resolve(null)
+
   // see if this is an (atypical) "off site" page/post, compared to the main site
   const body_contents = globalThis.document?.querySelector('body').innerHTML.trim()
 
@@ -315,7 +324,7 @@ date: ${date}
 type: homepage
 ---
 
-${body_contents}
+${homepage_markdown(await self_prom) || body_contents}
 `.trimStart(), location.href)
   }
 
@@ -323,6 +332,12 @@ ${body_contents}
   if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
 
     await storage_create()
+
+  // trust this post's own file over the (up to a day old) cache -- eg: it was just edited
+  const self = filter_post ? await self_prom : null
+  const self_post = self ? markdown_to_post(self, filter_post) : undefined
+  if (self_post)
+    storage_overlay(self_post)
 
 
   storage_loop()
@@ -367,24 +382,84 @@ function reveal() {
 }
 
 
+/**
+ * Fetches this page's own file, exactly as written.  (Not the DOM: the browser has parsed our markdown
+ * as html by then -- eg: `> quote` reads back as `&gt; quote`, and code like `a<b` turns into tags.)
+ * Every page renders from its own file, over the (up to a day old) cache -- so edits always show,
+ * and dev renders the same bytes as prod's index.xml.
+ * Dev mode skips the HTTP cache, too, so a reload shows what you just saved.
+ *
+ * @returns {Promise<string|null>}
+ */
+async function fetch_self() {
+  try {
+    const res = await fetch(location.href.replace(/[?#].*$/, ''), {
+      cache: state.filedev || state.localdev ? 'no-cache' : 'default',
+    })
+    if (res.ok) return await res.text()
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+  log('could not fetch this page, using the cache', location.href)
+  return null
+}
+
+
+/** @returns {string|undefined} the markdown in a homepage file: everything inside its `<body>` */
+function homepage_markdown(text) {
+  return text?.match(/<body[^>]*>([\s\S]*?)(<\/body>|$)/i)?.[1].trim()
+}
+
+
+/**
+ * Puts this page's post into the cache, replacing any older copy of it (keeping that copy's url).
+ * Leaves the cache (and its localStorage write, of every post) alone when the copy is the same.
+ *
+ * NOTE: a copy from index.xml never compares the same -- eg: its `featured` is a full url (vs. `seo.jpg`)
+ * and its body is trimmed.  So the first view of each post, after each (daily) rebuild from index.xml,
+ * writes once -- harmlessly.  Later views compare the same, until the post's file changes.
+ * (To skip even that write, compare just the fields that matter: body, title, date, tags, etc.)
+ */
+function storage_overlay(post) {
+  const cached = STORAGE.docs.find((e) => is_filter_post(e.url))
+  if (cached) {
+    post.url = cached.url // eslint-disable-line no-param-reassign
+    post.type ||= 'post' // eslint-disable-line no-param-reassign
+    // (via JSON, so eg: a js-yaml `Date` matches the cached ISO string)
+    if (JSON.stringify(post) === JSON.stringify(cached)) return
+  }
+
+  const docs = {}
+  for (const doc of STORAGE.docs) {
+    if (is_filter_post(doc.url))
+      post.url = doc.url // eslint-disable-line no-param-reassign
+    else
+      docs[storage_key(doc)] = doc
+  }
+  STORAGE.docs = docs
+  storage_add(post)
+  STORAGE.docs = Object.values(krsort(STORAGE.docs))
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(STORAGE))
+}
+
+
 async function storage_create() {
   STORAGE.created = dayjs().format('MMM D, YYYY')
-  STORAGE.docs ||= {}
+  // what we have so far (eg: posts opened while browsing) -- kept, unless we find a full list of posts
+  const prior = Object.fromEntries(
+    (Array.isArray(STORAGE.docs) ? STORAGE.docs : []).map((e) => [storage_key(e), e]),
+  )
+  STORAGE.docs = {}
 
   // the build step's index.xml has every post already -- else find & fetch each post
+  const from_feed = await posts_from_feed()
+  const latest = from_feed ? [] : await find_posts()
 
-  const latest = await posts_from_feed() ? [] : await find_posts()
-
-  let proms = []
-  let files = []
-  for (let n = 0; n < latest.length; n++) {
-    const url = latest[n]
+  /** @returns {array} [file, promise of its contents (text, or a fetch() Response)] */
+  const fetch_post = (url) => {
     // NOTE: the final match is for a demo single page in a dir (eg: /index.html => /, /test/post/)
     const mat = url.match(/^(.*)\/([^/]+)$/) || url.match(/^()([^/]+)$/) || url.match(/^()(.*\/)$/)
-    const file = state.sitemap_htm ? latest[n] : mat[2]
-
-    const contents = await fetcher(file)
-    files.push(file)
+    const file = state.sitemap_htm ? url : mat[2]
 
     const url2 = (state.filedev || state.localdev) && STORAGE.base ? url.replace(RegExp(`^${STORAGE.base}`), '') : url
 
@@ -393,21 +468,18 @@ async function storage_create() {
       : '')).concat(url2).concat(state.filedev && url2.endsWith('/') ? 'index.html' : '')
     log({ file, url2, fetchee })
 
-    proms.push(contents || fetch(fetchee))
-
-    if (((n + 1) % cfg.posts_per_page) && n < latest.length - 1)
-      continue // keep building up requests
-
-    // now make the requests in parallel and wait for them all to answer.
-    const vals = await Promise.all(proms)
-    const file2markdown = files.reduce((obj, key, idx) => ({ ...obj, [key]: vals[idx] }), {})
-
-
-    await parse_posts(file2markdown)
-
-    files = []
-    proms = []
+    return [file, fetcher(file).then((contents) => contents || fetch(fetchee))]
   }
+
+  // fetch the posts in parallel, a batch at a time
+  for (let n = 0; n < latest.length; n += FETCH_BATCH) {
+    const batch = latest.slice(n, n + FETCH_BATCH).map(fetch_post)
+    const vals = await Promise.all(batch.map(([, prom]) => prom))
+
+    await parse_posts(Object.fromEntries(batch.map(([file], idx) => [file, vals[idx]])))
+  }
+  if (!from_feed && !state.sitemap_htm)
+    STORAGE.docs = { ...prior, ...STORAGE.docs }
   log({ state })
 
   STORAGE.docs = Object.values(krsort(STORAGE.docs))
@@ -516,8 +588,8 @@ async function find_posts() {
     if (!STORAGE.base)
       setup_base(sitemap_urls)
   } else {
-    // handles the "i'm just trying it out" / no sitemap case
-    FILES.push(location.pathname) // xxx
+    // handles the "i'm just trying it out" / no sitemap case:
+    // the page itself gets added by `storage_overlay()` -- and the cache grows as you browse
     state.sitemap_htm = false
   }
   log({ cfg, state })
@@ -611,17 +683,7 @@ function storage_loop() {
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
     if (filter_post) {
-      const url_no_args = post.url.replace(/\?.*$/, '').replace(/&.*$/, '')
-      const match = (
-        url_no_args === filter_post ||
-        url_no_args === `${filter_post}/` ||
-        // deal with IPFS immutable (and unknowable a priori) CID
-        (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
-          filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
-        // local file:// dev
-          ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))) // xxxx endsWith() lame
-      )
-      if (!match && STORAGE.docs.length !== 1) {
+      if (!is_filter_post(post.url) && STORAGE.docs.length !== 1) {
         // note prior and next posts
         if (!state.filter_post_url)
           state.filter_post_url_prior = urlify(post.url)
@@ -654,15 +716,34 @@ function storage_loop() {
 }
 
 
-function storage_add(post) { // xxx use snippet
-  const ts = Math.round(new Date(post.date) / 1000)
-  const key = `p${isNaN(ts) ? '' : ts} ${post.url}`
+/** @returns {boolean} true if `url` is this (single post/page) page's post */
+function is_filter_post(url) {
+  const url_no_args = url.replace(/\?.*$/, '').replace(/&.*$/, '')
+  return Boolean(
+    url_no_args === filter_post ||
+    url_no_args === `${filter_post}/` ||
+    // deal with IPFS immutable (and unknowable a priori) CID
+    (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
+      filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
+    // local file:// dev
+      ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))), // xxxx endsWith() lame
+  )
+}
 
+
+/** @returns {string} key for `STORAGE.docs` -- newest first, when reverse sorted */
+function storage_key(post) {
+  const ts = Math.round(new Date(post.date) / 1000)
+  return `p${isNaN(ts) ? '' : ts} ${post.url}`
+}
+
+
+function storage_add(post) { // xxx use snippet
   if (!('type' in post))
     // eslint-disable-next-line no-param-reassign
     post.type = 'post'
 
-  STORAGE.docs[key] = post
+  STORAGE.docs[storage_key(post)] = post
 
   state.num_posts += 1
 
