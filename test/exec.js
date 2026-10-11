@@ -1,5 +1,8 @@
 // What runs JS in Code App's EXECUTION tab?  Open this file, then run it.
 // Wanted: a local runtime that can read/write the repo's files (so `bin/build.js` could run there).
+
+/* eslint-disable no-undef, no-console, @stylistic/max-statements-per-line */
+
 const say = (...args) => console.log(...args)
 
 say('Deno:', typeof Deno, ' process:', typeof process, ' require:', typeof require)

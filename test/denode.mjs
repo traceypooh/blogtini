@@ -1,6 +1,8 @@
 // Tries `bin/https-hooks.mjs` (see DENODE.md):  node test/denode.mjs   (or open in Code App & press ▶)
 // Loads the real `js/text.js` -- which imports js-yaml & showdown from https urls.
 // 2nd run should come from the cache, eg: works offline.
+
+/* eslint-disable no-console */
 import { register } from 'node:module'
 
 register('../bin/https-hooks.mjs', import.meta.url)
