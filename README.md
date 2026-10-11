@@ -54,6 +54,13 @@ git config --local core.hooksPath bin/
 ## Releases
 https://github.com/traceypooh/blogtini/releases
 
+Release notes live in the annotated git tags, too (1.0.6+), so you can read them from any clone:
+```sh
+bin/releases       # every release & its notes, newest first
+git show 1.0.9     # one release's notes, atop its commits
+```
+For earlier releases' notes, see https://github.com/traceypooh/blogtini/releases
+
 You can find the [Draft a new release] button at the top right, to enter notes for a release,
 if you dont have the `gh` pkg/binary installed.
 

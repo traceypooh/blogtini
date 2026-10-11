@@ -1,0 +1,25 @@
+#!/bin/sh -e
+
+# Lists blogtini releases & their notes, newest first -- w/o the commits (`git show 1.0.9` for those).
+# Notes live in the annotated tags (1.0.6+).
+#
+# Run anywhere inside a clone, eg:  bin/releases | less
+
+# Each release gets a box, eg:
+#   ╭──────────────────────╮
+#   │  1.0.9   2026-10-11  │
+#   ╰──────────────────────╯
+# `%(align:6)` pads the version, so the box stays square for versions up to 6 chars, eg: 1.0.10
+# (via `$(…)`, which drops all the trailing newlines.  `printf`, not `echo`: some `sh` echos mangle backslashes)
+printf '%s\n' "$(git for-each-ref --sort=-creatordate --format='%(if:equals=tag)%(objecttype)%(then)╭──────────────────────╮
+│  %(align:6)%(refname:short)%(end)  %(creatordate:short)  │
+╰──────────────────────╯
+%(contents)%(end)' refs/tags)"
+
+cat <<'EOF'
+
+
+────────────────────────────────────────────────────────────────────────────────
+All releases, including 1.0.0 – 1.0.5:  https://github.com/traceypooh/blogtini/releases
+
+EOF
