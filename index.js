@@ -8,7 +8,7 @@ import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
 import search_setup from './js/search-setup.js'
 import {
-  markdown_to_html, summarize_markdown, markdown_parse, krsort,
+  markdown_to_html, summarize_markdown, markdown_parse, krsort, SKIP_DIRS,
 } from './js/text.js'
 
 
@@ -581,14 +581,19 @@ async function find_posts() {
     .map((e) => e.split('</loc>').slice(0, 1).join(''))
     .filter((e) => e !== '')
 
-  if (sitemap_urls) {
-    log({ sitemap_urls })
-    FILES.push(...sitemap_urls)
+  // else a plain list of posts, eg: made via:  find . -name index.html > index.txt
+  const urls = sitemap_urls?.length
+    ? sitemap_urls
+    : index_txt_urls(await fetcher(`${state.top_dir}index.txt`))
+
+  if (urls?.length) {
+    log({ urls })
+    FILES.push(...urls)
     state.sitemap_htm = true
     if (!STORAGE.base)
-      setup_base(sitemap_urls)
+      setup_base(urls)
   } else {
-    // handles the "i'm just trying it out" / no sitemap case:
+    // handles the "i'm just trying it out" / no list of posts case:
     // the page itself gets added by `storage_overlay()` -- and the cache grows as you browse
     state.sitemap_htm = false
   }
@@ -598,6 +603,26 @@ async function find_posts() {
   log(latest.slice(0, cfg.posts_per_page))
 
   return latest
+}
+
+
+/**
+ * Parses a plain list of posts, one per line -- eg: made via:  find . -name index.html > index.txt
+ * Lines can be like `./2024-07-my-post/index.html`, `2024-07-my-post/` or `2024-07-my-post`.
+ * Skips blank lines, `#` comments, the homepage, and dirs that are never posts (eg: `test/`).
+ *
+ * @param {string|null} text  index.txt contents
+ * @returns {string[]} absolute urls (same form as a post's own url, so the two match)
+ */
+function index_txt_urls(text) {
+  const top = new URL(state.top_dir || './', location.href)
+  const skip = (path) => path.split('/')
+    .some((dir) => dir.startsWith('.') || dir.startsWith('_') || SKIP_DIRS.has(dir))
+
+  return (text ?? '').split('\n')
+    .map((e) => e.trim().replace(/^\.\//, '').replace(/(^|\/)index\.html$/, '$1'))
+    .filter((e) => e && !e.startsWith('#') && !skip(e))
+    .map((e) => new URL(e.endsWith('/') || e.match(/\.\w+$/) ? e : `${e}/`, top).href)
 }
 
 

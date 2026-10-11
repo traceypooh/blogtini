@@ -17,7 +17,7 @@
   See V2.md for the why of all of it.
 */
 import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
-import { markdown_parse, markdown_to_html, friendly_truncate } from '../js/text.js'
+import { markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS } from '../js/text.js'
 
 // hides body for up to 3s (so no flash of raw markdown before JS renders), then shows it regardless.
 // `pre-wrap` so a no-JS reader still sees the markdown's line breaks.  JS undoes both: `reveal()` in index.js
@@ -26,8 +26,6 @@ const STYLE = '<style>body{white-space:pre-wrap;animation:h 3s}@keyframes h{0%,t
 const OLD_HEAD_START = '<!DOCTYPE html><html><head><style>body{display:none}</style>'
 // max chars for a post's RSS `<description>` one-liner (when front matter has no `description:`)
 const RSS_DESCRIPTION_MAXLEN = 300
-// dirs that are never posts
-const SKIP_DIRS = new Set(['node_modules', 'test', 'theme', 'js', 'img', 'comments'])
 
 // eslint-disable-next-line no-console
 const log = console.log.bind(console)

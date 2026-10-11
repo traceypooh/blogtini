@@ -147,7 +147,11 @@ function vrsort(map) {
 }
 
 
+// dirs that are never posts (nor are any dirs starting with `.` or `_`).  Shared w/ `bin/build.js`
+const SKIP_DIRS = new Set(['node_modules', 'test', 'theme', 'js', 'img', 'comments'])
+
+
 export {
   markdown_to_html, summarize, summarize_markdown, markdown_parse,
-  friendly_truncate, krsort, vsort, vrsort,
+  friendly_truncate, krsort, vsort, vrsort, SKIP_DIRS,
 }
