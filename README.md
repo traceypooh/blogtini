@@ -95,7 +95,15 @@ V=1.0.7 &&\
 python3 -m http.server
 ```
 
-You can force a re-parse of posts & pages by adding optional CGI arg `?recache=1`
+The page you're on always shows its file's latest edits.
+Other posts & pages come from a cache in your browser (rebuilt daily), made from the first of:
+- `index.xml` -- from the [build step](#build-optional)
+- `sitemap.xml`
+- `index.txt` -- a plain list, one post per line, eg: `find . -name index.html > index.txt`
+- else: just the pages you've opened -- the cache grows as you browse
+
+To rebuild the cache (eg: after adding or deleting a post), click the bottom (↻) button
+(shown on `localhost` & `file:` only), or add CGI arg `?recache=1` to the url.
 
 ## Example urls using GitHub or GitLab pages
 If you use https://github.com or https://gitlab.com free 'Pages' integration, you will get urls you can like this:

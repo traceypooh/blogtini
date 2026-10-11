@@ -345,6 +345,9 @@ ${homepage_markdown(await self_prom) || body_contents}
 
   bt_body()
 
+  if (state.filedev || state.localdev)
+    add_recache_button()
+
 
   add_interactivity()
 
@@ -401,6 +404,35 @@ async function fetch_self() {
   } catch {}
   log('could not fetch this page, using the cache', location.href)
   return null
+}
+
+
+/**
+ * Dev mode: a small button to rebuild the post cache -- eg: after adding or deleting a post.
+ * Same as adding `?recache=1` to the url -- for when you can't, eg: a phone editor's preview pane.
+ * (Not in a theme, so every theme gets it.)
+ */
+function add_recache_button() {
+  const btn = document.createElement('button')
+  btn.textContent = '↻'
+  btn.title = 'dev: rebuild the post cache (eg: after adding or deleting a post)'
+  btn.setAttribute('aria-label', btn.title)
+  // `all:initial` so no theme `button` styles leak in.
+  // a button's width in from the right -- clear of the bottom-right "back to top" button many themes have
+  btn.style.cssText = [
+    'all:initial', 'position:fixed', 'z-index:9999', 'right:44px',
+    'bottom:calc(12px + env(safe-area-inset-bottom))', 'width:44px', 'height:44px',
+    'border-radius:50%', 'background:rgba(0,0,0,.6)', 'color:#fff', 'cursor:pointer',
+    'font:22px/44px system-ui,sans-serif', 'text-align:center',
+  ].join(';')
+  btn.addEventListener('click', () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+      /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+    } catch {}
+    location.reload()
+  })
+  document.body.appendChild(btn)
 }
 
 
