@@ -107,7 +107,7 @@ function renderSearchResults(results) {
       )
     }
   } else {
-    $searchResults.innerHTML = '<article class="mini-post"><main><p>No Results Found...</p></main></a></article>'
+    $searchResults.innerHTML = '<article class="mini-post"><main><p>No Results Found...</p></main></article>'
   }
 
   // Render the list

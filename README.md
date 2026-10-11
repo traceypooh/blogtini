@@ -98,8 +98,8 @@ python3 -m http.server
 The page you're on always shows its file's latest edits.
 Other posts & pages come from a cache in your browser (rebuilt daily), made from the first of:
 - `index.xml` -- from the [build step](#build-optional)
+- `index.txt` -- a plain list, one post per line, eg: `find . -name index.html > index.txt` (or hand-edit it)
 - `sitemap.xml`
-- `index.txt` -- a plain list, one post per line, eg: `find . -name index.html > index.txt`
 - else: just the pages you've opened -- the cache grows as you browse
 
 To rebuild the cache (eg: after adding or deleting a post), click the bottom (↻) button

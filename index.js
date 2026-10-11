@@ -608,15 +608,17 @@ function setup_base(urls) { // xxx get more sophisticated than this!  eg: if all
 async function find_posts() {
   const FILES = []
 
-  const sitemap_urls = (await fetcher(`${state.top_dir}sitemap.xml`))?.split('<loc>')
-    .slice(1)
-    .map((e) => e.split('</loc>').slice(0, 1).join(''))
-    .filter((e) => e !== '')
+  // a plain list of posts, eg: made via:  find . -name index.html > index.txt  (or hand-edited)
+  // -- ahead of sitemap.xml: it's easier to write & keep up, so likelier the one someone means
+  const list_urls = index_txt_urls(await fetcher(`${state.top_dir}index.txt`))
 
-  // else a plain list of posts, eg: made via:  find . -name index.html > index.txt
-  const urls = sitemap_urls?.length
-    ? sitemap_urls
-    : index_txt_urls(await fetcher(`${state.top_dir}index.txt`))
+  // else a sitemap (eg: pre-v2 blogtini sites, hand-made)
+  const urls = list_urls.length
+    ? list_urls
+    : (await fetcher(`${state.top_dir}sitemap.xml`))?.split('<loc>')
+      .slice(1)
+      .map((e) => e.split('</loc>').slice(0, 1).join(''))
+      .filter((e) => e !== '')
 
   if (urls?.length) {
     log({ urls })
@@ -832,7 +834,7 @@ function datetime(date) {
 }
 
 /**
- * Sets dark theme if [7am .. 5pm] localtime and prefers dark mode
+ * Sets dark theme if prefers dark mode *and* it's nighttime: before 7am or from 6pm, localtime
  */
 function dark_mode() {
   const hour = new Date().getHours()
