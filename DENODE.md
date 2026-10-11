@@ -1,0 +1,92 @@
+# DENODE: one JS codebase that runs on Deno *and* Node
+
+**Status:**
+- **Done:** [bin/https-hooks.mjs](bin/https-hooks.mjs) works on Node from the Mac CLI (2026-10-11, via `test/denode.mjs`).
+- **Still sketch:** porting `bin/build.js`, the Node entry file, and Code App's Node 18.
+
+**Why:**
+- Deno's future is uncertain.
+- Node is everywhere, including the iOS Code App (its ▶ button runs `node <file>`).
+- Most of our Deno scripts barely use Deno-only features.
+
+**The general idea, for any repo with Deno scripts:**
+1. Use `node:` built-ins (`node:fs`, `node:process`, …) instead of `Deno.*`. Deno supports `node:` imports natively, so this is one code path with no `if (globalThis.Deno)` branches.
+2. Keep importing ES modules from https URLs (eg: `https://esm.ext.archive.org/js-yaml@4.1.0`), the same way browsers and Deno do. Node can't do that natively, so a small **loader hook** fetches them, with a **local cache** for repeat and offline runs.
+3. Node gets one tiny **entry file** that registers the hook, then dynamically imports the real script. Deno keeps running the script directly.
+
+Then `node bin/build-node.mjs` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
+
+
+## 1. `Deno.*` → `node:*`
+
+| Deno | Node (also works in Deno) |
+|---|---|
+| `Deno.readTextFileSync(p)` | `readFileSync(p, 'utf8')` from `node:fs` |
+| `Deno.writeTextFileSync(p, s)` | `writeFileSync(p, s)` |
+| `Deno.statSync(p)` | `statSync(p)` |
+| `Deno.readDirSync(d)` | `readdirSync(d, { withFileTypes: true })` (**note:** `e.isDirectory()` is a *method* here, not a property) |
+| `Deno.env.get(k)` | `process.env[k]` from `node:process` |
+| `Deno.args` | `process.argv.slice(2)` |
+| `Deno.exit(n)` | `process.exit(n)` |
+
+Deno's `--allow-read` / `--allow-write` / `--allow-env` flags still apply when Deno runs the script. Node simply doesn't check them.
+
+
+## 2. The loader hook, with a cache: `bin/https-hooks.mjs`
+
+Node's [module customization hooks](https://nodejs.org/api/module.html#customization-hooks) (`module.register()`) are available in Node 20.6+ and were backported to 18.19, which is the version Code App ships. They replace the removed `--experimental-network-imports` flag, and Node's docs include an import-from-HTTPS example.
+
+**The hooks:** [bin/https-hooks.mjs](bin/https-hooks.mjs), about 50 lines with no dependencies, so it can be copied into other repos as-is.
+- `resolve`: passes `https://` imports through. Relative imports inside an https module (eg: esm.sh-style `/js-yaml@4.1.0/es2022/js-yaml.mjs`) resolve against that module's URL.
+- `load`: fetches https modules through the cache.
+
+**Cache policy:**
+- An exact-version URL (`pkg@1.2.3`) never changes, so it's cached forever.
+- Anything else (`pkg`, `pkg@1`) is re-fetched after `MAX_AGE_DAYS` (30).
+- If a fetch fails (eg: offline), a stale cached copy is used.
+
+**Try it:** `node test/denode.mjs` (or ▶ in Code App). It loads the real `js/text.js`, which imports js-yaml and showdown over https. A second run should work offline.
+
+**Cache location:**
+- Default: `~/.cache/denode/`, shared by every repo on the machine.
+- Code App: its home dir may not be writable or may not persist. The fallback would be a repo-local `.cache/denode/`, gitignored. Needs testing.
+
+
+## 3. The Node entry file: `bin/build-node.mjs`
+
+```js
+// Node entry for `build.js` -- `deno run … build.js` doesn't need this.
+// Static imports resolve before any code runs, so: register the hooks first, then import dynamically.
+import { register } from 'node:module'
+
+register('./https-hooks.mjs', import.meta.url)
+await import('./build.js')
+```
+
+- **Mac/Unix/CI:** `node bin/build-node.mjs`, with no flags.
+- **Code App:** open `bin/build-node.mjs`, press ▶.
+- **Alternative to an entry file:** `node --import ./bin/https-hooks-register.mjs bin/build.js`. That's fine on a CLI but impossible with ▶, so the entry file is the general solution.
+
+
+## Gotchas
+
+- **`.js` must load as an ES module.** Node 18 treats a `.js` file as CommonJS unless the nearest `package.json` says `"type": "module"`. Newer Node detects ESM syntax automatically, but Code App's 18.19 doesn't. Fix: add a tiny `bin/package.json` containing `{ "type": "module" }`, or rename the files to `.mjs`.
+- **Shebang lines are fine.** `#!/usr/bin/env -S deno run …` at the top of `build.js` is valid in Node, since ESM allows a hashbang first line.
+- **Redirects:** if an https module URL redirects, its relative imports should resolve against the *final* URL (`res.url`), not the requested one. esm.sh-style mirrors mostly use stub modules rather than redirects, but `load` should handle redirects if they come up.
+- **Only ES modules come over https.** `format: 'module'` is assumed. JSON, wasm and CommonJS over https aren't handled, and esm.sh-style mirrors serve ESM anyway.
+
+
+## What this does *not* cover, when porting other repos
+
+- **`npm:` and `jsr:` specifiers** (Deno-only). Swap them for an esm.sh-style https URL, or use `package.json` + `node_modules`.
+- **Deno-only APIs** like `Deno.serve`, `Deno.Command` and `Deno.Kv`. These need real equivalents (`node:http`, `node:child_process`, …), not a one-line swap.
+- **TypeScript.** Node 22.6+ can strip types (on by default in 23.6+), but Node 18 can't. Plain JS with JSDoc is the portable choice.
+- **Bun.** It has no https imports, and its plugin API is different. "Isomorphic" here means Deno + Node.
+
+
+## blogtini specifics
+
+- **`bin/build.js`:** about 7 `Deno.*` calls (`readTextFileSync`, `writeTextFileSync`, `readDirSync`, `statSync`, `env.get`, `args`, `exit`).
+- **https imports:** js-yaml (in `build.js`), plus js-yaml and showdown in the shared `js/text.js`. The browser and Deno are unaffected by the hooks.
+- **CI:** could keep `denoland/deno:alpine`, or switch to the Node that's preinstalled on GitHub's ubuntu runners.
+- **Optional: a ▶-able `index.txt` maker.** If it imports nothing over https, it needs no hooks at all. That means moving `SKIP_DIRS` out of `js/text.js` into its own dependency-free module.
