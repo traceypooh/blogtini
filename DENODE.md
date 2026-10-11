@@ -84,6 +84,32 @@ await import('./build.js')
 - **Bun.** It has no https imports, and its plugin API is different. "Isomorphic" here means Deno + Node.
 
 
+## Future: a general `denode.js`
+
+A reusable file for any repo, which could grow into its own small project. It would hold:
+- **The https hooks with cache** (today's [bin/https-hooks.mjs](bin/https-hooks.mjs)).
+- **An optional `Deno` shim for Node:** `globalThis.Deno ??= { readTextFileSync, writeTextFileSync, readDirSync, statSync, env, args, exit, … }`, each a few lines over `node:fs` / `node:process`. It grows one call at a time, as scripts need them.
+- **A `run(script)` helper:** registers the hooks, installs the shim, then `await import(script)`.
+
+**Two ways to handle `Deno.*`, which mix well:**
+- **A. Port to `node:*`** (sections 1–3 above). The code runs natively on both, with no shim to keep in sync. Prefer this for code we own and touch anyway.
+- **B. Shim the `Deno` global.** Existing scripts run on Node unchanged. Use this for scripts we don't want to touch yet.
+
+**Shim gotchas:**
+- **Environment checks get fooled.** Code that detects Deno via `globalThis.Deno` gets the wrong answer: blogtini's `index.js` does this in `fetcher()`, `main()`, etc. So the shim should mark itself (eg: `Deno.denode = true`), and such checks should test for the feature they need.
+- **No sandbox.** `--allow-read` etc don't exist on Node, so it's harmless but unprotected.
+- **Prior art:** Deno's own `@deno/shim-deno` (npm, from their `dnt` tool) implements much of the `Deno` namespace on Node. Worth reading, or using, even if ours stays small. It's unknown whether it loads cleanly through an esm.sh-style mirror.
+
+**Self-loading from a URL** (eg: `https://esm.ext.archive.org/…/denode.js`):
+- **Chicken-and-egg:** Node can't import the hooks over https until the hooks are installed.
+- **The way around it:** `module.register()` accepts a `data:` URL. A tiny local bootstrap `fetch()`es the hooks' source and registers it as `data:text/javascript,…`. Everything after that (the shim, the script's imports) comes over https through the cache.
+- **First run needs the network.** The bootstrap's own fetch has no cache until it keeps one.
+- **Host the hooks as a plain static file.** esm.sh-style mirrors may rewrite the module.
+- **Pin it to an exact version.** Every Node run executes code from that URL.
+
+**Each repo then needs** only its scripts, plus a 3–4 line Node entry file (or the `data:` URL bootstrap).
+
+
 ## blogtini specifics
 
 - **`bin/build.js`:** about 7 `Deno.*` calls (`readTextFileSync`, `writeTextFileSync`, `readDirSync`, `statSync`, `env.get`, `args`, `exit`).
