@@ -1,7 +1,7 @@
 # DENODE: one JS codebase that runs on Deno *and* Node
 
 **Status:**
-- **Done:** [bin/https-hooks.js](bin/https-hooks.js) works on Node from the Mac CLI (2026-10-11, via `test/denode.js`).
+- **Done:** [bin/https-hooks.js](bin/https-hooks.js) works on Node from the Mac CLI (2026-10-11).
 - **Done:** `bin/build.js` runs on both Deno and Node (2026-10-12), via [bin/deno.js](bin/deno.js) (option B below). Deno and Node write byte-identical output on the Mac. This includes Node run with `--no-experimental-detect-module`, standing in for Node 18.
 - **Done:** Code App's real Node 18.19: ▶ on the build ran the full build (2026-10-12).
 - **Chosen:** keeping `Deno.*` code via an *exported* (not global) `Deno`: `import { Deno } from './deno.js'`. On Deno it's the real `Deno`; on Node it's a small `node:*` shim. Porting to plain `node:*` (option A, section 1) was also built and verified, and is the fallback if the shim gets annoying.
@@ -48,11 +48,11 @@ Node's [module customization hooks](https://nodejs.org/api/module.html#customiza
 - Anything else (`pkg`, `pkg@1`) is re-fetched after `MAX_AGE_DAYS` (30).
 - If a fetch fails (eg: offline), a stale cached copy is used.
 
-**Try it:** `node test/denode.js` (or ▶ in Code App). It loads the real `js/text.js`, which imports js-yaml and showdown over https. A second run should work offline.
+**Try it:** `node bin/build.js` (or ▶ in Code App). It loads the real `js/text.js`, which imports js-yaml and showdown over https. A second run should work offline.
 
-**Cache location:**
-- Default: `~/.cache/denode/`, shared by every repo on the machine.
-- Code App: its home dir may not be writable or may not persist. The fallback would be a repo-local `.cache/denode/`, gitignored. Needs testing.
+**Cache location:** `~/.cache/denode/`, shared by every repo on the machine. Works in Code App, too: the build
+there succeeds, and the hooks fail if they can't write the cache. (If it ever doesn't, the fallback would be a
+repo-local `.cache/denode/`, gitignored.)
 
 
 ## 3. One file for both: the script registers the hooks itself
@@ -159,6 +159,24 @@ A reusable file for any repo, which could grow into its own small project. It wo
 - **First run needs the network.** The bootstrap's own fetch has no cache until it keeps one.
 - **Host the hooks as a plain static file.** esm.sh-style mirrors may rewrite the module.
 - **Pin it to an exact version.** Every Node run executes code from that URL.
+
+**Package idea: `deno-polyfill` (or `denode`)**
+- **Names:** `deno-polyfill` was free on npm (2026-10-13). `denode` is taken by an old 2017 debugger
+  (steelbrain, v1.10.5), but still a fine *project* name — esp. w/ the extras (https imports + cache).
+- **It's really a "ponyfill":** it *exports* `Deno` instead of setting the global, so libs' `globalThis.Deno`
+  checks don't get fooled. `deno-polyfill` is what people search for, though. A `deno-polyfill/global` entry
+  could set the global, for the classic polyfill behavior.
+- **Ship the hooks in it, too:** `deno-polyfill/register` registers `https-hooks.js`, the same pattern as `tsx`:
+  `node --import deno-polyfill/register script.js`, or in-script (section 3): `await import('deno-polyfill/register')`.
+- **Node gets it from npm**, not over https: `npm i deno-polyfill`, then `import { Deno } from 'deno-polyfill'`.
+  An https import of it would need the very hooks it ships (chicken-and-egg, above).
+- **Deno side:** esm.sh-style mirrors build npm packages for *browsers* by default, so a package of `node:fs`
+  imports may not load cleanly from `esm.ext.archive.org`. Serve its files raw (`?raw`) or as plain static files.
+- **Why another one?** Small and grows as needed; https imports w/ a cache; runs on iOS Node (no WebAssembly,
+  so `node:https`, not `fetch()`).
+- **Prior art to read first:** Deno's own `@deno/shim-deno` (repo `denoland/node_deno_shims`, MIT; latest 0.19.2,
+  2024-06-06; deps `which` + `@deno/shim-deno-test`; ESM + CJS builds). Its supported-API list is the generated
+  `packages/shim-deno/PROGRESS.md`. Its readme doesn't say global vs. export.
 
 **Each repo then needs** only its scripts, each starting with the 4-line register guard (section 3) — or the `data:` URL bootstrap.
 
