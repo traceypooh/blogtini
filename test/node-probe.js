@@ -22,10 +22,19 @@ const mod = await import('node:module')
 await step('module.register', () => typeof mod.register)
 await step('module.registerHooks', () => typeof mod.registerHooks)
 await step('worker_threads', async () => typeof (await import('node:worker_threads')).Worker)
-await step('fetch', () => typeof fetch)
+await step('WebAssembly', () => typeof WebAssembly) // Node 18's fetch() needs it
 await step('local ESM import (bin/deno.js)', async () => Object.keys(await import('../bin/deno.js')))
 await step('config.yml here', async () => (await import('node:fs')).existsSync('config.yml'))
-await step('fetch js-yaml', async () => (await fetch('https://esm.ext.archive.org/js-yaml@4.1.0')).status)
+await step('https.get js-yaml', async () => {
+  const https = await import('node:https')
+  const url = 'https://esm.ext.archive.org/js-yaml@4.1.0'
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      res.resume()
+      resolve(res.statusCode)
+    }).on('error', reject)
+  })
+})
 
 if (await step('register hooks', () => mod.register('../bin/https-hooks.js', import.meta.url))) {
   // hooks run on a worker thread -- a hang here (no more output) points at that
@@ -34,4 +43,7 @@ if (await step('register hooks', () => mod.register('../bin/https-hooks.js', imp
   await step('import js/text.js', async () => Object.keys(await import('../js/text.js')))
   clearTimeout(timer)
 }
+// last, since w/o WebAssembly this crashed node in Code App
+if (typeof WebAssembly !== 'undefined')
+  await step('fetch js-yaml', async () => (await fetch('https://esm.ext.archive.org/js-yaml@4.1.0')).status)
 say('done')

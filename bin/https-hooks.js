@@ -11,6 +11,7 @@
 */
 import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import https from 'node:https'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -51,9 +52,7 @@ async function fetch_cached(url) {
   } catch {}
 
   try {
-    const res = await fetch(url)
-    if (!res.ok) throw Error(`HTTP ${res.status} ${url}`)
-    const source = await res.text()
+    const source = await get(url)
     mkdirSync(CACHE_DIR, { recursive: true })
     writeFileSync(file, source)
     return source
@@ -65,4 +64,33 @@ async function fetch_cached(url) {
     } catch {}
     throw err
   }
+}
+
+
+/**
+ * GETs `url` w/ `node:https`, following redirects.  Not `fetch()`: Node 18's is undici, whose http parser
+ * is WebAssembly -- which iOS Node (no JIT, eg: Code App) doesn't have.
+ * @returns {Promise<string>} the response body
+ */
+function get(url, redirects = 5) {
+  return new Promise((done, reject) => {
+    https.get(url, (res) => {
+      const { statusCode, headers } = res
+      if (statusCode >= 300 && statusCode < 400 && headers.location && redirects) {
+        res.resume()
+        done(get(new URL(headers.location, url).href, redirects - 1))
+        return
+      }
+      if (statusCode !== 200) {
+        res.resume()
+        reject(Error(`HTTP ${statusCode} ${url}`))
+        return
+      }
+      res.setEncoding('utf8')
+      let body = ''
+      res.on('data', (chunk) => { body += chunk })
+      res.on('end', () => done(body))
+      res.on('error', reject)
+    }).on('error', reject)
+  })
 }
