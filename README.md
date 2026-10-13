@@ -9,23 +9,27 @@ Site live at:
 - https://traceypooh.github.io/blogtini/
 
 ## Build (optional)
-The [bin/build](bin/build) step ([bin/build.js](bin/build.js), needs only [deno](https://deno.com)) makes your site
-better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
+The [bin/build](bin/build) step ([bin/build.js](bin/build.js), runs on [deno](https://deno.com) *or* node 18.19+)
+makes your site better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
 It writes:
 - `index.xml` -- RSS feed of every post & page.  Also your sitemap and the client's content/search index.
-- a tiny head line atop each post (title, image, and a style that shows the text even w/o JS)
 - `comments/` JSON files
+- with `--seo`: a tiny head line atop each post (title, image, and a style that shows the text even w/o JS),
+  and `robots.txt`
 
-Our GitHub Action runs it for you on each push.  To run it locally, from the top of your site repo:
+Our GitHub Action runs it for you on each push -- with `--seo`, for the live site.
+Locally, the default (`index.xml` & comments) is usually all you want: no head lines to `git checkout` (revert) afterwards.
+From the top of your site repo:
 ```sh
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
   --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
 ```
 or, if you have a blogtini checkout next to your site repo:
 ```sh
-../blogtini/bin/build
+../blogtini/bin/build            # deno
+node ../blogtini/bin/build.js    # node -- or open bin/build.js in iOS Code App & press ▶
 ```
-(In this blogtini repo itself, it's just `./bin/build`.)
+(In this blogtini repo itself, it's just `./bin/build` or `node bin/build.js`.)  Add `--seo` for the full build.
 
 ## Hooks
 Whenever someone comments on your site, we run a small script (just the comments part of the build).

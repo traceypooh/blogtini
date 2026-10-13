@@ -2,9 +2,10 @@
 
 **Status:**
 - **Done:** [bin/https-hooks.js](bin/https-hooks.js) works on Node from the Mac CLI (2026-10-11, via `test/denode.js`).
-- **Done:** `bin/build.js` runs on both Deno and Node (2026-10-12), via [bin/deno.js](bin/deno.js) (option B below) and the Node entry file [bin/build-node.js](bin/build-node.js). Deno and Node write byte-identical output on the Mac. This includes Node run with `--no-experimental-detect-module`, standing in for Node 18.
-- **Trying out:** keeping `Deno.*` code via an *exported* (not global) `Deno`: `import { Deno } from './deno.js'`. On Deno it's the real `Deno`; on Node it's a small `node:*` shim. Porting to plain `node:*` (option A, section 1) was also built and verified, and is the fallback if the shim gets annoying.
-- **Still to test:** Code App's real Node 18 (▶ on `bin/build-node.js`).
+- **Done:** `bin/build.js` runs on both Deno and Node (2026-10-12), via [bin/deno.js](bin/deno.js) (option B below). Deno and Node write byte-identical output on the Mac. This includes Node run with `--no-experimental-detect-module`, standing in for Node 18.
+- **Done:** Code App's real Node 18.19: ▶ on the build ran the full build (2026-10-12).
+- **Chosen:** keeping `Deno.*` code via an *exported* (not global) `Deno`: `import { Deno } from './deno.js'`. On Deno it's the real `Deno`; on Node it's a small `node:*` shim. Porting to plain `node:*` (option A, section 1) was also built and verified, and is the fallback if the shim gets annoying.
+- **2026-10-13:** no more separate Node entry file. `build.js` registers the hooks itself (section 3).
 
 **Why:**
 - Deno's future is uncertain.
@@ -14,9 +15,9 @@
 **The general idea, for any repo with Deno scripts:**
 1. Use `node:` built-ins (`node:fs`, `node:process`, …) instead of `Deno.*`. Deno supports `node:` imports natively, so this is one code path with no `if (globalThis.Deno)` branches.
 2. Keep importing ES modules from https URLs (eg: `https://esm.ext.archive.org/js-yaml@4.1.0`), the same way browsers and Deno do. Node can't do that natively, so a small **loader hook** fetches them, with a **local cache** for repeat and offline runs.
-3. Node gets one tiny **entry file** that registers the hook, then dynamically imports the real script. Deno keeps running the script directly.
+3. The script **registers the hook itself**, on Node only, then loads its https imports with `await import()`. Same file for both.
 
-Then `node bin/build-node.js` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
+Then `node bin/build.js` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
 
 
 ## 1. `Deno.*` → `node:*`
@@ -54,20 +55,68 @@ Node's [module customization hooks](https://nodejs.org/api/module.html#customiza
 - Code App: its home dir may not be writable or may not persist. The fallback would be a repo-local `.cache/denode/`, gitignored. Needs testing.
 
 
-## 3. The Node entry file: `bin/build-node.js`
+## 3. One file for both: the script registers the hooks itself
+
+The catch: **static** imports resolve before any code in the file runs. So on Node, a static https import
+(or a static import of a local file that has one) fails before the script could register the hooks.
+
+The rule: **static imports only for files Node resolves natively** (`node:*`, and local files whose own
+imports are only `node:*`). Everything else comes via `await import()`, *after* the guard:
 
 ```js
-// Node entry for `build.js` -- `deno run … build.js` doesn't need this.
-// Static imports resolve before any code runs, so: register the hooks first, then import dynamically.
+import { Deno } from './deno.js'               // only node:* inside -- fine statically, on both
+
+if (!globalThis.Deno) {                         // Node (deno.js never sets the global)
+  const { register } = await import('node:module')
+  register('./https-hooks.js', import.meta.url)
+}
+const { default: yml } = await import('https://esm.ext.archive.org/js-yaml@4.1.0')
+const { markdown_parse, markdown_to_html } = await import('../js/text.js')   // has https imports
+```
+
+- **Detecting Node:** `globalThis.Deno` alone is enough. `deno.js` deliberately doesn't set the global, and inside
+  the script the name `Deno` is the *imported* binding, so test `globalThis` explicitly.
+- **Deno is unchanged:** top-level `await import()` works there, `--allow-import=…` covers dynamic imports too, and
+  the register branch never runs.
+- **Mac/Unix/CI:** `node bin/build.js`, with no flags. **Code App:** open `bin/build.js`, press ▶.
+- **Cost:** a couple of static imports become dynamic, which linters and editors' jump-to-definition handle less nicely.
+- **Alternative:** keep the script pristine, and run it via a small Node entry file (below).
+
+### Alternative: keep a Deno script pristine, w/ a Node entry file
+For a script whose top you'd rather not touch, eg: a Deno tool w/ 10–20 static imports (https ones included).
+The script stays as-is (except, eventually, `import { Deno } from './deno.js'` — see below). A tiny entry file
+registers the hooks *first*, then dynamically imports the script, so its static imports go through the hooks:
+
+```js
+// bin/tool-node.js -- Node entry for tool.js.  `deno run … tool.js` doesn't need this.
 import { register } from 'node:module'
 
 register('./https-hooks.js', import.meta.url)
-await import('./build.js')
+await import('./tool.js')
 ```
+(This is how `bin/build.js` first ran on Node, as `bin/build-node.js`, before it registered the hooks itself.)
 
-- **Mac/Unix/CI:** `node bin/build-node.js`, with no flags.
-- **Code App:** open `bin/build-node.js`, press ▶.
-- **Alternative to an entry file:** `node --import ./bin/https-hooks-register.js bin/build.js`. That's fine on a CLI but impossible with ▶, so the entry file is the general solution.
+- run: `node bin/tool-node.js [args]` — the script sees the args as usual (`Deno.args` / `process.argv.slice(2)`)
+- Code App: open the entry file, press ▶ — so it needs one entry file per script (▶ can't pass args)
+- `Deno.*` in the script: it still needs a `Deno` on Node. Either `import { Deno } from './deno.js'` (the one-line
+  change), or have the entry file set the global before importing:
+  `globalThis.Deno ??= (await import('./deno.js')).Deno` — but then `globalThis.Deno` checks anywhere (the
+  script, its libs) think they're on Deno. Check `Deno.denode` to tell.
+- on a CLI only, no entry file at all: `node --import ./bin/https-hooks-register.js script.js`, where that file is
+  just the `register()` line (impossible with ▶)
+
+**Someday: one generic runner** for any script, instead of an entry file per script:
+```js
+// bin/denode-run.js -- eg:  node bin/denode-run.js bin/build.js --seo
+import { register } from 'node:module'
+import process from 'node:process'
+import { pathToFileURL } from 'node:url'
+
+register('./https-hooks.js', import.meta.url)
+const [script] = process.argv.splice(2, 1) // drop it, so the script sees just its own args at argv[2…]
+await import(pathToFileURL(script).href)
+```
+Untested sketch. Do the `splice()` before anything imports `deno.js`: its `args` is read once, when it loads.
 
 
 ## Gotchas
@@ -111,7 +160,7 @@ A reusable file for any repo, which could grow into its own small project. It wo
 - **Host the hooks as a plain static file.** esm.sh-style mirrors may rewrite the module.
 - **Pin it to an exact version.** Every Node run executes code from that URL.
 
-**Each repo then needs** only its scripts, plus a 3–4 line Node entry file (or the `data:` URL bootstrap).
+**Each repo then needs** only its scripts, each starting with the 4-line register guard (section 3) — or the `data:` URL bootstrap.
 
 
 ## blogtini specifics

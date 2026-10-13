@@ -2,10 +2,13 @@
   Node module hooks: lets Node `import` ES modules from https urls (like browsers & Deno do),
   w/ a local cache -- so the same script runs on Deno *and* Node.  See DENODE.md.
 
-  Register them before importing anything over https, eg: in an entry file:
-    import { register } from 'node:module'
-    register('./https-hooks.js', import.meta.url)
-    await import('./build.js')
+  Register them before importing anything over https, eg: atop a script (see `build.js`):
+    if (!globalThis.Deno) {
+      const { register } = await import('node:module')
+      register('./https-hooks.js', import.meta.url)
+    }
+    const { default: yml } = await import('https://esm.ext.archive.org/js-yaml@4.1.0')
+  (static imports resolve before any code runs -- so anything w/ https imports must be `await import()`ed)
 
   Needs Node 18.19+ / 20.6+ (`module.register()`).
 */

@@ -4,23 +4,35 @@
   link previews, crawlers, RSS readers, and people w/o JS.
 
   Run from the top of your site repo (where `config.yml` is), eg:
-    ../blogtini/bin/build            # everything
+    ../blogtini/bin/build            # index.xml & comments -- what local dev needs
+    ../blogtini/bin/build --seo      # also: each post's head line & robots.txt (GitHub Actions does this)
     ../blogtini/bin/build comments   # just the comments part (git hooks use this)
 
   Writes:
     index.xml             RSS feed of every post & page.  Also our sitemap and the client's content/search index.
-    robots.txt            (only if missing) pointing crawlers to index.xml
-    <post>/index.html     prepends one head line: title, og:image, and the fail-open style
     comments/index.txt, comments/<post>/index.json
+  and w/ `--seo`:
+    <post>/index.html     prepends one head line: title, og:image, and the fail-open style
+    robots.txt            (only if missing) pointing crawlers to index.xml
 
   Idempotent: rerunning replaces its own head lines, so running twice changes nothing.
   See V2.md for the why of all of it.
 
-  Runs on Deno *and* Node (`node bin/build-node.js`) -- `Deno` comes from `deno.js`.  See DENODE.md.
+  Runs on Deno *and* Node, eg:  node ../blogtini/bin/build.js  (or ▶ in iOS Code App).  See DENODE.md:
+  - `Deno` comes from `deno.js` (the real one on Deno; a small `node:*` stand-in on Node)
+  - on Node, https imports need our hooks registered *first* -- and static imports resolve before any
+    code runs.  So: static imports only for `node:*`-only files; everything else via `await import()`.
 */
-import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
 import { Deno } from './deno.js'
-import { markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS } from '../js/text.js'
+
+if (!globalThis.Deno) { // Node (`deno.js` never sets the global)
+  const { register } = await import('node:module')
+  register('./https-hooks.js', import.meta.url)
+}
+const { default: yml } = await import('https://esm.ext.archive.org/js-yaml@4.1.0')
+const {
+  markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS,
+} = await import('../js/text.js')
 
 // hides body for up to 3s (so no flash of raw markdown before JS renders), then shows it regardless.
 // `pre-wrap` so a no-JS reader still sees the markdown's line breaks.  JS undoes both: `reveal()` in index.js
@@ -113,9 +125,9 @@ function description(fm, body) {
 
 
 /**
- * Prepends the head line to each post/page and returns the feed items.
+ * Returns the feed items.  W/ `seo`, also prepends the head line to each post/page.
  */
-function posts(cfg, site) {
+function posts(cfg, site, seo) {
   const items = []
   for (const path of find_files()) {
     let text = Deno.readTextFileSync(path)
@@ -136,13 +148,15 @@ function posts(cfg, site) {
     }
 
     const img = featured_url(fm, site)
-    const og_image = img.replace(/#(bottom|top)$/, '') || (cfg.img_site ? `${site}${cfg.img_site}` : '')
-    const head = '<!DOCTYPE html>'.concat(
-      `<title>${esc(fm.title || cfg.title || 'blogtini')}</title>`,
-      og_image ? `<meta property="og:image" content="${esc(og_image)}">` : '',
-      STYLE,
-    )
-    write(path, `${head}\n${text}`)
+    if (seo) {
+      const og_image = img.replace(/#(bottom|top)$/, '') || (cfg.img_site ? `${site}${cfg.img_site}` : '')
+      const head = '<!DOCTYPE html>'.concat(
+        `<title>${esc(fm.title || cfg.title || 'blogtini')}</title>`,
+        og_image ? `<meta property="og:image" content="${esc(og_image)}">` : '',
+        STYLE,
+      )
+      write(path, `${head}\n${text}`)
+    }
 
     const date = new Date(fm.date || fm.created_at || '')
     if (isNaN(date)) {
@@ -242,14 +256,15 @@ function main() {
   comments()
   if (Deno.args.includes('comments')) return
 
+  const seo = Deno.args.includes('--seo')
   const cfg = yml.load(Deno.readTextFileSync('config.yml')) ?? {}
   const site = site_url(cfg)
 
-  const items = posts(cfg, site)
+  const items = posts(cfg, site, seo)
   write('index.xml', rss(cfg, site, items))
   log(items.length, 'posts & pages in index.xml')
 
-  if (!exists('robots.txt'))
+  if (seo && !exists('robots.txt'))
     write('robots.txt', `Sitemap: ${site}index.xml\n`)
 }
 
