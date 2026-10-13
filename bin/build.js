@@ -15,8 +15,11 @@
 
   Idempotent: rerunning replaces its own head lines, so running twice changes nothing.
   See V2.md for the why of all of it.
+
+  Runs on Deno *and* Node (`node bin/build-node.js`) -- `Deno` comes from `deno.js`.  See DENODE.md.
 */
 import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
+import { Deno } from './deno.js'
 import { markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS } from '../js/text.js'
 
 // hides body for up to 3s (so no flash of raw markdown before JS renders), then shows it regardless.

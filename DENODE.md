@@ -1,8 +1,10 @@
 # DENODE: one JS codebase that runs on Deno *and* Node
 
 **Status:**
-- **Done:** [bin/https-hooks.mjs](bin/https-hooks.mjs) works on Node from the Mac CLI (2026-10-11, via `test/denode.mjs`).
-- **Still sketch:** porting `bin/build.js`, the Node entry file, and Code App's Node 18.
+- **Done:** [bin/https-hooks.js](bin/https-hooks.js) works on Node from the Mac CLI (2026-10-11, via `test/denode.js`).
+- **Done:** `bin/build.js` runs on both Deno and Node (2026-10-12), via [bin/deno.js](bin/deno.js) (option B below) and the Node entry file [bin/build-node.js](bin/build-node.js). Deno and Node write byte-identical output on the Mac. This includes Node run with `--no-experimental-detect-module`, standing in for Node 18.
+- **Trying out:** keeping `Deno.*` code via an *exported* (not global) `Deno`: `import { Deno } from './deno.js'`. On Deno it's the real `Deno`; on Node it's a small `node:*` shim. Porting to plain `node:*` (option A, section 1) was also built and verified, and is the fallback if the shim gets annoying.
+- **Still to test:** Code App's real Node 18 (▶ on `bin/build-node.js`).
 
 **Why:**
 - Deno's future is uncertain.
@@ -14,7 +16,7 @@
 2. Keep importing ES modules from https URLs (eg: `https://esm.ext.archive.org/js-yaml@4.1.0`), the same way browsers and Deno do. Node can't do that natively, so a small **loader hook** fetches them, with a **local cache** for repeat and offline runs.
 3. Node gets one tiny **entry file** that registers the hook, then dynamically imports the real script. Deno keeps running the script directly.
 
-Then `node bin/build-node.mjs` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
+Then `node bin/build-node.js` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
 
 
 ## 1. `Deno.*` → `node:*`
@@ -32,11 +34,11 @@ Then `node bin/build-node.mjs` works from a Mac/Unix CLI, from CI, and from Code
 Deno's `--allow-read` / `--allow-write` / `--allow-env` flags still apply when Deno runs the script. Node simply doesn't check them.
 
 
-## 2. The loader hook, with a cache: `bin/https-hooks.mjs`
+## 2. The loader hook, with a cache: `bin/https-hooks.js`
 
 Node's [module customization hooks](https://nodejs.org/api/module.html#customization-hooks) (`module.register()`) are available in Node 20.6+ and were backported to 18.19, which is the version Code App ships. They replace the removed `--experimental-network-imports` flag, and Node's docs include an import-from-HTTPS example.
 
-**The hooks:** [bin/https-hooks.mjs](bin/https-hooks.mjs), about 50 lines with no dependencies, so it can be copied into other repos as-is.
+**The hooks:** [bin/https-hooks.js](bin/https-hooks.js), about 50 lines with no dependencies, so it can be copied into other repos as-is.
 - `resolve`: passes `https://` imports through. Relative imports inside an https module (eg: esm.sh-style `/js-yaml@4.1.0/es2022/js-yaml.mjs`) resolve against that module's URL.
 - `load`: fetches https modules through the cache.
 
@@ -45,32 +47,33 @@ Node's [module customization hooks](https://nodejs.org/api/module.html#customiza
 - Anything else (`pkg`, `pkg@1`) is re-fetched after `MAX_AGE_DAYS` (30).
 - If a fetch fails (eg: offline), a stale cached copy is used.
 
-**Try it:** `node test/denode.mjs` (or ▶ in Code App). It loads the real `js/text.js`, which imports js-yaml and showdown over https. A second run should work offline.
+**Try it:** `node test/denode.js` (or ▶ in Code App). It loads the real `js/text.js`, which imports js-yaml and showdown over https. A second run should work offline.
 
 **Cache location:**
 - Default: `~/.cache/denode/`, shared by every repo on the machine.
 - Code App: its home dir may not be writable or may not persist. The fallback would be a repo-local `.cache/denode/`, gitignored. Needs testing.
 
 
-## 3. The Node entry file: `bin/build-node.mjs`
+## 3. The Node entry file: `bin/build-node.js`
 
 ```js
 // Node entry for `build.js` -- `deno run … build.js` doesn't need this.
 // Static imports resolve before any code runs, so: register the hooks first, then import dynamically.
 import { register } from 'node:module'
 
-register('./https-hooks.mjs', import.meta.url)
+register('./https-hooks.js', import.meta.url)
 await import('./build.js')
 ```
 
-- **Mac/Unix/CI:** `node bin/build-node.mjs`, with no flags.
-- **Code App:** open `bin/build-node.mjs`, press ▶.
-- **Alternative to an entry file:** `node --import ./bin/https-hooks-register.mjs bin/build.js`. That's fine on a CLI but impossible with ▶, so the entry file is the general solution.
+- **Mac/Unix/CI:** `node bin/build-node.js`, with no flags.
+- **Code App:** open `bin/build-node.js`, press ▶.
+- **Alternative to an entry file:** `node --import ./bin/https-hooks-register.js bin/build.js`. That's fine on a CLI but impossible with ▶, so the entry file is the general solution.
 
 
 ## Gotchas
 
-- **`.js` must load as an ES module.** Node 18 treats a `.js` file as CommonJS unless the nearest `package.json` says `"type": "module"`. Newer Node detects ESM syntax automatically, but Code App's 18.19 doesn't. Fix: add a tiny `bin/package.json` containing `{ "type": "module" }`, or rename the files to `.mjs`.
+- **`.js` must load as an ES module.** Node 18 treats a `.js` file as CommonJS unless the nearest `package.json` says `"type": "module"`. Newer Node detects ESM syntax automatically, but Code App's 18.19 doesn't. Fix: a top-level `package.json` containing `{ "type": "module" }`. Use `.js`, not `.mjs`, for every file, because Code App's ▶ wants `.js`.
+- **`module.register()` is deprecated in Node 26** (DEP0205, a runtime warning) in favor of `module.registerHooks()`. But `registerHooks()` hooks are synchronous, so they can't `await fetch()`, and Node 18 doesn't have `registerHooks()`. Keep `register()` for now. Before it's removed, a sync fetch is needed, eg: a worker plus `Atomics.wait`, or `execFileSync('curl')`.
 - **Shebang lines are fine.** `#!/usr/bin/env -S deno run …` at the top of `build.js` is valid in Node, since ESM allows a hashbang first line.
 - **Redirects:** if an https module URL redirects, its relative imports should resolve against the *final* URL (`res.url`), not the requested one. esm.sh-style mirrors mostly use stub modules rather than redirects, but `load` should handle redirects if they come up.
 - **Only ES modules come over https.** `format: 'module'` is assumed. JSON, wasm and CommonJS over https aren't handled, and esm.sh-style mirrors serve ESM anyway.
@@ -87,7 +90,7 @@ await import('./build.js')
 ## Future: a general `denode.js`
 
 A reusable file for any repo, which could grow into its own small project. It would hold:
-- **The https hooks with cache** (today's [bin/https-hooks.mjs](bin/https-hooks.mjs)).
+- **The https hooks with cache** (today's [bin/https-hooks.js](bin/https-hooks.js)).
 - **An optional `Deno` shim for Node:** `globalThis.Deno ??= { readTextFileSync, writeTextFileSync, readDirSync, statSync, env, args, exit, … }`, each a few lines over `node:fs` / `node:process`. It grows one call at a time, as scripts need them.
 - **A `run(script)` helper:** registers the hooks, installs the shim, then `await import(script)`.
 

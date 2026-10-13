@@ -4,7 +4,7 @@
 
   Register them before importing anything over https, eg: in an entry file:
     import { register } from 'node:module'
-    register('./https-hooks.mjs', import.meta.url)
+    register('./https-hooks.js', import.meta.url)
     await import('./build.js')
 
   Needs Node 18.19+ / 20.6+ (`module.register()`).
