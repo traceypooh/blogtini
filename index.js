@@ -6,7 +6,7 @@ import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
 
 // adds header click actions, etc.
 
-import search_setup from './js/search-setup.js'
+import search_setup, { btbody_root } from './js/search-setup.js'
 import {
   markdown_to_html, summarize_markdown, markdown_parse, krsort, SKIP_DIRS,
 } from './js/text.js'
@@ -845,31 +845,38 @@ function dark_mode() {
 }
 
 function add_interactivity() {
-  const btbody = document.querySelector('bt-body')?.shadowRoot
-  if (!btbody) {
+  if (!btbody_root()) {
     setTimeout(add_interactivity, 250) // xxx
     return
   }
 
+  // one listener for the page -- so the theme menu keeps working after each theme switch re-renders it
   state.theme_change_number = 0
-  btbody.querySelectorAll('#theme-menu a').forEach((e) => {
-    e.addEventListener('click', async (evt) => {
-      const theme = evt.target.innerText.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
-      evt.preventDefault()
-      if (!theme)
-        return false
+  document.addEventListener('click', async (evt) => {
+    const link = evt.composedPath().find((e) => e.matches?.('#theme-menu a'))
+    if (!link)
+      return
 
-      log({ theme })
+    evt.preventDefault()
+    const theme = link.textContent.trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
+    if (!theme)
+      return
 
-      state.theme_change_number += 1
-      // (a variable, not an inline template, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it)
-      const url = theme_url(theme)
-      await import(`${url}${url.includes('?') ? '&' : '?'}${state.theme_change_number}`)
+    log({ theme })
 
-      bt_body()
+    state.theme_change_number += 1
+    // (a variable, not an inline template, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it)
+    const url = theme_url(theme)
 
-      return false
-    })
+    // swap in the new theme's light DOM css
+    document.querySelectorAll('link[data-theme-css]').forEach((e) => e.remove())
+    add_css(url.replace(/\?.*$/, '').replace(/[^/]+\.js$/, 'index.css'))
+
+    await import(`${url}${url.includes('?') ? '&' : '?'}${state.theme_change_number}`)
+
+    bt_body()
+
+    search_setup(STORAGE.docs, cfg) // the new theme's search box
   })
 
   search_setup(STORAGE.docs, cfg)
@@ -882,6 +889,7 @@ function add_css(file) {
   e.type = 'text/css'
   e.rel = 'stylesheet'
   e.href = file
+  e.dataset.themeCss = '' // so a theme switch can swap it out
   head.appendChild(e)
 }
 
@@ -1017,4 +1025,5 @@ export {
   fetcher,
   path_to_theme_url,
   reveal,
+  btbody_root,
 }

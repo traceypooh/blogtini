@@ -12,32 +12,47 @@ let $searchResults     // The element on the page holding search results
 let $searchInput       // The search box element
 let site_cfg           // config from main index.js
 const resultDetails = {} // Will hold the data for the search results (titles and summaries)
+let closer_added = false
+
+/**
+ * Returns where a theme's `<bt-body>` keeps its markup: its shadow root (eg: future-imperfect),
+ * or the element itself, for light DOM themes (eg: editorial).  Null until the theme has defined it.
+ */
+function btbody_root() {
+  const btbody = document.querySelector('bt-body')
+  return btbody?.shadowRoot ?? (btbody?.matches(':defined') ? btbody : null)
+}
 
 function search_setup(docs, cfg) {
   site_cfg = cfg
   for (const doc of docs)
     resultDetails[doc.url] = doc
 
-  // Click anywhere outside a flyout to close
-  document.addEventListener('click', (e) => {
-    const windowWidth = globalThis.innerWidth
-    if (e.clientX < windowWidth - 177) {
-      const btbod = document.querySelector('bt-body')?.shadowRoot
-      if (btbod) {
-        // esp. when search is open, additionally require the click be below bottom of search input
-        const search_bottom = btbod.querySelector('#search-input')?.getBoundingClientRect()?.bottom
-        if (e.clientY > search_bottom) {
-          btbod.querySelector('#wrapper')?.classList.remove('overlay')
-          btbod.querySelectorAll('.menu.active').forEach((o) => o.classList.remove('active'))
+  // Click anywhere outside a flyout to close.  (Once -- we get called again after each theme switch)
+  if (!closer_added) {
+    closer_added = true
+    document.addEventListener('click', (e) => {
+      const windowWidth = globalThis.innerWidth
+      if (e.clientX < windowWidth - 177) {
+        const btbod = btbody_root()
+        if (btbod) {
+          // esp. when search is open, additionally require the click be below bottom of search input
+          const search_bottom = btbod.querySelector('#search-input')?.getBoundingClientRect()?.bottom
+          if (e.clientY > search_bottom) {
+            btbod.querySelector('#wrapper')?.classList.remove('overlay')
+            btbod.querySelectorAll('.menu.active').forEach((o) => o.classList.remove('active'))
+          }
         }
       }
-    }
-  })
+    })
+  }
 
   // Get dom objects for the elements we'll be interacting with
-  const btbody = document.querySelector('bt-body')?.shadowRoot
+  const btbody = btbody_root()
   $searchResults = btbody?.querySelector('#search-results')
   $searchInput   = btbody?.querySelector('#search-input')
+  if (!$searchInput)
+    return // eg: `header.search: false` in config.yml
 
   // Build the index so Lunr can search it.  The `ref` field will hold the URL
   // to the page/post.  title, excerpt, and body will be fields searched.
@@ -119,3 +134,4 @@ function search(query) {
 }
 
 export default search_setup
+export { btbody_root }

@@ -108,6 +108,7 @@ customElements.define('bt-body', class extends LitElement {
     <menu id="theme-menu" class="flyout-menu menu">
       <h1>Choose a theme</h1>
       <a href="#"><p>  future imperfect    </a>
+      <a href="#"><p>  editorial           </a>
       <a href="#"><p>  grid                </a>
     </menu>`
     : ''}
