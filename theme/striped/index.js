@@ -11,6 +11,7 @@
 
 import {
   cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, datetime, imgurl, reveal,
+  all_posts,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
@@ -113,6 +114,7 @@ customElements.define('bt-body', class extends HTMLElement {
     : ''}
 
   ${sidebar_recent(recent)}
+  ${sidebar_calendar()}
   ${sidebar_categories(categories)}
 
   ${Object.keys(tags).length
@@ -149,6 +151,7 @@ customElements.define('bt-body', class extends HTMLElement {
 
     this.querySelector('.box.search form')?.addEventListener('submit', (evt) => evt.preventDefault())
     scheme_toggles(this)
+    calendar_setup(this)
     setup(this)
 
     // the content's elements render right after this -- then show the page
@@ -172,6 +175,115 @@ function sidebar_recent(recent) {
     ${more ? `<li><a href="${esc(cfg.view_more_posts_link || `${state.top_page}#post${cfg.sidebar.post_amount}`)}">See more &hellip;</a></li>` : ''}
   </ul>
 </section>`
+}
+
+/** Returns a post date's day, eg: '2014-07-14' -- the same day `datetime()` shows */
+function post_day(date) {
+  const d = new Date(date)
+  if (isNaN(d))
+    return ''
+  // front matter dates w/o a time arrive as UTC midnight -- that's their day.  Others: local time
+  if ((typeof date === 'string' && date.length <= 10) || d.toISOString().endsWith('T00:00:00.000Z'))
+    return d.toISOString().slice(0, 10)
+  const pad = (n) => `${n}`.padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+/**
+ * Returns the inside of Striped's sidebar calendar, for a month: days w/ posts link to them.
+ * Its caption's arrows go to the prior/next month w/ posts.
+ *
+ * @param {string} ym  eg: '2014-07'
+ * @param {Object<string, Array>} by_day  eg: { '2014-07-14': [post, ...] }
+ */
+function calendar_table(ym, by_day) {
+  const [year, month] = ym.split('-').map(Number)
+  const lead = (new Date(year, month - 1, 1).getDay() + 6) % 7 // days before the 1st, weeks start Monday
+  const ndays = new Date(year, month, 0).getDate()
+  const now = new Date()
+  const today = `${now.getFullYear()}-${`${now.getMonth() + 1}`.padStart(2, '0')}-${`${now.getDate()}`.padStart(2, '0')}`
+
+  // months w/ posts, for the arrows
+  const months = [...new Set(Object.keys(by_day).map((e) => e.slice(0, 7)))].sort()
+  const prior = months.filter((e) => e < ym).pop()
+  const next = months.find((e) => e > ym)
+
+  const cells = lead ? [`<td colspan="${lead}" class="pad"><span>&nbsp;</span></td>`] : []
+  for (let day = 1; day <= ndays; day++) {
+    const key = `${ym}-${`${day}`.padStart(2, '0')}`
+    const posts = by_day[key] ?? []
+    const title = esc(posts.map((e) => e.title).join(' / '))
+    cells.push(`<td${key === today ? ' class="today"' : ''}>${posts.length
+      ? `<a href="${esc(urlify(posts[0].url))}" title="${title}">${day}</a>`
+      : `<span>${day}</span>`}</td>`)
+  }
+  const trail = (7 - ((lead + ndays) % 7)) % 7
+  if (trail)
+    cells.push(`<td colspan="${trail}" class="pad"><span>&nbsp;</span></td>`)
+
+  // rows of 7 days (a padding cell counts as its colspan)
+  const rows = []
+  let row = []
+  let cols = 0
+  for (const cell of cells) {
+    row.push(cell)
+    cols += Number(cell.match(/colspan="(\d+)"/)?.[1] ?? 1)
+    if (cols % 7 === 0) {
+      rows.push(`<tr>${row.join('')}</tr>`)
+      row = []
+    }
+  }
+
+  const name = new Date(year, month - 1, 1).toLocaleString('en', { month: 'long', year: 'numeric' })
+  const days = [['Monday', 'M'], ['Tuesday', 'T'], ['Wednesday', 'W'], ['Thursday', 'T'], ['Friday', 'F'], ['Saturday', 'S'], ['Sunday', 'S']]
+  return `
+<table>
+  <caption>
+    ${prior ? `<a href="#" class="cal-nav cal-prior" data-ym="${prior}" title="Prior month w/ posts">&lsaquo;</a>` : ''}
+    ${name}
+    ${next ? `<a href="#" class="cal-nav cal-next" data-ym="${next}" title="Next month w/ posts">&rsaquo;</a>` : ''}
+  </caption>
+  <thead><tr>${days.map(([day, abbr]) => `<th scope="col" title="${day}">${abbr}</th>`).join('')}</tr></thead>
+  <tbody>${rows.join('')}</tbody>
+</table>`
+}
+
+/** Returns the posts (not pages) by day, eg: { '2014-07-14': [post, ...] } */
+function posts_by_day() {
+  const by_day = {}
+  for (const post of all_posts()) {
+    const day = post.type === 'post' ? post_day(post.date) : ''
+    if (day)
+      (by_day[day] ||= []).push(post)
+  }
+  return by_day
+}
+
+/** Returns Striped's sidebar calendar: the month of this post -- or else the newest post */
+function sidebar_calendar() {
+  const by_day = posts_by_day()
+  const newest = Object.keys(by_day).sort().pop()
+  if (!newest)
+    return ''
+
+  const self = state.filter_post_url ? url2post(state.filter_post_url) : null
+  const ym = (self?.type === 'post' && post_day(self.date)) || newest
+  return `
+<section class="box calendar">
+  <div class="inner">${calendar_table(ym.slice(0, 7), by_day)}</div>
+</section>`
+}
+
+/** Wires up the calendar's prior/next month arrows (re-renders just the table) */
+function calendar_setup(btbody) {
+  const box = btbody.querySelector('.box.calendar .inner')
+  box?.addEventListener('click', (evt) => {
+    const nav = evt.target.closest('.cal-nav')
+    if (!nav)
+      return
+    evt.preventDefault()
+    box.innerHTML = calendar_table(nav.dataset.ym, posts_by_day())
+  })
 }
 
 function sidebar_categories(categories) {

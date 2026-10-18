@@ -16,6 +16,7 @@ The theme defines those custom elements, and so decides what the page looks like
   - `#search-input` and `#search-results` -- the sitewide search box (optional)
 
 - blogtini's `THEMES` export (in `index.js`) lists the shipped themes -- for each theme's theme picker.
+- blogtini's `all_posts()` export returns every post & page it knows of, newest first (eg: striped's calendar).
 
 Two styles so far:
 
@@ -28,6 +29,7 @@ Two styles so far:
 | `phantom` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `striped` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `forty` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
+| `strata` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -62,8 +64,7 @@ HTML5 UP themes are one global `main.css` + plain markup + a little jQuery.  So 
   else a long line in a code block widens the page.
 - Add its dir name to `THEMES` in blogtini's `index.js` (the theme pickers).
 
-Other HTML5 UP themes that could be next ports:
-- Strata
+Next HTML5 UP themes to port: see [Next ports](#next-ports) below.
 
 
 ## Editorial
@@ -154,13 +155,16 @@ What changed from the HTML5 UP download:
 Mapping:
 - `#content`: each post as a `.post-excerpt` -- title, categories as the subtitle, Striped's date & "stats"
   (reading minutes, number of tags), featured image, summary, "Continue Reading"
-- sidebar: logo (site title), menu + Scheme, search, about, recent posts, categories, tags, theme picker,
-  social icons, copyright
+- sidebar: logo (site title), menu + Scheme, search, about, recent posts, calendar, categories, tags,
+  theme picker, social icons, copyright
+- calendar: the month of the newest post (or, on a post, its month).  Days w/ posts link to them (hover: titles).
+  Its caption's &lsaquo; &rsaquo; go to the prior/next month w/ posts, w/o a page load.  Weeks start Monday, like the original.
 - single post: the same, w/ the whole body, categories & tags, comments
 - pagination: previous / page number / next.  On a post: previous & next post
 
 ### TODO / FIXME
-- [ ] Striped's sidebar calendar isn't ported -- could show the posts in the month of the newest post
+- [x] Striped's sidebar calendar (2026-10-18)
+- [ ] calendar: a day w/ several posts links to the first (the rest are in its hover title)
 - [ ] dark scheme is partial -- like editorial
 - [ ] check phone widths: title bar & slide-out sidebar
 
@@ -189,6 +193,33 @@ Mapping:
 - [ ] banner background is Forty's own `banner.jpg` -- maybe a `config.yml` option for the site's own
 - [ ] Forty is dark already -- its "dark" scheme just deepens the background
 - [ ] check phone widths & the menu overlay
+
+
+## Strata
+Port of https://html5up.net/strata (2026-10-18).
+
+What changed from the HTML5 UP download:
+- `assets/css/main.css`: just its two `@import` lines -- Font Awesome => the shared `theme/html5up/` copy,
+  Google Fonts => a comment.  Otherwise as is.
+  (`images/bg.jpg` & `assets/css/images/overlay.png` are the left panel's background)
+- jQuery `main.js` => vanilla js in `index.js`: footer moves from the left panel to below `#main` (<= 980px),
+  left panel background parallax (wide screens, not touch), `is-preload`.
+  Left out: the image lightbox (poptrox) -- post thumbnails link to their posts instead.
+
+Mapping:
+- fixed left panel: site image as the avatar, site title, intro paragraph, our nav (Strata has none):
+  menu + Scheme, search, theme picker -- then social icons & copyright
+- home page (first page): newest post on top (title, image, summary, Read More), the rest as 2-column "work items"
+  (thumbnail, title, date, summary)
+- "About" section at the bottom, like Strata's "Get In Touch": about, Learn More & Contact | categories, tags
+- single post: title, date, featured image, body, categories & tags, comments
+- prior & next buttons below the posts, or a post
+
+### TODO / FIXME
+- [ ] a lightbox for images in posts (Strata's poptrox did one for its portfolio thumbnails)
+- [ ] the left panel scrolls, if our nav makes it taller than the screen
+- [ ] dark scheme is partial -- like editorial
+- [ ] check phone widths: the panel becomes a top header, footer moves below the posts
 
 
 ## HTML5 UP ports: shared TODO / FIXME

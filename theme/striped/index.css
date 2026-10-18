@@ -74,6 +74,25 @@ bt-body {
   padding: 0;
 }
 
+/* calendar: prior/next month (w/ posts) arrows in its caption */
+.box.calendar caption {
+  position: relative;
+}
+.box.calendar .cal-nav {
+  position: absolute;
+  top: 0;
+  padding: 0 0.6em;
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.25em;
+}
+.box.calendar .cal-prior {
+  left: 0;
+}
+.box.calendar .cal-next {
+  right: 0;
+}
+
 /* search results (made by blogtini's js/search-setup.js) */
 #search-results:empty {
   display: none;

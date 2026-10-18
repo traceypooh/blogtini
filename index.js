@@ -60,6 +60,7 @@ const THEMES = [
   'phantom',
   'striped',
   'forty',
+  'strata',
   'grid',
 ]
 
@@ -1155,6 +1156,14 @@ function url2post(url = '') {
   return STORAGE.docs[url2post_map[url]]
 }
 
+/**
+ * Returns every post & page blogtini knows of, newest first -- eg: for a theme's calendar or archive.
+ * (Don't change them -- they're blogtini's cache)
+ */
+function all_posts() {
+  return STORAGE.docs ?? []
+}
+
 
 if (!globalThis.blogtini_imported) {
   globalThis.blogtini_imported = true // avoid any inadvertent double import
@@ -1178,4 +1187,5 @@ export {
   reveal,
   btbody_root,
   THEMES,
+  all_posts,
 }
