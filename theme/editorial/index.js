@@ -163,13 +163,15 @@ customElements.define('bt-body', class extends HTMLElement {
 
   <div id="sidebar">
     <div class="inner">
-      ${cfg.header.search ? `
+      ${cfg.header.search
+        ? `
       <section id="search" class="alt">
         <form>
           <input type="text" id="search-input" placeholder="Search" autocomplete="off">
         </form>
         <div id="search-results"></div>
-      </section>` : ''}
+      </section>`
+        : ''}
 
       ${sidebar_menu()}
       ${sidebar_recent(recent)}
@@ -218,13 +220,15 @@ function sidebar_menu() {
   <header class="major"><h2>Menu</h2></header>
   <ul>
     ${(cfg.menu?.main ?? []).map((e) => `<li><a href="${esc(navurl(e.url))}">${e.pre ?? ''} ${esc(e.name)}</a></li>`).join('')}
-    ${cfg.header.theme ? `
+    ${cfg.header.theme
+      ? `
     <li>
       <span class="opener"><i class="fas fa-palette"></i> Theme</span>
       <ul id="theme-menu">
         ${THEMES.map((e) => `<li><a href="#">${e}</a></li>`).join('')}
       </ul>
-    </li>` : ''}
+    </li>`
+      : ''}
     <li><a href="#scheme" class="scheme-toggle"><i class="fas fa-lightbulb"></i> Scheme</a></li>
   </ul>
 </nav>`
@@ -251,10 +255,12 @@ function sidebar_recent(recent) {
     </article>`
     }).join('')}
   </div>
-  ${more ? `
+  ${more
+    ? `
   <ul class="actions">
     <li><a href="${esc(cfg.view_more_posts_link || `${state.top_page}#post${cfg.sidebar.post_amount}`)}" class="button">See More</a></li>
-  </ul>` : ''}
+  </ul>`
+    : ''}
 </section>`
 }
 
@@ -469,13 +475,15 @@ customElements.define('bt-posts', class extends HTMLElement {
 
     this.replaceWith(nodes(`
 ${top}
-${posts.length ? `
+${posts.length
+  ? `
 <section>
   <header class="major"><h2>${esc(title)}</h2></header>
   <div class="posts">
     ${posts.map(([url, id]) => card(url, id)).join('')}
   </div>
-</section>` : ''}`))
+</section>`
+  : ''}`))
   }
 })
 
@@ -501,7 +509,9 @@ customElements.define('bt-post-full', class extends HTMLElement {
     }
 
     // (same as future-imperfect)
-    const relative_path = post.url.startsWith(cfg.site_url) ? post.url.slice(cfg.site_url.length) : post.url
+    const relative_path = post.url.startsWith(cfg.site_url)
+      ? post.url.slice(cfg.site_url.length)
+      : post.url
     const comments_entryid = new URL(relative_path, 'https://blogtini.com').pathname.replace(/^\/+/, '').replace(/\/+$/, '')
 
     const taxonomy = [
