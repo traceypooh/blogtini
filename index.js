@@ -50,6 +50,17 @@ const STORAGE = SEARCH.match(/[&?]recache=1/i)
   JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}
 
 /**
+ * The themes shipped alongside this `index.js` (dirs under `theme/`) -- eg: for a theme's theme picker.
+ * Picker links show them w/ spaces, eg: 'future imperfect' -- and map back w/ dashes.
+ */
+const THEMES = [
+  'future-imperfect',
+  'editorial',
+  'massively',
+  'grid',
+]
+
+/**
  * Returns the absolute url of a theme shipped alongside *this* `index.js` --
  * so a site pinning a blogtini version (eg: `blogtini@1.0.5/index.js`) gets that version's theme, too.
  *
@@ -1157,4 +1168,5 @@ export {
   path_to_theme_url,
   reveal,
   btbody_root,
+  THEMES,
 }

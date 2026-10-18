@@ -5,7 +5,7 @@ import {
   css_buttons, css_headers, css_links, css_forms, css_normalize, css_theme, css_fontawesome,
 } from './css.js'
 import {
-  cfg, state, PR, url2post, reveal,
+  cfg, state, PR, url2post, reveal, THEMES,
 } from '../../index.js'
 
 
@@ -107,9 +107,7 @@ customElements.define('bt-body', class extends LitElement {
     ? html`
     <menu id="theme-menu" class="flyout-menu menu">
       <h1>Choose a theme</h1>
-      <a href="#"><p>  future imperfect    </a>
-      <a href="#"><p>  editorial           </a>
-      <a href="#"><p>  grid                </a>
+      ${THEMES.map((e) => html`<a href="#"><p>${e.replace(/-/g, ' ')}</a>`)}
     </menu>`
     : ''}
 </header>

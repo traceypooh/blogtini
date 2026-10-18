@@ -1,0 +1,237 @@
+/*
+  Massively theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ & images/ are the HTML5 UP original (minus its Google Fonts `@import`); below are blogtini additions.
+*/
+@import url(assets/css/main.css);
+
+
+/* self-hosted (no Google Fonts), latin subset */
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Merriweather Light'), local('Merriweather-Light'), url(assets/fonts/merriweather-latin-300-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Merriweather Light Italic'), local('Merriweather-LightItalic'), url(assets/fonts/merriweather-latin-300-italic.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Merriweather Bold'), local('Merriweather-Bold'), url(assets/fonts/merriweather-latin-700-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Merriweather Bold Italic'), local('Merriweather-BoldItalic'), url(assets/fonts/merriweather-latin-700-italic.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: local('Source Sans Pro Black'), local('SourceSansPro-Black'), url(assets/fonts/source-sans-pro-latin-900-normal.woff2) format('woff2');
+}
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#main {
+  min-width: 0;
+}
+#main pre {
+  overflow-x: auto;
+}
+#main img,
+#main video,
+#main iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+/* post list */
+#main > .posts > article p {
+  overflow-wrap: break-word;
+}
+#main > .post.filtered {
+  padding-bottom: 2rem;
+}
+#main > .post.filtered header.major {
+  margin-bottom: 0;
+}
+
+.post-tags a {
+  margin-right: 0.75em;
+}
+
+.histogram .count {
+  float: right;
+}
+
+/* nav: dropdowns for the theme picker & search (Massively's nav has none) */
+#nav {
+  overflow: visible;
+}
+#nav ul.links li.bt-dropdown {
+  position: relative;
+}
+#nav .bt-drop {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  min-width: 14rem;
+  padding: 1rem 0;
+  background: #ffffff;
+  color: #212931;
+  line-height: 1.65;
+  text-transform: none;
+  letter-spacing: 0;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+}
+#nav li.bt-dropdown.open .bt-drop {
+  display: block;
+}
+#nav .bt-drop ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#nav ul.links .bt-drop li a {
+  color: #212931;
+  line-height: 2.5rem;
+  text-transform: uppercase;
+}
+#nav ul.links .bt-drop li a:hover {
+  background-color: #f5f5f5;
+  color: #18bfef !important;
+}
+
+#search.bt-drop {
+  width: 24rem;
+  padding: 1rem;
+}
+#search-input {
+  color: #212931 !important;
+}
+#search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+  font-family: "Merriweather", Georgia, serif;
+  font-weight: 300;
+  font-size: 0.8rem;
+}
+#search-results:empty {
+  display: none;
+}
+#search-results .mini-post {
+  border-top: solid 1px #eeeeee;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+#search-results .mini-post a {
+  display: block;
+  padding: 0 !important;
+  color: inherit !important;
+  border-bottom: 0;
+  line-height: 1.5;
+  font-size: 0.8rem;
+}
+#search-results .mini-post h2 {
+  color: #212931;
+  font-size: 0.9rem;
+  margin: 0;
+}
+#search-results .mini-post time {
+  color: #909498;
+  font-size: 0.7rem;
+}
+#search-results .mini-post p {
+  margin: 0.25rem 0 0 0;
+}
+
+/* in the (phone width) side panel: no dropdowns, just show them */
+#navPanel .bt-drop {
+  display: none;
+  padding-left: 1rem;
+}
+#navPanel li.bt-dropdown.open .bt-drop {
+  display: block;
+}
+#navPanel #search.bt-drop {
+  padding: 0.5rem 0;
+}
+
+/* footer */
+#footer .tagcloud a {
+  border-bottom: 0;
+  margin-right: 0.35em;
+}
+#footer .site-img {
+  max-width: 6rem;
+  border-radius: 100%;
+}
+#footer .categories {
+  list-style: none;
+  padding-left: 0;
+}
+#footer .categories .count {
+  float: right;
+}
+
+
+/* dark scheme (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`) */
+[scheme="dark"] #main,
+[scheme="dark"] #nav .bt-drop {
+  background-color: #1b2229;
+  color: #b6bdc4;
+}
+[scheme="dark"] #footer {
+  background-color: #161c22;
+  color: #9aa1a8;
+}
+[scheme="dark"] #main > * {
+  border-top-color: #2b333b;
+}
+[scheme="dark"] #main h1, [scheme="dark"] #main h2, [scheme="dark"] #main h3,
+[scheme="dark"] #main h4, [scheme="dark"] #main h5, [scheme="dark"] #main h6,
+[scheme="dark"] #main strong, [scheme="dark"] #main b,
+[scheme="dark"] #main a,
+[scheme="dark"] #footer h2, [scheme="dark"] #footer h3, [scheme="dark"] #footer a,
+[scheme="dark"] #nav ul.links .bt-drop li a,
+[scheme="dark"] #search-results .mini-post h2 {
+  color: #e6eaee;
+}
+[scheme="dark"] #main .button:not(.primary) {
+  color: #e6eaee !important;
+  box-shadow: inset 0 0 0 2px #e6eaee;
+}
+[scheme="dark"] #main code,
+[scheme="dark"] #main pre {
+  background: #242c34;
+}
+[scheme="dark"] #main input,
+[scheme="dark"] #main textarea,
+[scheme="dark"] #search-input {
+  color: #e6eaee !important;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}
