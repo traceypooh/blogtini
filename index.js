@@ -294,6 +294,10 @@ async function main() {
   if (tmp)
     cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
 
+  // a viewer trying out themes w/ the theme picker overrides the site's theme (for them, for 24h)
+  if (!globalThis.Deno && viewer_prefs().theme)
+    cfg.theme = viewer_prefs().theme
+
   // a bare theme name (eg: `grid`) is one shipped alongside this `index.js` -- so it follows a pinned version
   if (cfg.theme.match(/^[\w-]+$/))
     cfg.theme = theme_url(cfg.theme)
@@ -433,6 +437,114 @@ function add_recache_button() {
     location.reload()
   })
   document.body.appendChild(btn)
+}
+
+
+/*
+  A viewer's own theme picker & light/dark picks -- kept for 24h, just for them (this browser, this site).
+  So people can try out themes (eg: on blogtini.com) and click around, before changing their own `config.yml`.
+  (localStorage, not a cookie -- so it never gets sent to any server)
+*/
+const VIEWER_PREFS_KEY = `${STORAGE_KEY}-viewer`
+const VIEWER_PREFS_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Returns the viewer's unexpired picks, eg: { theme: 'editorial', scheme: 'dark' }
+ */
+function viewer_prefs() {
+  const ret = {}
+  try {
+    const prefs = JSON.parse(localStorage.getItem(VIEWER_PREFS_KEY)) ?? {}
+    for (const [key, { val, until }] of Object.entries(prefs)) {
+      if (until > Date.now())
+        ret[key] = val
+    }
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+  return ret
+}
+
+/**
+ * Remembers a viewer's pick for 24h -- even if it's the site's default (so the notice stays once-a-day).
+ * Shows a notice about it, unless they already had a pick saved.
+ *
+ * @param {string} key  'theme' or 'scheme'
+ * @param {string} val  eg: 'editorial' or 'dark'
+ */
+function viewer_prefs_set(key, val) {
+  if (!val || !`${val}`.match(/^[\w-]+$/))
+    return
+  const had_prefs = Object.keys(viewer_prefs()).length
+  try {
+    const prefs = JSON.parse(localStorage.getItem(VIEWER_PREFS_KEY)) ?? {}
+    prefs[key] = { val, until: Date.now() + VIEWER_PREFS_MS }
+    localStorage.setItem(VIEWER_PREFS_KEY, JSON.stringify(prefs))
+  } catch {
+    return
+  }
+  if (!had_prefs)
+    viewer_prefs_notice()
+}
+
+/**
+ * A closable notice, centered over a dimmed page: picks here are just for this viewer, for 24h.
+ * Closes w/ its buttons, a click on the dimmed page, or Escape.
+ * (Plain text & `all:initial` so no theme styles leak in.)
+ */
+function viewer_prefs_notice() {
+  const screen = document.createElement('div')
+  screen.style.cssText = [
+    'all:initial', 'position:fixed', 'inset:0', 'z-index:10001', 'background:rgba(0,0,0,.55)',
+    'display:flex', 'align-items:center', 'justify-content:center', 'padding:16px', 'box-sizing:border-box',
+  ].join(';')
+
+  const box = document.createElement('div')
+  box.setAttribute('role', 'dialog')
+  box.setAttribute('aria-modal', 'true')
+  box.setAttribute('aria-label', 'Theme picks are just for you, for 24 hours')
+  box.style.cssText = [
+    'all:initial', 'position:relative', 'display:block', 'box-sizing:border-box', 'max-width:30em',
+    'padding:24px 44px 20px 24px', 'border-radius:10px', 'background:#fff', 'color:#222',
+    'font:16px/1.5 system-ui,sans-serif', 'box-shadow:0 10px 40px rgba(0,0,0,.4)',
+  ].join(';')
+
+  const text = document.createElement('div')
+  text.style.cssText = 'all:initial;display:block;font:inherit;color:inherit'
+  text.textContent = 'Your theme and light/dark picks are saved for 24 hours -- just for you, in this browser. ' +
+    "To change the theme of your own site, for you and all your viewers, set `theme:` in your site's top config.yml file."
+
+  const close = () => {
+    screen.remove()
+    // eslint-disable-next-line no-use-before-define
+    document.removeEventListener('keydown', on_key)
+  }
+
+  const on_key = (evt) => {
+    if (evt.key === 'Escape')
+      close()
+  }
+
+  const button = (label, css) => {
+    const btn = document.createElement('button')
+    btn.textContent = label
+    btn.style.cssText = `all:initial;cursor:pointer;font-family:system-ui,sans-serif;${css}`
+    btn.addEventListener('click', () => close())
+    return btn
+  }
+  const x = button('×', 'position:absolute;top:8px;right:10px;width:32px;height:32px;font-size:24px;line-height:32px;text-align:center;color:#666')
+  x.setAttribute('aria-label', 'Close')
+  const ok = button('OK', 'display:block;margin:16px 0 0 auto;padding:8px 22px;border-radius:6px;background:#222;color:#fff;font-size:15px')
+
+  screen.addEventListener('click', (evt) => {
+    if (evt.target === screen)
+      close()
+  })
+  document.addEventListener('keydown', on_key)
+
+  box.append(x, text, ok)
+  screen.appendChild(box)
+  document.body.appendChild(screen)
+  ok.focus()
 }
 
 
@@ -834,9 +946,16 @@ function datetime(date) {
 }
 
 /**
- * Sets dark theme if prefers dark mode *and* it's nighttime: before 7am or from 6pm, localtime
+ * Sets dark theme if prefers dark mode *and* it's nighttime: before 7am or from 6pm, localtime.
+ * Unless the viewer picked light or dark (w/ a theme's "Scheme" lightbulb) in the last 24h.
  */
 function dark_mode() {
+  const { scheme } = viewer_prefs()
+  if (scheme) {
+    document.documentElement.setAttribute('scheme', scheme)
+    return scheme === 'dark'
+  }
+
   const hour = new Date().getHours()
   const dark = (hour < 7 || hour > 17) && globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches
   if (dark)
@@ -853,7 +972,15 @@ function add_interactivity() {
   // one listener for the page -- so the theme menu keeps working after each theme switch re-renders it
   state.theme_change_number = 0
   document.addEventListener('click', async (evt) => {
-    const link = evt.composedPath().find((e) => e.matches?.('#theme-menu a'))
+    const path = evt.composedPath()
+
+    // a theme's "Scheme" lightbulb.  (Its own click handler already toggled the scheme -- remember it)
+    if (path.some((e) => e.matches?.('.scheme-toggle'))) {
+      viewer_prefs_set('scheme', document.documentElement.getAttribute('scheme'))
+      return
+    }
+
+    const link = path.find((e) => e.matches?.('#theme-menu a'))
     if (!link)
       return
 
@@ -877,6 +1004,10 @@ function add_interactivity() {
     bt_body()
 
     search_setup(STORAGE.docs, cfg) // the new theme's search box
+    if (state.filedev || state.localdev)
+      add_recache_button() // (`bt_body()` replaced the whole `<body>`)
+
+    viewer_prefs_set('theme', theme)
   })
 
   search_setup(STORAGE.docs, cfg)

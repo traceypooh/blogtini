@@ -79,3 +79,18 @@ Mapping:
 - [ ] after switching away from Editorial w/ the picker, its page-wide scroll/click/resize listeners stay
       (they no-op w/o its `#sidebar`)
 - [ ] check phone widths (<= 736px: the toggle button & sidebar overlay) and the 981-1280px collapsed sidebar
+
+
+## Viewer picks & light/dark
+A viewer's theme picker and "Scheme" lightbulb picks are kept for 24h, just for them (localStorage, per site) --
+so people can try out themes and click around (eg: on blogtini.com).  The first pick shows a notice
+(centered, over a dimmed page) that it's just for them -- at most once a day.  See `viewer_prefs()` in `index.js`.
+
+Light/dark today: dark only if the viewer's OS prefers dark *and* it's nighttime (before 7am, from 6pm),
+unless they picked one w/ the lightbulb.
+
+### TODO
+- [ ] `config.yml` setting for the site's light/dark, eg: `scheme: light | dark | auto` (default: `auto`, as now) --
+      for an author who wants their site always light, or always dark.  Viewers can still override w/ the lightbulb
+- [ ] lightbulb is only a light <=> dark toggle.  Once clicked, there's no way back to `auto` (until the 24h is up).
+      Maybe a 3-way light / dark / auto picker -- where `auto` clears the viewer's pick
