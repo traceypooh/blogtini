@@ -1,0 +1,132 @@
+/*
+  Striped theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ is the HTML5 UP original (w/ its Font Awesome & Google Fonts `@import`s => the shared `../html5up/`); below are blogtini additions.
+*/
+@import url(assets/css/main.css);
+@import url(../html5up/fonts.css); /* self-hosted fonts (no Google Fonts) */
+
+
+/* blogtini additions */
+
+/* Striped's `<body>` is the flex container for `#content` & `#sidebar` -- so `<bt-body>` steps aside */
+bt-body {
+  display: contents;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#content {
+  min-width: 0;
+}
+#content pre {
+  overflow-x: auto;
+}
+#content img,
+#content video,
+#content iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+.post-excerpt .more {
+  margin-top: 1em;
+}
+.post-tags a {
+  margin-right: 0.75em;
+}
+.histogram .count,
+#sidebar .count {
+  float: right;
+}
+.filtered h2 {
+  margin-bottom: 0;
+}
+
+/* sidebar extras: about, theme picker, scheme, tag cloud */
+#sidebar .site-img {
+  max-width: 5em;
+  border-radius: 100%;
+  margin-bottom: 0.5em;
+}
+#sidebar .tagcloud a {
+  margin-right: 0.35em;
+  line-height: 1.6;
+}
+/* (Striped has no `ul.icons` -- social links, in a row) */
+#sidebar ul.icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 0.9em;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#sidebar ul.icons a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+}
+#sidebar ul.icons a:hover {
+  color: #fff;
+}
+.histogram ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* search results (made by blogtini's js/search-setup.js) */
+#search-results:empty {
+  display: none;
+}
+#search-results {
+  margin-top: 1em;
+}
+#search-results .mini-post {
+  border-top: solid 1px rgba(255, 255, 255, 0.1);
+  padding: 0.6em 0;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+#search-results .mini-post a {
+  color: inherit;
+  text-decoration: none;
+}
+#search-results .mini-post h2 {
+  color: #fff;
+  font-size: 1em;
+  margin: 0;
+}
+#search-results .mini-post time {
+  opacity: 0.7;
+  font-size: 0.85em;
+}
+#search-results .mini-post p {
+  margin: 0.25em 0 0 0;
+}
+
+
+/* dark scheme (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`) */
+[scheme="dark"] body {
+  background-color: #1d2026;
+}
+[scheme="dark"] #content {
+  background-color: #23272e;
+  color: #b4bac2;
+}
+[scheme="dark"] #content h1, [scheme="dark"] #content h2, [scheme="dark"] #content h3,
+[scheme="dark"] #content h4, [scheme="dark"] #content h5, [scheme="dark"] #content h6,
+[scheme="dark"] #content strong, [scheme="dark"] #content b {
+  color: #e8ebef;
+}
+[scheme="dark"] #content input,
+[scheme="dark"] #content textarea {
+  color: #e8ebef;
+  background: #2c313a;
+}
+[scheme="dark"] #content code,
+[scheme="dark"] #content pre {
+  background: #2c313a;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}

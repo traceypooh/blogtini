@@ -1,16 +1,17 @@
 /*
-  Shared helpers for the light DOM ports of HTML5 UP themes (eg: editorial, massively).  Not a theme itself.
+  Shared helpers for the light DOM ports of HTML5 UP themes (eg: editorial, massively).
+  This dir is not a theme itself -- it also has their shared Font Awesome & self-hosted fonts.
   See THEMES.md
 */
 
 import {
   cfg, state, url2post, imgurl, THEMES,
-} from '../index.js'
-import { vrsort } from '../js/text.js'
+} from '../../index.js'
+import { vrsort } from '../../js/text.js'
 // comments are reused from future-imperfect, as is (lit, w/ shadow DOM)
-import './future-imperfect/bt-comments.js'
-import './future-imperfect/bt-comment.js'
-import { css_hljs } from './future-imperfect/css.js'
+import '../future-imperfect/bt-comments.js'
+import '../future-imperfect/bt-comment.js'
+import { css_hljs } from '../future-imperfect/css.js'
 
 
 /** Escapes text for use in html (and attribute values) */

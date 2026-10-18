@@ -57,6 +57,9 @@ const THEMES = [
   'future-imperfect',
   'editorial',
   'massively',
+  'phantom',
+  'striped',
+  'forty',
   'grid',
 ]
 
@@ -390,7 +393,13 @@ function reveal() {
   const { style } = document.querySelector('body')
   style.animation = 'none'
   style.whiteSpace = 'normal'
-  style.display = 'block'
+
+  // older pages: drop their hiding `<style>` -- rather than an inline `display: block`,
+  // which would override a theme's own `body` display (eg: striped's `display: flex`)
+  for (const e of document.querySelectorAll('head style')) {
+    if (e.textContent?.trim() === 'body{display:none}')
+      e.remove()
+  }
 
   // eg: sidebar "See More" goes to `#post5`.  The browser looked for it before we rendered it -- so scroll now
   if (!state.scrolled_to_hash && location.hash.match(/^#post\d+$/)) {

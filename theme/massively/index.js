@@ -19,7 +19,7 @@ import {
   esc, nodes, post_img, site_img, menu_items, theme_items, scheme_toggles, copyright,
   social_icons, pager, comments, taxonomy, highlight_code, histogram_items, tag_cloud,
   contact_form, preload,
-} from '../html5up.js'
+} from '../html5up/shared.js'
 
 
 // nav moves into a side panel at, or below, this width

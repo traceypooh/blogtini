@@ -1,0 +1,121 @@
+/*
+  Forty theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ & images/ are the HTML5 UP original (w/ its Font Awesome & Google Fonts `@import`s => the shared `../html5up/`); below are blogtini additions.
+*/
+@import url(assets/css/main.css);
+@import url(../html5up/fonts.css); /* self-hosted fonts (no Google Fonts) */
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#main,
+#main > * > .inner {
+  min-width: 0;
+}
+#main pre {
+  overflow-x: auto;
+}
+#main img,
+#main video,
+#main iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+.date {
+  opacity: 0.65;
+}
+.post-tags a {
+  margin-right: 0.75em;
+}
+.histogram .count {
+  float: right;
+}
+
+/* tiles: a short summary under the title */
+.tiles article header.major p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* menu overlay: search & theme picker */
+#menu #search-input {
+  margin: 0 auto 1em auto;
+  max-width: 20em;
+}
+#menu #search-results {
+  max-width: 28em;
+  margin: 0 auto 2em auto;
+  text-align: left;
+}
+#menu #search-results:empty {
+  display: none;
+}
+#menu #search-results .mini-post {
+  border-top: solid 1px rgba(212, 212, 255, 0.1);
+  padding: 0.75em 0;
+  font-size: 0.85em;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#menu #search-results .mini-post a {
+  border-bottom: 0;
+}
+#menu #search-results .mini-post h2 {
+  font-size: 1em;
+  margin: 0;
+}
+#menu #search-results .mini-post time {
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+#menu #search-results .mini-post p {
+  margin: 0.25em 0 0 0;
+}
+#menu h2.theme-heading {
+  font-size: 0.8em;
+  margin: 2em 0 0.5em 0;
+  opacity: 0.6;
+}
+
+/* contact area: about | recent, categories, tags */
+#contact .site-img {
+  max-width: 6em;
+  border-radius: 100%;
+}
+#contact .contact-method ul {
+  list-style: none;
+  padding-left: 0;
+}
+#contact .contact-method .count {
+  float: right;
+  opacity: 0.6;
+}
+#contact .tagcloud a {
+  border-bottom: 0;
+  margin-right: 0.35em;
+}
+
+
+/*
+  Forty is dark already.  Its dark scheme: a deeper background, and grayer images.
+  (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`)
+*/
+[scheme="dark"] body,
+[scheme="dark"] #main,
+[scheme="dark"] #contact {
+  background-color: #1d2033;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}

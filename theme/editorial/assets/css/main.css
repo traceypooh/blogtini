@@ -1,5 +1,5 @@
-@import url(fontawesome-all.min.css);
-/* blogtini: no Google Fonts (IP leak) -- Open Sans & Roboto Slab are self-hosted, see ../../index.css */
+@import url(../../../html5up/fontawesome/css/fontawesome-all.min.css);
+/* blogtini: Font Awesome is the shared copy in theme/html5up/ (line above).  No Google Fonts (IP leak) -- Open Sans & Roboto Slab self-hosted, see theme/html5up/fonts.css */
 /*
 	Editorial by HTML5 UP
 	html5up.net | @ajlkn

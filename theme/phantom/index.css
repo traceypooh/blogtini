@@ -1,0 +1,149 @@
+/*
+  Phantom theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ is the HTML5 UP original (w/ its Font Awesome & Google Fonts `@import`s => the shared `../html5up/`); below are blogtini additions.
+*/
+@import url(assets/css/main.css);
+@import url(../html5up/fonts.css); /* self-hosted fonts (no Google Fonts) */
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#main,
+#main > .inner {
+  min-width: 0;
+}
+#main pre {
+  overflow-x: auto;
+}
+#main img,
+#main video,
+#main iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+/* the site image as the logo's "symbol" */
+#header .logo .symbol img {
+  border-radius: 100%;
+  object-fit: cover;
+}
+
+/* tiles: keep summaries short, and the title on top of the image */
+.tiles article h2 {
+  overflow-wrap: break-word;
+}
+.tiles article .content p {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tiles article .image img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.date {
+  color: #9a9a9a;
+  font-size: 0.9em;
+}
+.post-tags a {
+  margin-right: 0.75em;
+}
+.histogram .count {
+  float: right;
+}
+.pager {
+  margin-top: 4em;
+}
+
+/* menu panel: search, theme picker, scheme */
+#menu h2 + ul,
+#menu ul + h2 {
+  margin-top: 1.5em;
+}
+#menu #search-input {
+  color: #ffffff;
+  margin-bottom: 1em;
+}
+#menu #search-results:empty {
+  display: none;
+}
+#menu #search-results .mini-post {
+  border-top: solid 1px rgba(255, 255, 255, 0.15);
+  padding: 0.75em 0;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+#menu #search-results .mini-post a {
+  color: inherit;
+  border-bottom: 0;
+}
+#menu #search-results .mini-post h2 {
+  color: #ffffff;
+  font-size: 1em;
+  margin: 0;
+}
+#menu #search-results .mini-post time {
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+#menu #search-results .mini-post p {
+  margin: 0.25em 0 0 0;
+}
+
+/* footer */
+#footer .tagcloud a {
+  border-bottom: 0;
+  margin-right: 0.35em;
+}
+#footer .categories .count {
+  float: right;
+}
+#footer .site-img {
+  max-width: 6em;
+  border-radius: 100%;
+}
+
+
+/* dark scheme (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`) */
+[scheme="dark"] body,
+[scheme="dark"] #wrapper {
+  background: #1e1f22;
+  color: #b9bcc0;
+}
+[scheme="dark"] #footer {
+  background: #18191b;
+}
+[scheme="dark"] h1, [scheme="dark"] h2, [scheme="dark"] h3,
+[scheme="dark"] h4, [scheme="dark"] h5, [scheme="dark"] h6,
+[scheme="dark"] strong, [scheme="dark"] b,
+[scheme="dark"] #header .logo,
+[scheme="dark"] #header nav a {
+  color: #eceef0;
+}
+[scheme="dark"] #main a:not(.button):not(.tiles a),
+[scheme="dark"] #footer a {
+  color: #eceef0;
+}
+[scheme="dark"] .tiles article h2 {
+  color: #ffffff;
+}
+[scheme="dark"] code,
+[scheme="dark"] pre {
+  background: #2a2c2f;
+}
+[scheme="dark"] input,
+[scheme="dark"] textarea {
+  color: #eceef0;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}

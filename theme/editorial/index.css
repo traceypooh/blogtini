@@ -1,53 +1,9 @@
 /*
   Editorial theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
-  assets/ is the HTML5 UP original (minus its Google Fonts `@import`); below are blogtini additions.
+  assets/ is the HTML5 UP original (w/ its Font Awesome & Google Fonts `@import`s => the shared `../html5up/`); below are blogtini additions.
 */
 @import url(assets/css/main.css);
-
-
-/* self-hosted (no Google Fonts), latin subset */
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Open Sans Regular'), local('OpenSans-Regular'), url(assets/fonts/open-sans-latin-400-normal.woff2) format('woff2');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(assets/fonts/open-sans-latin-400-italic.woff2) format('woff2');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'), url(assets/fonts/open-sans-latin-600-normal.woff2) format('woff2');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Open Sans SemiBold Italic'), local('OpenSans-SemiBoldItalic'), url(assets/fonts/open-sans-latin-600-italic.woff2) format('woff2');
-}
-@font-face {
-  font-family: 'Roboto Slab';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(assets/fonts/roboto-slab-latin-400-normal.woff2) format('woff2');
-}
-@font-face {
-  font-family: 'Roboto Slab';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(assets/fonts/roboto-slab-latin-700-normal.woff2) format('woff2');
-}
+@import url(../html5up/fonts.css); /* self-hosted fonts (no Google Fonts) */
 
 
 /* blogtini additions */
