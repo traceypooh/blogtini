@@ -8,6 +8,7 @@ Site live at:
 - https://blogtini.com
 - https://traceypooh.github.io/blogtini/
 
+
 ## Build (optional)
 The [bin/build](bin/build) step ([bin/build.js](bin/build.js), runs on [deno](https://deno.com) *or* node 18.19+)
 makes your site better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
@@ -31,13 +32,12 @@ node ../blogtini/bin/build.js    # node -- or open bin/build.js in iOS Code App 
 ```
 (In this blogtini repo itself, it's just `./bin/build` or `node bin/build.js`.)  Add `--seo` for the full build.
 
-## Hooks
-Whenever someone comments on your site, we run a small script (just the comments part of the build).
 
-Thus, we suggest you use our "pre commit" and "post merge" `git` 'hooks' to automate the above "housekeeping".  You can set them up like this:
-```sh
-git config --local core.hooksPath bin/
-```
+### Comments
+- New comments arrive as JSON files in `comments/`.
+- The build also rolls them up into per-post `index.json` files
+(efficiency - fewer requests for the site) -- our GitHub Action does that on each push, and so does `bin/build` locally.
+- Commit any `index.json` files or not -- either is fine.
 
 
 

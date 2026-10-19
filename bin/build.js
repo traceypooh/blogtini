@@ -6,7 +6,7 @@
   Run from the top of your site repo (where `config.yml` is), eg:
     ../blogtini/bin/build            # index.xml & comments -- what local dev needs
     ../blogtini/bin/build --seo      # also: each post's head line & robots.txt (GitHub Actions does this)
-    ../blogtini/bin/build comments   # just the comments part (git hooks use this)
+    ../blogtini/bin/build comments   # just the comments part
 
   Writes:
     index.xml             RSS feed of every post & page.  Also our sitemap and the client's content/search index.
