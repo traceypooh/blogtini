@@ -10,10 +10,6 @@ customElements.define('bt-share', class extends LitElement {
   }
 
   render() {
-    if (!this.post) {
-      // if no post, parse url for ?tags etc and fake
-      // post = markdown_to_post(document.querySelector('body').innerHTML, 'xxx')
-    }
     if (!this.post)
       return html``
 

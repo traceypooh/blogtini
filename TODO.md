@@ -43,8 +43,6 @@ nav search box that prefills google search site:xxx AND ..
 
 xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse atom feed..
 
-document JS/CSS versioning xxx
-
 github.com cookie: dotcom_user
 
 minimum:
@@ -111,7 +109,6 @@ js
 
 - 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
 - xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
-- import xxx from 'https://esm.archive.org/blogtini'
 - xxx can still use site w/o .md copied into webroot via api
   https://api.github.com/repos/traceypooh/blogtini/contents look for type: dir and dir with 20\d\d...md
 

@@ -59,7 +59,7 @@ function search_setup(docs, cfg) {
   idx = lunr(function adder() {
     this.ref('url')
     this.field('title')
-    this.field('date') // xxx typo in source!
+    this.field('date') // (the theme this came from had 'data' -- so date search silently never worked)
     this.field('body_raw')
     this.field('tags')
     this.field('categories')

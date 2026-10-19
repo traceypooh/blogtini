@@ -290,15 +290,6 @@ async function main() {
     head_insert_generics()
   }
 
-  if (state.is_homepage) {
-    head_insert_titles('Blogtini') // xxx
-  } else if (state.list_tags) {
-    head_insert_titles('Tags')
-  } else if (state.list_cats) {
-    head_insert_titles('Categories')
-  }
-
-
   if (!globalThis.Deno) {
     // default expect github pages hostname - user can override via their own `config.yml` file
     [tmp, cfg.user, cfg.repo] = location.href.match(/^https:\/\/(.*)\.github\.io\/([^/]+)/) || ['', '', '']
@@ -308,8 +299,17 @@ async function main() {
   STORAGE.base ||= base
 
   tmp = yml.load(await fetcher(`${state.top_dir}config.yml`))
-  if (tmp)
-    cfg = { ...cfg, ...tmp } // xxx deep merge `sidebar` value hashmap, too
+  if (tmp) {
+    // ensure we deep merge `sidebar` value hashmap, etc.
+    // one level deep: eg: a `sidebar:` w/ just `about:` keeps the default `post_amount`, etc.
+    // (lists & plain values replace the defaults)
+    const is_map = (/** @type {any} */ v) => v && typeof v === 'object' && !Array.isArray(v)
+    /** @type {Record<string, any>} */
+    const merged = { ...cfg }
+    for (const [key, val] of Object.entries(tmp))
+      merged[key] = is_map(merged[key]) && is_map(val) ? { ...merged[key], ...val } : val
+    cfg = /** @type {typeof cfg} */ (merged)
+  }
 
   // a viewer trying out themes w/ the theme picker overrides the site's theme (for them, for 24h)
   if (!globalThis.Deno && viewer_prefs().theme)
@@ -322,6 +322,14 @@ async function main() {
 
   if (globalThis.Deno)
     return // the build step's head lines, index.xml, etc. are now in `bin/build.js`
+
+  // (a post's title -- & tags & categories pages' titles -- get set as we find the posts)
+  if (state.list_tags)
+    head_insert_titles(`Tags - ${cfg.title}`)
+  else if (state.list_cats)
+    head_insert_titles(`Categories - ${cfg.title}`)
+  else if (state.is_homepage && !filter_tag && !filter_cat)
+    head_insert_titles(cfg.title)
 
 
   log({
@@ -894,9 +902,9 @@ function storage_loop() {
 
       head_insert_titles(post.title, imgurl(post, true, false))
     } else if (filter_tag.length) {
-      head_insert_titles(`posts tagged: ${filter_tag} - blogtini.com`) // xxx
+      head_insert_titles(`posts tagged: ${filter_tag} - ${cfg.title}`)
     } else if (filter_cat.length) {
-      head_insert_titles(`posts in category: ${filter_cat} - blogtini.com`) // xxx
+      head_insert_titles(`posts in category: ${filter_cat} - ${cfg.title}`)
     }
 
     if (!filter_post)
@@ -1049,11 +1057,15 @@ function add_css(file) {
 }
 
 function head_insert_generics() {
+  /*
+    // NOTE: it's too late in JS to set the charset -- and GH Pages already do for us.
+    // so this section is left as a kind of reminder, if ever move off GH Pages, etc..
   {
-    const e = document.createElement('meta') // xxxx no worky
+    const e = document.createElement('meta')
     e.setAttribute('charset', 'utf-8')
     document.head.appendChild(e)
   }
+  */
   {
     const e = document.createElement('meta')
     e.setAttribute('name', 'viewport')
@@ -1076,7 +1088,8 @@ function imgurl(post, nohash = true, relative = false) {
 }
 
 function head_insert_titles(title, img) {
-  document.title = title // xxx &gt; &lt;
+  // (plain text -- no html escaping needed, here or in `setAttribute()` below)
+  document.title = title
 
   // document.getElementsByTagName('meta')['description'].content = 'New meta description'
   // document.getElementsByTagName('meta')['viewport']
@@ -1085,7 +1098,7 @@ function head_insert_titles(title, img) {
   if (img) {
     const e = document.createElement('meta') // chexxx
     e.setAttribute('property', 'og:image')
-    e.setAttribute('content', img) // xxx quote escape, etc.
+    e.setAttribute('content', img)
     document.head.appendChild(e)
   }
 }
