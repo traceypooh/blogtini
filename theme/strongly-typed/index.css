@@ -1,0 +1,141 @@
+/*
+  Strongly Typed theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ & images/ are the HTML5 UP original (w/ its Font Awesome & Google Fonts `@import`s => the shared `../html5up/`); below are blogtini additions.
+*/
+@import url(assets/css/main.css);
+@import url(../html5up/fonts.css); /* self-hosted fonts (no Google Fonts) */
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#content,
+#sidebar {
+  min-width: 0;
+}
+.post-body pre {
+  overflow-x: auto;
+}
+.post-body img,
+.post-body video,
+.post-body iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+/* posts: a date above the title (like the sidebar's excerpts) */
+.box.post .date {
+  display: block;
+  color: #999;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+#features section .image img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+.post-tags a {
+  margin-right: 0.75em;
+}
+.histogram ul,
+#sidebar .categories {
+  list-style: none;
+  padding: 0;
+}
+.histogram .count,
+#sidebar .count {
+  float: right;
+}
+.tagcloud a {
+  margin-right: 0.35em;
+}
+#sidebar .box.highlight .image.left img {
+  border-radius: 100%;
+}
+.pager {
+  text-align: center;
+  margin-top: 4em;
+}
+
+/* nav dropdowns: theme picker & search */
+.dropotron.bt-search {
+  min-width: 20em;
+  max-width: 26em;
+  padding: 1em;
+}
+.dropotron #search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.dropotron #search-results:empty {
+  display: none;
+}
+.dropotron #search-results .mini-post {
+  border-top: solid 1px #e5e5e5;
+  padding: 0.6em 0;
+  line-height: 1.4;
+  font-size: 0.85em;
+}
+.dropotron #search-results .mini-post a {
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.dropotron #search-results .mini-post h2 {
+  font-size: 1em;
+  margin: 0;
+}
+.dropotron #search-results .mini-post time {
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+.dropotron #search-results .mini-post p {
+  margin: 0.25em 0 0 0;
+}
+
+
+/* dark scheme (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`) */
+[scheme="dark"] body,
+[scheme="dark"] #header,
+[scheme="dark"] #main,
+[scheme="dark"] #features,
+[scheme="dark"] .dropotron {
+  background: #1e1e20;
+  color: #b2b2b6;
+}
+[scheme="dark"] #footer,
+[scheme="dark"] #banner {
+  background: #18181a;
+  color: #a6a6aa;
+}
+[scheme="dark"] h2, [scheme="dark"] h3, [scheme="dark"] h4,
+[scheme="dark"] h5, [scheme="dark"] h6,
+[scheme="dark"] strong, [scheme="dark"] b,
+[scheme="dark"] #nav > ul > li > a {
+  color: #ececee;
+}
+[scheme="dark"] #header > .container,
+[scheme="dark"] #content > section, [scheme="dark"] #content > article,
+[scheme="dark"] #sidebar > section, [scheme="dark"] #sidebar > article {
+  box-shadow: none;
+  border-color: #333;
+}
+[scheme="dark"] code,
+[scheme="dark"] pre {
+  background: #2a2a2d;
+}
+[scheme="dark"] input,
+[scheme="dark"] textarea {
+  color: #ececee;
+  background: #2a2a2d !important;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}

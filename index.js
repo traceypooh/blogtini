@@ -61,6 +61,8 @@ const THEMES = [
   'striped',
   'forty',
   'strata',
+  'helios',
+  'strongly-typed',
   'grid',
 ]
 
@@ -1001,7 +1003,8 @@ function add_interactivity() {
       return
     }
 
-    const link = path.find((e) => e.matches?.('#theme-menu a'))
+    // (`.theme-menu`, too: for a theme w/ a 2nd picker, eg: in a phone nav panel -- ids must be unique)
+    const link = path.find((e) => e.matches?.('#theme-menu a, .theme-menu a'))
     if (!link)
       return
 

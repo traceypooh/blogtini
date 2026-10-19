@@ -78,6 +78,15 @@
   src: local('Merriweather Bold Italic'), local('Merriweather-BoldItalic'), url(fonts/merriweather-latin-700-italic.woff2) format('woff2');
 }
 
+/* strongly typed */
+@font-face {
+  font-family: 'Arvo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Arvo Bold'), local('Arvo-Bold'), url(fonts/arvo-latin-700-normal.woff2) format('woff2');
+}
+
 /* striped */
 @font-face {
   font-family: 'Open Sans Condensed';

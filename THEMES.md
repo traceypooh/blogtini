@@ -12,11 +12,15 @@ The theme defines those custom elements, and so decides what the page looks like
   and swapped by the theme picker on a switch.  (Links get `data-theme-css`, so the old one gets removed.)
 - The theme must call `reveal()` (from `index.js`) once it has rendered -- the body is hidden until then.
 - blogtini looks for these ids in `<bt-body>` (its shadow root, or itself for a light DOM theme -- see `btbody_root()`):
-  - `#theme-menu a` -- theme picker links.  The link text maps to the theme dir, eg: `future imperfect` => `future-imperfect`
+  - `#theme-menu a` -- theme picker links.  The link text maps to the theme dir, eg: `future imperfect` => `future-imperfect`.
+    (`.theme-menu a`, too -- for a 2nd picker, eg: in a phone width nav panel, since ids must be unique)
   - `#search-input` and `#search-results` -- the sitewide search box (optional)
 
 - blogtini's `THEMES` export (in `index.js`) lists the shipped themes -- for each theme's theme picker.
 - blogtini's `all_posts()` export returns every post & page it knows of, newest first (eg: striped's calendar).
+- Sidebar side: each theme defaults to its own original layout (a `SIDEBAR_POSITION` const), unless
+  `config.yml` `sidebar: { position: left | right | none }` pins it.  Defaults: future-imperfect, editorial,
+  striped: left (fixed, so far); strongly-typed, helios: right (& they honor `position`).
 
 Two styles so far:
 
@@ -30,11 +34,15 @@ Two styles so far:
 | `striped` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `forty` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `strata` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
+| `helios` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
+| `strongly-typed` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
-- `shared.js` -- helpers: escaping, menu & theme picker items, social icons, prior/next links, comments,
-  tag cloud, contact form, code highlighting, etc.
+- `shared.js` -- helpers: escaping, menu & theme picker items, social links & icons, prior/next links, comments,
+  tag cloud, contact form, code highlighting, etc.  And for the "classic" themes (helios, strongly typed, and
+  dopetrope, zerofour, escape velocity, verti ... someday): vanilla js for their jQuery `dropotron` nav dropdowns
+  (`dropdowns()`) and phone width nav panel (`nav_panel()`, `nav_panel_links()`).
 - `fontawesome/` -- the Font Awesome 5 css & webfonts every HTML5 UP theme ships (all identical)
 - `fonts.css` & `fonts/` -- self-hosted fonts, in place of their Google Fonts.
   (Browsers only download the ones a theme uses)
@@ -222,7 +230,61 @@ Mapping:
 - [ ] check phone widths: the panel becomes a top header, footer moves below the posts
 
 
+## Helios
+Port of https://html5up.net/helios (2026-10-18).
+
+What changed from the HTML5 UP download:
+- `assets/css/main.css`: just its two `@import` lines -- Font Awesome => the shared `theme/html5up/` copy,
+  Google Fonts => a comment.  Otherwise as is.
+  (`images/header.jpg` is its header background; `assets/css/images/arrow.svg` the carousel arrows.
+  Its css also refers to an `assets/css/images/overlay.png` that isn't in HTML5 UP's download, either)
+- jQuery `main.js` => vanilla js in `index.js` & `../html5up/shared.js`: carousel (hover its edge arrows to scroll;
+  touch screens swipe), nav dropdowns (`dropotron`), phone width nav button & panel, smooth "Start" scroll, `is-preload`.
+  Left out: the carousel's one-by-one fade in.
+- Helios's full screen header is for `body.homepage` -- so blogtini's first homepage page keeps that class,
+  & other pages (eg: `?page/2`, `?tags/x`) drop it.  (blogtini reads `homepage` just once, as it loads)
+
+Mapping:
+- header: site title, intro paragraph, "Start" (homepage) -- nav: menu, Theme & Search dropdowns, Scheme
+- homepage (first page): banner (title & about), carousel of the newest posts, newest post featured,
+  the rest in a 3-column grid
+- single post: Helios's sidebar page -- the sidebar (about, recent posts, categories, tags) goes
+  left, right or none: `config.yml` `sidebar: { position: left | right | none }` -- default: right
+- footer: recent posts, categories, tags | about & social icons, copyright
+
+### TODO / FIXME
+- [ ] the carousel duplicates the homepage's posts (it's the newest 12 -- maybe the *older* ones?)
+- [ ] dark scheme is partial -- like editorial
+- [ ] check phone widths: nav button & panel (its theme picker & Scheme; no search in it yet)
+
+
+## Strongly Typed
+Port of https://html5up.net/strongly-typed (2026-10-18).
+
+What changed from the HTML5 UP download:
+- `assets/css/main.css`: just its two `@import` lines -- Font Awesome => the shared `theme/html5up/` copy,
+  Google Fonts => a comment (Arvo is now in `theme/html5up/fonts/`, too).  Otherwise as is.
+  (`images/banner.jpg` is its banner background; `assets/css/images/bracket.svg` a decoration)
+- jQuery `main.js` => vanilla js in `../html5up/shared.js`: nav dropdowns (`dropotron`), phone width title bar & nav panel,
+  `is-preload`.
+
+Mapping:
+- header: site title (Arvo), intro paragraph, nav w/ an icon per menu item -- from the `pre` icon in
+  `config.yml` `menu.main` (else a file icon) -- plus Theme & Search dropdowns & Scheme
+- homepage (first page): the 3 newest posts as "features", a banner (about), then the rest of the posts
+- `#main`: posts (`.box.post`) & the sidebar -- recent post excerpts, about, categories, tags.
+  The sidebar goes left, right or none: `config.yml` `sidebar: { position: left | right | none }` -- default: right
+  (none: `body.no-sidebar`, as Strongly Typed's own no-sidebar page)
+- footer: about, Learn More & Contact | social links w/ their names, copyright
+
+### TODO / FIXME
+- [ ] dark scheme is partial -- like editorial
+- [ ] check phone widths: title bar & nav panel (its theme picker & Scheme; no search in it yet)
+
+
 ## HTML5 UP ports: shared TODO / FIXME
+- [ ] the phone width nav panels (helios, strongly typed) have no search box yet
+- [ ] `sidebar.position`: future-imperfect, editorial & striped could honor it, too (they're left only, so far)
 - [ ] Share menu (`<bt-share>`) not ported
 - [x] the theme picker's list was copied into each theme -- now blogtini's `THEMES` export (2026-10-18)
 - [ ] comments reuse future-imperfect's `<bt-comments>` (lit, shadow DOM) -- so they look like future-imperfect.
@@ -235,6 +297,55 @@ Mapping:
 - [ ] `cfg.site_header` image (blogtini logo) isn't used
 - [ ] after switching away w/ the picker, a theme's page-wide scroll/click/resize listeners stay
       (they no-op w/o its elements)
+
+
+## Next ports
+Popularity = each template's **download count**, shown on its html5up.net page ("Download (511,929)")
+-- all 44 templates, fetched 2026-10-18.  The counts are fairly flat: 293K (Highlights) to 770K (Massively).
+A 2nd signal: GitHub stars of each template's ports to Hugo / Jekyll / Gatsby / etc.
+
+Ours, by downloads: Massively 770K (#1 of 44), Editorial 601K (#7), Forty 512K, Phantom 511K,
+Future Imperfect 473K, Strata 421K, Striped 412K.  (Forty is the most *ported* by far: a Jekyll port w/ 1109 stars)
+
+"Blog fit": how naturally a list of posts & a post page map into it.  Many of the older "classic" templates
+(Strongly Typed, Helios, Dopetrope, ZeroFour, Escape Velocity, Verti, Arcana, Twenty, Alpha ...) come w/
+left-sidebar / right-sidebar / no-sidebar page variants -- could be a `config.yml` option.
+
+Not yet ported, most downloaded first:
+
+| downloads | template | layout | blog fit | most-starred ports |
+|---:|---|---|---|---|
+| 724K | [Dimension](https://html5up.net/dimension) | centered intro, each "page" opens as a modal card | landing | Gatsby 321, Hugo 108 |
+| 705K | [Prologue](https://html5up.net/prologue) | fixed left sidebar w/ avatar & nav, one-page sections | ok | Jekyll 451 |
+| 637K | [Big Picture](https://html5up.net/big-picture) | full-screen image sections, gallery | landing | |
+| 627K | [Parallelism](https://html5up.net/parallelism) | horizontally scrolling photo grid | gallery | |
+| 607K | [Paradigm Shift](https://html5up.net/paradigm-shift) | big type, alternating sections, gallery | landing | |
+| 592K | [Helios](https://html5up.net/helios) -- **ported** | big header, post carousel, posts, sidebar pages | **good** | Jekyll 7 |
+| 583K | [Hyperspace](https://html5up.net/hyperspace) | sidebar nav, scrolling sections, generic page | ok | Gatsby 28 |
+| 561K | [Spectral](https://html5up.net/spectral) | big hero, alternating spotlight rows, generic page | ok | Jekyll 400, Hugo 81 |
+| 550K | [Aerial](https://html5up.net/aerial) | one-screen personal splash | landing | |
+| 543K | [ZeroFour](https://html5up.net/zerofour) | banner, features, posts + sidebar pages | **good** | |
+| 525K | [Solid State](https://html5up.net/solid-state) | banner, alternating wrappers, article tiles | ok | Gatsby 31 |
+| 524K | [Strongly Typed](https://html5up.net/strongly-typed) -- **ported** | posts on the homepage, left / right / no-sidebar pages | **good** | Jekyll 8 |
+| 510K | [Arcana](https://html5up.net/arcana) | banner, features, sidebar pages | ok | |
+| 507K | [Ethereal](https://html5up.net/ethereal) | horizontally scrolling panels | landing | |
+| 504K | [Landed](https://html5up.net/landed) | product landing page | landing | |
+| 503K | [Escape Velocity](https://html5up.net/escape-velocity) | features, posts + sidebar pages | **good** | |
+| 495K | [Story](https://html5up.net/story) | full-screen spotlight banners, galleries | landing | Hugo 260 |
+| 468K | [Stellar](https://html5up.net/stellar) | header, sticky in-page nav, feature sections | ok | Gatsby 134 |
+| 465K | [Twenty](https://html5up.net/twenty) | landing + left / right / no-sidebar pages | ok | Pelican 116 |
+| 451K | [Dopetrope](https://html5up.net/dopetrope) | features, blog section, sidebar pages | **good** | WordPress 4 |
+| 449K | [Multiverse](https://html5up.net/multiverse) | masonry photo grid w/ lightbox | gallery | Astro 124 |
+| 445K | [Lens](https://html5up.net/lens) | thumbnail sidebar + full-bleed photo viewer | photo | Jekyll 77 |
+| 433K | [Verti](https://html5up.net/verti) | features, posts + sidebar pages | **good** | |
+| 305K | [Read Only](https://html5up.net/read-only) | fixed profile sidebar, single-column long-form | **good** | Jekyll 28 |
+
+(Also: Astral, Miniport, Alpha, Tessellate, Halcyonic, Eventually, Minimaxing, TXT, Telephasic, Fractal, Photon,
+Directive, Highlights -- 293K-454K, mostly one-page / landing designs.)
+
+Picks: ~~Helios & Strongly Typed~~ (ported 2026-10-18), then the top downloads, **Dimension** & **Prologue**.
+ZeroFour, Escape Velocity, Dopetrope & Verti are good blog fits, too -- & "classic" ones, like helios &
+strongly typed, so `shared.js`'s dropdowns & nav panel are ready for them.
 
 
 ## Viewer picks & light/dark

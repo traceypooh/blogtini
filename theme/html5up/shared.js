@@ -101,21 +101,30 @@ const SOCIAL = [
 ]
 
 /**
+ * Returns the site's social links (`config.yml` `social`, RSS first), eg:
+ *   [{ href: 'https://github.com/x', title: 'GitHub', handle: 'x', cls: 'brands fa-github', rel: 'noopener' }]
+ */
+function social_list() {
+  const ret = cfg.social?.rss
+    ? [{ href: state.top_dir + cfg.social.rss, title: 'RSS', handle: 'RSS', cls: 'solid fa-rss', rel: '' }]
+    : []
+  for (const [svc, url, title, cls] of SOCIAL) {
+    const val = cfg.social?.[svc]
+    if (val !== '' && val !== undefined && val !== null)
+      ret.push({ href: url(val), title, handle: `${val}`, cls, rel: svc === 'mastodon' ? 'me' : 'noopener' })
+  }
+  return ret
+}
+
+/**
  * Returns `<li>`s of the site's social links (`config.yml` `social`), HTML5 UP `ul.icons` style
  *
  * @param {string} extra_cls  eg: 'alt' -- for icons on a light background, in some themes
  */
 function social_icons(extra_cls = '') {
-  const rss = cfg.social?.rss
-    ? `<li><a href="${esc(state.top_dir + cfg.social.rss)}" class="icon solid ${extra_cls} fa-rss" type="application/rss+xml"><span class="label">RSS</span></a></li>`
-    : ''
-  return rss + SOCIAL.map(([svc, url, title, cls]) => {
-    const val = cfg.social?.[svc]
-    if (val === '' || val === undefined || val === null)
-      return ''
-    const rel = svc === 'mastodon' ? 'me' : 'noopener'
-    return `<li><a href="${esc(url(val))}" class="icon ${cls} ${extra_cls}" title="${title}" target="_blank" rel="${rel}"><span class="label">${title}</span></a></li>`
-  }).join('')
+  return social_list().map((e) => (e.title === 'RSS'
+    ? `<li><a href="${esc(e.href)}" class="icon ${e.cls} ${extra_cls}" type="application/rss+xml"><span class="label">RSS</span></a></li>`
+    : `<li><a href="${esc(e.href)}" class="icon ${e.cls} ${extra_cls}" title="${e.title}" target="_blank" rel="${e.rel}"><span class="label">${e.title}</span></a></li>`)).join('')
 }
 
 
@@ -231,6 +240,107 @@ function contact_form() {
 }
 
 
+/*
+  For the "classic" HTML5 UP themes (eg: helios, strongly typed): vanilla js for their jQuery
+  `dropotron` (nav bar dropdowns) & `navList` + `panel` (the phone width nav panel).
+*/
+
+/**
+ * Nav bar dropdowns: a `#nav` `<li>` w/ a `.dropotron` child opens it on click, centered below the `<li>`.
+ * The menu moves out to `root` -- so a `#nav` w/ `overflow: hidden` doesn't clip it (as dropotron does).
+ */
+function dropdowns(root) {
+  for (const li of root.querySelectorAll('#nav li')) {
+    const menu = li.querySelector(':scope > .dropotron')
+    const opener = li.querySelector(':scope > a')
+    if (!menu || !opener)
+      continue
+    menu.classList.add('level-0')
+    menu.style.cssText = 'position: absolute; display: none; z-index: 10000;'
+    root.appendChild(menu)
+
+    opener.addEventListener('click', (evt) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+      const was_open = menu.style.display !== 'none'
+      close_dropdowns()
+      if (was_open)
+        return
+      menu.style.display = 'block'
+      li.classList.add('active')
+      const r = li.getBoundingClientRect()
+      menu.style.top = `${r.bottom + globalThis.scrollY}px`
+      menu.style.left = `${Math.max(8, r.left + globalThis.scrollX + (r.width - menu.offsetWidth) / 2)}px`
+      menu.querySelector('input')?.focus()
+    })
+  }
+  page_listeners()
+}
+
+function close_dropdowns() {
+  document.querySelectorAll('.dropotron').forEach((e) => { e.style.display = 'none' })
+  document.querySelectorAll('#nav li.active').forEach((e) => e.classList.remove('active'))
+}
+
+/**
+ * Returns the phone width nav panel's links (like `navList()`): the menu, Scheme -- and the theme picker,
+ * in a `.theme-menu` (the nav bar's dropdown has the `#theme-menu`)
+ */
+function nav_panel_links() {
+  const link = (href, htm, depth = 0, cls = '') => `<a href="${esc(href)}" class="link depth-${depth} ${cls}"><span class="indent-${depth}"></span>${htm}</a>`
+  return [
+    ...(cfg.menu?.main ?? []).map((e) => link(navurl(e.url), `${e.pre ?? ''} ${esc(e.name)}`)),
+    link('#scheme', '<i class="fas fa-lightbulb"></i> Scheme', 0, 'scheme-toggle'),
+    cfg.header.theme
+      ? `<span class="link depth-0"><span class="indent-0"></span><i class="fas fa-palette"></i> Theme</span>
+         <div class="theme-menu">${THEMES.map((e) => link('#', e.replace(/-/g, ' '), 1)).join('')}</div>`
+      : '',
+  ].join('')
+}
+
+/**
+ * The phone width nav panel: `toggle` shows/hides it (w/ `body.navPanel-visible`, as `panel()` does).
+ * Clicking outside it, a link in it, or Escape, hides it.
+ */
+function nav_panel(toggle) {
+  toggle.addEventListener('click', (evt) => {
+    evt.preventDefault()
+    evt.stopPropagation()
+    document.body.classList.toggle('navPanel-visible')
+  })
+  page_listeners()
+}
+
+/** Page-wide listeners for dropdowns & the nav panel: once (a theme switch re-renders the page) */
+function page_listeners() {
+  if (globalThis.bt_html5up_listening)
+    return
+  globalThis.bt_html5up_listening = true
+
+  document.addEventListener('click', (evt) => {
+    const path = evt.composedPath()
+    const link = path.find((e) => e.matches?.('a[href]'))
+
+    // dropdowns: a click outside them, or on a link in them, closes them
+    if (!path.some((e) => e.classList?.contains('dropotron')) || link)
+      close_dropdowns()
+
+    // nav panel: same
+    const panel = document.querySelector('#navPanel')
+    if (panel && document.body.classList.contains('navPanel-visible') && (!path.includes(panel) || link)) {
+      if (!link?.matches('.scheme-toggle'))
+        document.body.classList.remove('navPanel-visible')
+    }
+  })
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape') {
+      close_dropdowns()
+      document.body.classList.remove('navPanel-visible')
+    }
+  })
+}
+
+
 /**
  * Stops animations/transitions (HTML5 UP's `body.is-preload`) until the page has rendered.
  */
@@ -243,5 +353,5 @@ function preload() {
 export {
   esc, nodes, post_img, site_img, navurl, menu_items, theme_items, scheme_toggles, copyright,
   social_icons, pager, comments, taxonomy, highlight_code, histogram_items, tag_cloud,
-  contact_form, preload,
+  contact_form, preload, dropdowns, nav_panel, nav_panel_links, social_list,
 }
