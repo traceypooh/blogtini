@@ -85,14 +85,14 @@ For multiple posts & pages:
 - Change the `https://blogtini.com/index.js` in your markdown file(s) to `./theme.js`
 - Create a `theme.js` file with `import 'https://blogtini.com/index.js'`
 - Now you can change the `theme.js` contents to another theme anytime you like and your entire site will change with one line change :)
-- Create directory names that "sort in reverse order", to make a `sitemap.xml` file easier.
+- Create directory names that "sort in reverse order", to make an `index.xml` file easier.
 - We like directory and filenames like:
 ```
 2023-05-may-the-fourth-was-wild-this-year/index.html
 2022-12-christmas-with-family/index.html
 index.html
 theme.js
-sitemap.xml
+index.xml
 ```
 You can add days into the filenames/urls, too:
 ```
@@ -100,17 +100,14 @@ You can add days into the filenames/urls, too:
 2022-12-25-christmas-with-family/index.html
 index.html
 theme.js
-sitemap.xml
+index.xml
 ```
-- Create a `sitemap.xml` with contents like:
-```xml
-<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <url><loc>/index.html</loc></url>
-
-  <url><loc>/2023-05-may-the-fourth-was-wild-this-year/</loc></url>
-  <url><loc>/2022-12-christmas-with-family/</loc></url>
-</urlset>
+- If you have `deno` installed (mac users: `brew install deno`) are in a terminal `cd`-ed into your website, you can create an `index.xml` from your content via:
+```sh
+deno run --allow-import=esm.ext.archive.org:443,blogtini.com:443 --allow-read=. --allow-write=index.xml,comments https://blogtini.com/bin/build.js
+```
+- Or you can manually create/maintain a `index.xml` with contents like https://blogtini.com/index.xml
 ```
 - Reload your simple web server browser url to see the site
 - You can create a free https://github.com/ (new account if needed) and new repository and add your files there

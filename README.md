@@ -13,7 +13,7 @@ Site live at:
 The [bin/build](bin/build) step ([bin/build.js](bin/build.js), runs on [deno](https://deno.com) *or* node 18.19+)
 makes your site better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
 It writes:
-- `index.xml` -- RSS feed of every post & page.  Also your sitemap and the client's content/search index.
+- `index.xml` -- RSS feed & sitemap of every post & page.  Also the client's content/search index.
 - `comments/` JSON files
 - with `--seo`: a tiny head line atop each post (title, image, and a style that shows the text even w/o JS),
   and `robots.txt`
