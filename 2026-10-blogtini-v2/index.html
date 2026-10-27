@@ -1,0 +1,84 @@
+---
+title: Blogtini v2
+date: 2026-10-26
+categories:
+  - website
+  - features
+tags:
+  - blogtini
+  - markdown
+  - javascript
+  - comments
+  - themes
+  - privacy
+  - versions
+featured: v2-comments.png
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+Blogtini v2 is here!  Instantly previewable 10+ themes!
+Your posts are still just markdown files in a free git repo -- and now they hold up better
+everywhere: for crawlers, feed readers, link previews, people without JavaScript, and (we hope) the far future.
+
+The promise is unchanged:
+**no build step is required.  An optional minimal build step makes it better.**
+
+
+# Themes, themes, themes
+
+Ten themes now ship with blogtini, including ports of many favorites from [HTML5 UP](https://html5up.net):
+future imperfect, editorial, massively, phantom, striped, forty, strata, helios, strongly typed, and grid.
+
+Pick one in your `config.yml`:
+```yml
+theme: editorial
+```
+Or try them live with the theme picker -- your pick (and your light/dark choice) sticks for a day, just for you.
+
+
+# Comments, rebuilt
+
+- **One file.**  Every comment on your site now lives in a single `comments.json` at the top of your repo.
+  No build step is needed to show them -- merge a comment's pull request, and it's live.
+- **Still moderated.**  Each new comment arrives as a pull request
+  (via [staticmin](https://github.com/traceypooh/staticmin), our tiny Staticman on Netlify).
+  Each one lands in a random "slot" in the file, so two pending comments almost never conflict --
+  even with GitHub's web "Merge" button.
+- **No emails stored.**  Not even as a checksum.  Each commenter gets a private, site-specific id instead.
+- **Your Gravatar, kept local.**  If you have a [Gravatar](https://gravatar.com), a copy comes along with your
+  comment, into the site's `avatars/` folder -- so readers' browsers never call out to gravatar.com.
+  No Gravatar?  You get your own colorful identicon, made right in the page.
+- **Replies nest properly**, and comments are oldest first, like a conversation.
+
+Try it: leave a comment below!
+
+
+# Fail open
+
+If the JavaScript never loads -- blocked, offline, or a thousand years from now
+-- your page still shows its text after a moment, instead of staying blank.
+It's just a markdown file, after all.
+
+
+# One feed to rule them all
+
+The optional build now writes one rich `index.xml`:
+your RSS feed (with summaries, images, and full text),
+your sitemap, *and* the site's search index
+-- in one request, instead of fetching every post.
+No build?  A hand-made `index.xml`, `index.txt`, or `sitemap.xml` still works.
+
+The build is now one script that runs on [Deno](https://deno.com) *or* Node -- even in the iOS Code App,
+with a press of ▶.
+
+Add `--seo` for a tiny head line atop each post: its title and image, for link previews.
+
+
+# Privacy
+
+Reading a blogtini site with comments no longer sends anything to gravatar.com.
+Blogtini's libraries all come from
+[esm.ext.archive.org](https://esm.ext.archive.org) (the Internet Archive's own mirror)
+-- as do pinned, versioned releases of blogtini itself, like before.
+
+
+**🎉 Here's to v2! 🎉**
