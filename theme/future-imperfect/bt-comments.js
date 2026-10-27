@@ -1,8 +1,20 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { fetcher, state, cfg } from '../../index.js'
+import { state, cfg } from '../../index.js'
 import {
   css_headers, css_buttons, css_post, css_forms, css_normalize, css_fontawesome,
 } from './css.js'
+
+
+/**
+ * All comments in staticmin's `comments.json` -- deliberately not valid JSON (a speed bump for bots):
+ * "slot" marker lines like `#0` or `#a7`, between pretty-printed comments that each end `},`.
+ * So: drop the markers & the final `,`, and it's a JSON array.  (Format: staticmin `lib/comments_file.js`)
+ * @param {string} text
+ * @returns {any[]}
+ */
+function comments_parse(text) {
+  return JSON.parse(`[${text.replace(/^#[a-z]?[0-9a-z]$/gm, '').trim().replace(/,$/, '')}]`)
+}
 
 
 customElements.define('bt-comments', class extends LitElement {
@@ -136,23 +148,34 @@ customElements.define('bt-comments', class extends LitElement {
 
 
   async comments_get() {
-    let posts_with_comments
+    // every comment on the site, from staticmin's `comments.json`.  `fetch()`, not `fetcher()`:
+    // it's deliberately not quite JSON (see `comments_parse()`), and `fetcher()` JSON-parses .json urls
+    /** @type {any[]} */
+    let all = []
     try {
-      posts_with_comments = (await fetcher(`${state.top_dir}comments/index.txt`))?.split('\n')
+      const res = await fetch(`${state.top_dir}comments.json`)
+      if (res.ok) all = comments_parse(await res.text())
       /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
     } catch {}
-    if (!posts_with_comments?.includes(this.entryid)) {
-      this.comments = []
-      return
-    }
 
     // oldest comments (or oldest in a thread) first
-    this.comments = (await fetcher(`${state.top_dir}comments/${this.entryid}/index.json`))?.filter((e) => Object.keys(e).length).sort((a, b) => a.date < b.date).map((e) => {
+    all.sort((a, b) => ((a.date ?? '') < (b.date ?? '') ? -1 : 1))
+
+    // each commenter's avatar: `avatars/<identity>.<type>`, w/ the `type` (eg: `png`) of their newest comment w/
+    // one (staticmin sets it, current, on each) -- so their older comments show it too.  No `type`: an identicon.
+    /** @type {Object<string, string>} */
+    const types = {}
+    for (const e of all) {
+      if (e.identity && e.type) types[e.identity] = e.type
+    }
+
+    this.comments = all.filter((e) => e.path === this.entryid).map((e) => {
+      e.type = types[e.identity] ?? e.type
       // delete any unused keys in each comment hashmap
       for (const [k, v] of Object.entries(e)) {
         if (v === '' || v === undefined || v === null)
           delete e[k]
-        if (!['id', 'name', 'email', 'date', 'website', 'replyID', 'body'].includes(k))
+        if (!['id', 'name', 'identity', 'type', 'date', 'website', 'replyID', 'body'].includes(k))
           delete e[k]
       }
       return e

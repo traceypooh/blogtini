@@ -1,8 +1,48 @@
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
-import { datetime } from '../../index.js'
+import {
+  LitElement, html, svg, css,
+} from 'https://esm.ext.archive.org/lit@3.2.1'
+import { datetime, state } from '../../index.js'
 import {
   css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome, css_normalize,
 } from './css.js'
+
+
+/** A 32-bit string hash: FNV-1a, then murmur3's final mix (so similar strings look nothing alike) */
+function hash(str) {
+  let h = 0x811c9dc5
+  for (const c of str) {
+    h ^= c.codePointAt(0)
+    h = Math.imul(h, 0x01000193)
+  }
+  h ^= h >>> 16
+  h = Math.imul(h, 0x85ebca6b)
+  h ^= h >>> 13
+  h = Math.imul(h, 0xc2b2ae35)
+  h ^= h >>> 16
+  return h >>> 0
+}
+
+/**
+ * GitHub-style identicon, made here (no 3rd party requests): a 5x5 grid, whose left 3 columns are
+ * set from bits of the hash, then mirrored -- in one color from the hash.
+ */
+function identicon(seed) {
+  const h = hash(seed)
+  const cells = []
+  for (let i = 0; i < 15; i++) {
+    if (!((h >>> i) & 1)) {
+      const x = Math.floor(i / 5)
+      const y = i % 5
+      cells.push([x, y])
+      if (x !== 2) cells.push([4 - x, y]) // mirror (middle column is its own mirror)
+    }
+  }
+  const fill = `hsl(${(h >>> 15) % 360} 55% 55%)`
+  return html`<svg class="comment-avatar circle" viewBox="-0.5 -0.5 6 6" aria-hidden="true">
+    <rect x="-0.5" y="-0.5" width="6" height="6" fill="#f0f0f0"/>
+    ${cells.map(([x, y]) => svg`<rect x=${x} y=${y} width="1.02" height="1.02" fill=${fill}/>`)}
+  </svg>`
+}
 
 
 customElements.define('bt-comment', class extends LitElement {
@@ -10,7 +50,8 @@ customElements.define('bt-comment', class extends LitElement {
     return {
       id: { type: String },
       name: { type: String },
-      email: { type: String },
+      identity: { type: String },
+      type: { type: String }, // their avatar's image type (eg: `png`), if they have one
       date: { type: String },
       website: { type: String },
       replyID: { type: String },
@@ -20,9 +61,11 @@ customElements.define('bt-comment', class extends LitElement {
 
   render() {
     return html`
-<article id="${this.id}" class="comment" style="${this.replID ? 'margin-left:150px' : ''}">
+<article id="${this.id}" class="comment">
   <header>
-    <img class="comment-avatar circle" src="https://www.gravatar.com/avatar/${this.email}?s=100" alt="${this.name}'s Gravatar">
+    ${this.identity && this.type
+      ? html`<img class="comment-avatar circle" src="${state.top_dir}avatars/${this.identity}.${this.type}" alt="" loading="lazy">`
+      : identicon(this.identity ?? this.name ?? '')}
     <div>
       <div class="comment-author-container">
 
@@ -127,6 +170,7 @@ customElements.define('bt-comment', class extends LitElement {
   width: 3.75em;
   height: 3.75em;
   flex-grow: 0;
+  flex-shrink: 0;
 }
 @media (min-width: 375px) {
   .comment-avatar {

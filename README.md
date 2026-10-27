@@ -14,12 +14,11 @@ The [bin/build](bin/build) step ([bin/build.js](bin/build.js), runs on [deno](ht
 makes your site better for everything that doesn't run JS: link previews, crawlers, RSS readers, and people w/o JS.
 It writes:
 - `index.xml` -- RSS feed & sitemap of every post & page.  Also the client's content/search index.
-- `comments/` JSON files
 - with `--seo`: a tiny head line atop each post (title, image, and a style that shows the text even w/o JS),
   and `robots.txt`
 
 Our GitHub Action runs it for you on each push -- with `--seo`, for the live site.
-Locally, the default (`index.xml` & comments) is usually all you want: no head lines to `git checkout` (revert) afterwards.
+Locally, the default (`index.xml`) is usually all you want: no head lines to `git checkout` (revert) afterwards.
 From the top of your site repo:
 ```sh
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
@@ -34,10 +33,11 @@ node ../blogtini/bin/build.js    # node -- or open bin/build.js in iOS Code App 
 
 
 ### Comments
-- New comments arrive as JSON files in `comments/`.
-- The build also rolls them up into per-post `index.json` files
-(efficiency - fewer requests for the site) -- our GitHub Action does that on each push, and so does `bin/build` locally.
-- Commit any `index.json` files or not -- either is fine.
+- Each new comment arrives as a pull request ([staticmin](https://github.com/traceypooh/staticmin)) adding it to
+  `comments.json` at the top of your repo -- merge it to publish it.  No build step needed.
+- `comments.json` is deliberately *not* quite JSON (a speed bump for bots).  It's easy to read & hand-edit: each
+  comment is a few lines, `path` (the post) first; delete those lines to remove a comment.
+- Commenters' Gravatars (if any) come in the same pull request, into `avatars/`.  No emails are ever stored.
 
 
 

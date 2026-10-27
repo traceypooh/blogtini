@@ -4,13 +4,11 @@
   link previews, crawlers, RSS readers, and people w/o JS.
 
   Run from the top of your site repo (where `config.yml` is), eg:
-    ../blogtini/bin/build            # index.xml & comments -- what local dev needs
+    ../blogtini/bin/build            # index.xml -- what local dev needs
     ../blogtini/bin/build --seo      # also: each post's head line & robots.txt (GitHub Actions does this)
-    ../blogtini/bin/build comments   # just the comments part
 
   Writes:
     index.xml             RSS feed of every post & page.  Also our sitemap and the client's content/search index.
-    comments/index.txt, comments/<post>/index.json
   and w/ `--seo`:
     <post>/index.html     prepends one head line: title, og:image, and the fail-open style
     robots.txt            (only if missing) pointing crawlers to index.xml
@@ -221,41 +219,13 @@ function rss(cfg, site, items) {
 }
 
 
-/**
- * Merges each post's comment files (one JSON file per comment, from staticman) into one
- * `comments/<post>/index.json`, so the client makes one request per post.
- */
-function comments() {
-  if (!exists('comments')) return
-
-  const dirs = [...Deno.readDirSync('comments')].filter((e) => e.isDirectory).map((e) => e.name).sort()
-  write('comments/index.txt', dirs.map((e) => `${e}\n`).join(''))
-
-  for (const dir of dirs) {
-    const files = [...Deno.readDirSync(`comments/${dir}`)]
-      .map((e) => e.name)
-      .filter((e) => e.endsWith('.json') && e !== 'index.json')
-      .sort()
-    const all = files.flatMap((e) => JSON.parse(Deno.readTextFileSync(`comments/${dir}/${e}`)))
-      .map((comment) => Object.fromEntries(
-        Object.entries(comment)
-          .filter(([key]) => key !== 'replyThread' && key !== 'replyName')
-          .map(([key, val]) => [key === '_id' ? 'id' : key, val]),
-      ))
-    write(`comments/${dir}/index.json`, `${JSON.stringify(all, null, 2)}\n`)
-  }
-}
-
-
 function main() {
   if (!exists('config.yml')) {
     log('run this from the top of your site repo (where config.yml is)')
     Deno.exit(1)
   }
 
-  comments()
-  if (Deno.args.includes('comments')) return
-
+  // (no comments step: staticmin keeps every comment in `comments.json`, which the client reads as is)
   const seo = Deno.args.includes('--seo')
   const cfg = yml.load(Deno.readTextFileSync('config.yml')) ?? {}
   const site = site_url(cfg)
