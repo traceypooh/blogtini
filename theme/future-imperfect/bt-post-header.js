@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
 import {
-  cfg, urlify, datetime, PR,
+  cfg, urlify, datetime, PR, reading_time,
 } from '../../index.js'
 import {
   css_headers, css_links, css_normalize, css_title,
@@ -15,10 +15,6 @@ customElements.define('bt-post-header', class extends LitElement {
   }
 
 
-  wordcount(str) {
-    return str?.match(/(\w+)/g).length ?? 0
-  }
-
   render() {
     return html`
   <header>
@@ -31,7 +27,7 @@ customElements.define('bt-post-header', class extends LitElement {
       <div class="meta">
         <time datetime="${this.post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.post.date)}</time>
         ${PR`<p>${this.post.author}</p>` /* chexxx */}
-        ${cfg.reading_time ? html`<p>${Math.round((212 + this.wordcount(this.post.body_raw)) / 213)}-Minute Read</p>` : ''}
+        ${cfg.reading_time ? html`<p>${reading_time(this.post)}-Minute Read</p>` : ''}
       </div>`
       : ''}
   </header>

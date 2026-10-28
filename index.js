@@ -64,6 +64,7 @@ const THEMES = [
   'helios',
   'strongly-typed',
   'hyperspace',
+  'librarian',
   'grid',
 ]
 
@@ -977,6 +978,16 @@ function datetime(date) {
   return dayjs(d).format('dddd, MMM D, YYYY h:mm A')
 }
 
+/** Returns how many words a post has (roughly: its markdown, split on whitespace) */
+function word_count(post) {
+  return post.body_raw?.trim().split(/\s+/).filter(Boolean).length ?? 0
+}
+
+/** Returns a post's estimated reading time, in whole minutes (at least 1) -- eg: for a theme's "4 min read" */
+function reading_time(post) {
+  return Math.max(1, Math.ceil(word_count(post) / 213))
+}
+
 /**
  * Sets dark theme if prefers dark mode *and* it's nighttime: before 7am or from 6pm, localtime.
  * Unless the viewer picked light or dark (w/ a theme's "Scheme" lightbulb) in the last 24h.
@@ -1121,7 +1132,7 @@ function head_insert_json_ld(post) {
     headline: post.title,
     name: post.title,
     datePublished: date2ymd(new Date(post.date ?? new Date().getTime())),
-    wordCount: post.body_raw.trim().split(/\s+/).length,
+    wordCount: word_count(post),
     keywords: [...new Set([...post.tags, ...post.categories])], // unique array(s); preserve order
     image: {
       '@type': 'ImageObject',
@@ -1205,4 +1216,6 @@ export {
   btbody_root,
   THEMES,
   all_posts,
+  word_count,
+  reading_time,
 }

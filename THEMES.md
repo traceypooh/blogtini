@@ -37,6 +37,7 @@ Two styles so far:
 | `helios` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `strongly-typed` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `hyperspace` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
+| `librarian` | plain custom elements, light DOM | our own: Tufte CSS, as is, + `index.css` |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -316,6 +317,43 @@ Mapping, like the original's two pages:
 - [ ] the theme picker & search are down in "Explore" -- on a long page, that's a scroll
 
 
+## Librarian
+Our own theme (2026-10-28): a nerdy library.  Not an HTML5 UP port -- but built the same way (light DOM,
+`shared.js` helpers).  See the [idea](#original-theme-idea-librarian--archival), below, and the
+[blog post](2026-10-librarian-theme/index.html), for the card anatomy.
+- `tufte.css`: [Tufte CSS](https://github.com/edwardtufte/tufte-css) (MIT), as is -- except its ET Book fonts are
+  self-hosted in `fonts/`, and no `prefers-color-scheme` dark mode (blogtini's Scheme drives ours)
+- `fonts/`: ET Book (MIT) & Courier Prime (OFL, from `@fontsource/courier-prime` 5.3.0) -- for the typed cards
+- `index.css`: everything library, w/ colors as `:root` variables -- so the dark scheme ("the reading room after
+  hours") just redefines them
+
+Mapping:
+- posts (homepage, tags, categories): a "Card catalog" -- each post a library catalog card, typed in Courier Prime:
+  a "call number" (first subject, a Cutter-ish letter & 2 digits from the title, year), the author as main entry
+  (if any), title & date, "collation" (`1,240 words : front., 3 ill.` -- the featured image is the frontispiece), a summary, "tracings" (numbered subjects, `I. Title.`),
+  a punched hole -- and a red rubber "LOAN PERIOD" stamp: the reading time.  (Uneven ink: an SVG noise mask; each
+  post's stamp lands at its own slight angle)
+- single post: a Tufte article -- title, date, a "DATE DUE" slip in the right margin stamped w/ the reading time,
+  featured image (caption as a margin note), body, "Subjects:", comments.  In the body: a picture alone in its
+  paragraph becomes a figure, its alt text a margin caption; and a "See also" margin note about halfway down --
+  up to 3 posts sharing the most subjects
+- prior & next: "Previous / Next on the shelf" (posts), "Prior / Next drawer" (pages of posts)
+- "Finding aids" (every page): card catalog drawers -- oak fronts, brass label holders & pulls -- for search,
+  subjects (tags), categories, theme picker
+- tags & categories lists: "Subject headings", like a book's index (`name ........ 12`); contact: "Ask a librarian"
+- colophon (footer): site image, about, social links, credits
+- `config.yml` `reading_time: false` drops the stamps & slip
+
+Shared w/ every theme: `index.js` exports `word_count(post)` & `reading_time(post)` (minutes, at least 1) --
+future imperfect & striped use it now, too.
+
+### TODO / FIXME
+- [ ] comments: future-imperfect's form & comments, on Tufte's paper.  (Its box & headings are restyled via the
+      `::part()`s `bt-comments` now exposes: `comments`, `heading`, `say-something` -- "Shh! Quietly, please.")
+- [ ] Tufte's sidenotes: a markdown way to write them (eg: footnotes => sidenotes)
+- [ ] check phone widths & the dark scheme by eye; the stamp's noise mask in Safari & Firefox
+
+
 ## HTML5 UP ports: shared TODO / FIXME
 - [ ] the phone width nav panels (helios, strongly typed) have no search box yet
 - [ ] `sidebar.position`: future-imperfect, editorial & striped could honor it, too (they're left only, so far)
@@ -395,11 +433,12 @@ our web components.  Check each license (these are MIT or Apache-2.0, afaik -- v
 | [Clean White](https://github.com/zhaohuabing/hugo-theme-cleanwhite) | big header photo, clean centered posts, sidebar | very nice classic blog |
 
 ### Original theme idea: "Librarian" / "Archival"
-A nerdy-library look of our own -- nobody else has one.  Base: [Tufte CSS](https://github.com/edwardtufte/tufte-css)
+(**Made**: [Librarian](#librarian), above.)  A nerdy-library look of our own -- nobody else has one.  Base: [Tufte CSS](https://github.com/edwardtufte/tufte-css)
 (MIT; book typography, margin sidenotes, ET Book font -- there's also a
 [classless](https://github.com/eobrain/classless-tufte-css) variant that styles plain semantic HTML, which is what
-our markdown renders to).  Then: the post list as library catalog cards, "call numbers" from dates & tags, maybe a
-due-date stamp.  Self-host the fonts (no font CDNs).
+our markdown renders to).  Then: the post list as library catalog cards, "call numbers" from dates & tags, and a
+red rubber "due-date" stamp that's really the estimated reading time ("LOAN PERIOD: 4 MIN").  Self-host the fonts
+(no font CDNs).
 
 
 ## Viewer picks & light/dark

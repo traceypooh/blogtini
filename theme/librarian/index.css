@@ -1,0 +1,643 @@
+/*
+  Librarian theme for blogtini -- Tufte CSS (tufte.css, as is), then our library bits below.
+  Fonts are self-hosted in fonts/: ET Book (MIT, via Tufte CSS) & Courier Prime (OFL) for the typed cards.
+*/
+@import url(tufte.css);
+@import url(../html5up/fontawesome/css/fontawesome-all.min.css);
+
+@font-face {
+  font-family: "Courier Prime";
+  src: url("fonts/courier-prime-latin-400-normal.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("fonts/courier-prime-latin-700-normal.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --page: #fffff8;           /* Tufte's paper */
+  --ink: #111;
+  --muted: #6b6455;
+  --rule: #ccc;
+  --card: #fbf6e6;           /* catalog card stock */
+  --card-ink: #2a2620;
+  --card-edge: #e3d9bd;
+  --stamp: #c0392b;          /* red stamp pad */
+  --stamp-blend: multiply;
+  --slip: #f4ebcf;           /* manila date due slip */
+  --wood: #9a6634;           /* card catalog oak */
+  --wood-dark: #774a22;
+  --brass: #c9a75b;
+  --typed: "Courier Prime", "Courier New", Courier, monospace;
+  /* right side room for the full width parts (cards, drawers, shelf).  (Tufte's body pads just its left) */
+  --gutter: max(1.5rem, 6%);
+}
+
+bt-body {
+  display: block;
+}
+body {
+  background-color: var(--page);
+  color: var(--ink);
+}
+a:link,
+a:visited {
+  color: inherit;
+}
+.sans {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+}
+
+
+/* masthead: title & nav */
+.masthead {
+  padding-top: 3rem;
+}
+.masthead h1.site-title {
+  margin-top: 1rem;
+  font-size: 4rem;
+}
+.masthead p.site-title {
+  font-size: 1.6rem;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.masthead p.site-title a {
+  text-decoration: none;
+}
+.masthead .subtitle {
+  width: 55%;
+  line-height: 1.3;
+}
+.masthead nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0 0;
+  width: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.6rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+.masthead nav li {
+  margin: 0;
+}
+.masthead nav a {
+  text-decoration: none;
+  color: var(--muted);
+}
+.masthead nav a:hover {
+  color: var(--ink);
+}
+.masthead nav i {
+  font-size: 0.85em;
+  margin-right: 0.2em;
+}
+
+
+/* card catalog */
+.catalog {
+  padding-top: 2rem;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 31rem), 1fr));
+  gap: 2.4rem 2rem;
+  margin: 1rem var(--gutter) 2rem 0;
+}
+.card {
+  position: relative;
+  min-height: 17rem;
+  display: grid;
+  grid-template-columns: 6ch 1fr;
+  gap: 0 1.5ch;
+  align-content: start;
+  padding: 1.3rem 1.5rem 2.8rem 1.3rem;
+  background-color: var(--card);
+  color: var(--card-ink);
+  border: 1px solid var(--card-edge);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 6px 14px rgba(0, 0, 0, 0.05);
+  font-family: var(--typed);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  scroll-margin-top: 2rem;
+}
+/* the punched hole the drawer's rod goes through */
+.card::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.8rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--page);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.card p {
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  width: auto;
+}
+.card a {
+  text-decoration: none;
+}
+.card a:hover {
+  text-decoration: underline;
+}
+.card .call-number {
+  font-weight: bold;
+}
+.card .title {
+  text-indent: 2ch;
+}
+.card .title a {
+  font-weight: bold;
+}
+.card .collation {
+  padding-left: 4ch;
+}
+.card .summary {
+  margin-top: 0.7em;
+  text-indent: 2ch;
+  opacity: 0.85;
+}
+.card .tracings {
+  margin-top: 0.7em;
+  text-indent: 2ch;
+  padding-right: 7rem; /* room for the stamp */
+}
+
+/* the red rubber stamp: double border, slight tilt, uneven ink (a noise mask) */
+.stamp {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 1.3rem;
+  padding: 0.25em 0.6em 0.2em 0.6em;
+  border: 3px double currentColor;
+  border-radius: 5px;
+  color: var(--stamp);
+  font-family: var(--typed);
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  opacity: 0.85;
+  transform: rotate(var(--tilt, -6deg));
+  mix-blend-mode: var(--stamp-blend);
+  pointer-events: none;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.stamp small {
+  display: block;
+  font-size: 0.6em;
+  letter-spacing: 0.2em;
+}
+.stamp b {
+  display: block;
+  font-size: 1.45em;
+}
+
+
+/* a post: Tufte article, w/ a DATE DUE slip in the margin */
+article.post,
+article.histogram,
+article.contact {
+  padding-top: 2rem;
+}
+article.homepage {
+  padding: 1rem 0;
+}
+p.slip-anchor {
+  margin: 0;
+  height: 0;
+}
+.due-slip {
+  display: block;
+  width: 12rem;
+  max-width: 50%;
+  padding: 0.6rem 0.9rem 0.9rem 0.9rem;
+  background-color: var(--slip);
+  color: var(--card-ink);
+  border: 1px solid var(--card-edge);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-family: var(--typed);
+}
+.due-slip .slip-head {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 3px double var(--card-ink);
+  margin-bottom: 0.7rem;
+}
+.due-slip .stamp {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  display: inline-block;
+  margin: 0.2rem 0 0.4rem 0.5rem;
+  font-size: 1.05rem;
+}
+.due-slip .slip-rule {
+  display: block;
+  height: 1.6rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+figure.featured {
+  margin-bottom: 2rem;
+}
+.post-body figure .marginnote {
+  font-style: italic;
+}
+
+/* "See also": a few related posts, in the margin halfway down -- typed, like a catalog card's references */
+.see-also {
+  font-family: var(--typed);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--card-edge);
+}
+.see-also .see-head {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.see-also a {
+  display: block;
+  margin-bottom: 0.4rem;
+  text-decoration: none;
+}
+.see-also a:hover {
+  text-decoration: underline;
+}
+figure.featured img {
+  display: block;
+}
+.post-body img {
+  height: auto;
+}
+.post-body pre {
+  overflow-x: auto;
+}
+.tracings-full p {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+.tracings-full a {
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+
+
+/* prior & next: on the shelf */
+nav.shelf {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 2rem var(--gutter) 2rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+nav.shelf a {
+  text-decoration: none;
+  font-size: 1.15rem;
+  max-width: 48%;
+}
+nav.shelf a small {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+nav.shelf .next {
+  text-align: right;
+}
+
+
+/* finding aids: card catalog drawers -- an oak front w/ a brass label holder & pull, then its contents */
+.finding-aids {
+  padding: 2rem 0;
+}
+.drawers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1.5rem;
+  margin-right: var(--gutter);
+}
+.drawer {
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--card);
+  border: 1px solid var(--card-edge);
+  color: var(--card-ink);
+}
+.drawer.search {
+  grid-column: 1 / -1;
+}
+.drawer .front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem 0.7rem 1rem;
+  background:
+    repeating-linear-gradient(95deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 9px),
+    linear-gradient(var(--wood), var(--wood-dark));
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+.drawer .label {
+  padding: 0.15em 1.1em;
+  background-color: #f8f3e3;
+  color: #333;
+  border: 3px solid var(--brass);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  font-family: var(--typed);
+  font-weight: bold;
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.drawer .label a {
+  text-decoration: none;
+}
+.drawer .pull {
+  width: 3.2rem;
+  height: 0.6rem;
+  border-radius: 0 0 1rem 1rem;
+  background: linear-gradient(#e2c77f, #9c7a33);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.drawer .contents {
+  padding: 0.9rem 1rem;
+  font-family: var(--typed);
+  font-size: 0.95rem;
+}
+.drawer .contents p,
+.drawer .contents ul {
+  font-size: inherit;
+  line-height: 1.5;
+  margin: 0;
+  width: auto;
+}
+.drawer a {
+  text-decoration: none;
+}
+.drawer a:hover {
+  text-decoration: underline;
+}
+.tagcloud a {
+  margin-right: 0.35em;
+}
+#search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em 0.7em;
+  font: inherit;
+  color: inherit;
+  background: var(--page);
+  border: 1px solid var(--card-edge);
+}
+#search-results:empty {
+  display: none;
+}
+#search-results article.mini-post {
+  padding: 0.5rem 0;
+  border-bottom: 1px dotted var(--card-edge);
+}
+#search-results .mini-post a {
+  text-decoration: none;
+}
+#search-results .mini-post h2 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.3;
+}
+#search-results .mini-post time {
+  font-size: 0.85em;
+  color: var(--muted);
+}
+#search-results .mini-post p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0.2rem 0 0 0;
+  width: auto;
+}
+
+/* lists w/ counts, like a book's index: name ........ 12 */
+ul.index {
+  list-style: none;
+  padding: 0;
+  width: auto;
+}
+section > ul.index {
+  max-width: 30rem;
+}
+ul.index li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin: 0.15rem 0;
+}
+ul.index li a {
+  text-decoration: none;
+}
+ul.index li::after {
+  content: "";
+  order: 1;
+  flex: 1;
+  border-bottom: 2px dotted var(--rule);
+  margin: 0 0.2em 0.3em 0.2em;
+}
+ul.index li .count {
+  order: 2;
+  color: var(--muted);
+}
+#theme-menu li::after {
+  display: none;
+}
+
+
+/* the contact form, plainly */
+article.contact form input[type="text"],
+article.contact form input[type="email"],
+article.contact form textarea {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  box-sizing: border-box;
+  margin: 0 0 0.8rem 0;
+  padding: 0.5em 0.7em;
+  font: inherit;
+  font-size: 1.1rem;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+}
+article.contact form ul.actions {
+  list-style: none;
+  padding: 0;
+}
+article.contact form input[type="submit"] {
+  font: inherit;
+  font-size: 1.1rem;
+  padding: 0.4em 1.4em;
+  color: var(--page);
+  background: var(--ink);
+  border: 0;
+  cursor: pointer;
+}
+
+
+/* comments (future-imperfect's, in their shadow DOM): in line w/ the text, w/ Tufte headings.  Shh! */
+bt-comments::part(comments) {
+  max-width: 55%;
+  margin: 3rem 0 2rem 0;
+  padding: 0;
+  background: transparent;
+}
+bt-comments::part(heading) {
+  font-family: et-book, Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.2rem;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  text-align: left;
+  color: var(--ink);
+}
+bt-comments::part(say-something)::after {
+  content: "(Shh! Quietly, please.)";
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--typed);
+  font-style: normal;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+
+/* colophon */
+footer.colophon {
+  max-width: 55%;
+  padding: 2rem 0 4rem 0;
+  border-top: 1px solid var(--rule);
+}
+footer.colophon p {
+  width: auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+footer.colophon .avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  float: left;
+  margin: 0 1.2rem 0.5rem 0;
+}
+footer.colophon .social a {
+  text-decoration: none;
+  margin-right: 0.6em;
+  color: var(--muted);
+}
+footer.colophon .credits {
+  clear: both;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+
+/* phones: Tufte hides margin notes -- keep our due slip & caption, inline */
+@media (max-width: 760px) {
+  :root {
+    --gutter: 0px; /* Tufte pads both sides, on phones */
+  }
+  .masthead .subtitle,
+  footer.colophon,
+  bt-comments::part(comments) {
+    width: auto;
+    max-width: none;
+  }
+  .masthead h1.site-title {
+    font-size: 3rem;
+  }
+  .due-slip.marginnote,
+  figure .marginnote {
+    display: block;
+    float: none;
+    margin: 0 0 1rem 0;
+    width: auto;
+  }
+  .due-slip.marginnote {
+    float: right;
+    width: 10rem;
+    margin: 0 0 1rem 1rem;
+  }
+  p.slip-anchor {
+    height: auto;
+  }
+  .card {
+    grid-template-columns: 1fr;
+  }
+  .card .call-number br {
+    display: none;
+  }
+  .card .call-number {
+    margin-bottom: 0.5em;
+  }
+}
+
+
+/* dark scheme: the reading room after hours */
+[scheme="dark"] {
+  --page: #1b1a17;
+  --ink: #e6dfcf;
+  --muted: #a39a87;
+  --rule: #3d3a33;
+  --card: #2b2822;
+  --card-ink: #e6dfcf;
+  --card-edge: #3f3a30;
+  --stamp: #ef6a5d;
+  --stamp-blend: screen;
+  --slip: #332e24;
+  --wood: #6d4826;
+  --wood-dark: #4c3118;
+}
+[scheme="dark"] .drawer .label {
+  background-color: #e9e2cd;
+}
+[scheme="dark"] .due-slip .slip-rule {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+[scheme="dark"] img {
+  filter: brightness(0.9);
+}

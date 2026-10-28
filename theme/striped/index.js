@@ -11,7 +11,7 @@
 
 import {
   cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, datetime, imgurl, reveal,
-  all_posts,
+  all_posts, reading_time,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
@@ -40,7 +40,7 @@ function striped_date(date) {
 /** Returns a post's "stats" (left of the post): reading time, number of tags */
 function stats(post) {
   const href = esc(urlify(post.url))
-  const minutes = Math.max(1, Math.round(post.body_raw.trim().split(/\s+/).length / 200))
+  const minutes = reading_time(post)
   const tags = post.tags?.length ?? 0
   return `
 <ul class="stats">

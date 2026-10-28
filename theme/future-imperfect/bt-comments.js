@@ -17,6 +17,10 @@ function comments_parse(text) {
 }
 
 
+/*
+  A light DOM theme can restyle the comments w/ CSS `::part()`s (eg: librarian):
+  `comments` (the whole box), `heading` (its h2s), `say-something` (the form's h2)
+*/
 customElements.define('bt-comments', class extends LitElement {
   static get properties() {
     return {
@@ -33,9 +37,9 @@ customElements.define('bt-comments', class extends LitElement {
       this.comments_insert()
 
     return html`
-  <div class="comments post">
+  <div class="comments post" part="comments">
     <div>
-      <h2 id="say-something">Say Something</h2>
+      <h2 id="say-something" part="heading say-something">Say Something</h2>
       <form id="comment-form" class="new-comment" method="POST">
         <h3 class="reply-notice hidden">
           <span class="reply-name"></span>
@@ -63,7 +67,7 @@ customElements.define('bt-comments', class extends LitElement {
 
 
     <div class="comments-container">
-      <h2>Comments</h2>
+      <h2 part="heading">Comments</h2>
       ${this.comments && this.comments.length ? '' : html`<p>Nothing yet.</p>`}
     </div>
   </div>`
