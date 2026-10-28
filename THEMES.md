@@ -36,6 +36,7 @@ Two styles so far:
 | `strata` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `helios` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `strongly-typed` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
+| `hyperspace` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -282,6 +283,39 @@ Mapping:
 - [ ] check phone widths: title bar & nav panel (its theme picker & Scheme; no search in it yet)
 
 
+## Hyperspace
+Port of https://html5up.net/hyperspace (2026-10-27).
+
+What changed from the HTML5 UP download:
+- `assets/css/main.css`: just its one `@import` line -- Font Awesome => the shared `theme/html5up/` copy.
+  (No Google Fonts: it uses Arial & Courier New.)  Otherwise as is.  (`assets/css/images/intro.svg` is the intro's
+  background; its demo `images/` aren't needed)
+- jQuery `main.js` (scrollex & scrolly) => vanilla js in `index.js`, w/ `IntersectionObserver`: sections & the
+  "features" fade up -- and each post's spotlight row slides in -- once they reach the middle of the screen;
+  the sidebar link of the section in view lights up (a clicked one stays lit while scrolling to it); smooth scrolling
+  for the sidebar & `.scrolly` links (offset by the sidebar, when it's a top bar); `is-preload`.
+  Added: at the very bottom of the page, everything shows (a short last section may never reach the middle).
+- `index.css` cycles Hyperspace's spotlight row tints (its demo has just 3 rows).
+
+Mapping, like the original's two pages:
+- homepage (first page): the fixed left `#sidebar` -- links to this page's Welcome, Posts, Explore & About
+  sections, then our menu & Scheme (wide screens only: narrower, the sidebar is a one-line top bar) --
+  & the full screen `#intro` (site title, intro paragraph, "Read")
+- every other page: the original's generic page -- `#header` w/ the site title, menu & Scheme
+- posts: each one a "spotlight" row -- its image (featured, else first, else the site's) as the row's background,
+  title, date, summary, "Read more"
+- "Explore" (every page): Hyperspace's "features" -- search, categories, tags, theme picker
+- "About" (every page): like its "Get in touch" -- about, Learn More & Contact | site image, social icons
+- single post: title, date, featured image, body, categories & tags, comments
+- prior & next buttons after the posts, or a post
+
+### TODO / FIXME
+- [ ] Hyperspace is dark already -- its "dark" scheme just deepens the colors
+- [ ] comments: future-imperfect's (light) look, on Hyperspace's purple
+- [ ] check phone widths: the sidebar is hidden <= 736px -- so the homepage's only nav is in its sections
+- [ ] the theme picker & search are down in "Explore" -- on a long page, that's a scroll
+
+
 ## HTML5 UP ports: shared TODO / FIXME
 - [ ] the phone width nav panels (helios, strongly typed) have no search box yet
 - [ ] `sidebar.position`: future-imperfect, editorial & striped could honor it, too (they're left only, so far)
@@ -321,7 +355,7 @@ Not yet ported, most downloaded first:
 | 627K | [Parallelism](https://html5up.net/parallelism) | horizontally scrolling photo grid | gallery | |
 | 607K | [Paradigm Shift](https://html5up.net/paradigm-shift) | big type, alternating sections, gallery | landing | |
 | 592K | [Helios](https://html5up.net/helios) -- **ported** | big header, post carousel, posts, sidebar pages | **good** | Jekyll 7 |
-| 583K | [Hyperspace](https://html5up.net/hyperspace) | sidebar nav, scrolling sections, generic page | ok | Gatsby 28 |
+| 583K | [Hyperspace](https://html5up.net/hyperspace) -- **ported** | sidebar nav, scrolling sections, generic page | ok | Gatsby 28 |
 | 561K | [Spectral](https://html5up.net/spectral) | big hero, alternating spotlight rows, generic page | ok | Jekyll 400, Hugo 81 |
 | 550K | [Aerial](https://html5up.net/aerial) | one-screen personal splash | landing | |
 | 543K | [ZeroFour](https://html5up.net/zerofour) | banner, features, posts + sidebar pages | **good** | |
@@ -346,6 +380,26 @@ Directive, Highlights -- 293K-454K, mostly one-page / landing designs.)
 Picks: ~~Helios & Strongly Typed~~ (ported 2026-10-18), then the top downloads, **Dimension** & **Prologue**.
 ZeroFour, Escape Velocity, Dopetrope & Verti are good blog fits, too -- & "classic" ones, like helios &
 strongly typed, so `shared.js`'s dropdowns & nav panel are ready for them.
+2026-10-27: **Hyperspace** is a favorite -- its scroll fade-ins are lovely w/o being too showy.
+
+### Beyond HTML5 UP
+Lots of ideas in [Fifty of 2022's most popular Hugo themes](https://cloudcannon.com/blog/fifty-of-the-most-popular-hugo-themes/)
+(CloudCannon).  Hugo themes are Go templates -- so a port reuses the CSS (& the look), and rewrites the markup as
+our web components.  Check each license (these are MIT or Apache-2.0, afaik -- verify before porting).
+
+| theme | look | why |
+|---|---|---|
+| [Docsy](https://github.com/google/docsy) / [Doks](https://github.com/thuliteio/doks) | documentation site: left nav tree, page TOC | a look we don't have: docs, manuals, project sites |
+| [Terminal](https://github.com/panr/hugo-theme-terminal) | retro terminal, monospace, accent color | fun & distinctive; tiny |
+| [Ananke](https://github.com/theNewDynamic/gohugo-theme-ananke) | Hugo's starter theme: hero image, clean cards | familiar, friendly default |
+| [Clean White](https://github.com/zhaohuabing/hugo-theme-cleanwhite) | big header photo, clean centered posts, sidebar | very nice classic blog |
+
+### Original theme idea: "Librarian" / "Archival"
+A nerdy-library look of our own -- nobody else has one.  Base: [Tufte CSS](https://github.com/edwardtufte/tufte-css)
+(MIT; book typography, margin sidenotes, ET Book font -- there's also a
+[classless](https://github.com/eobrain/classless-tufte-css) variant that styles plain semantic HTML, which is what
+our markdown renders to).  Then: the post list as library catalog cards, "call numbers" from dates & tags, maybe a
+due-date stamp.  Self-host the fonts (no font CDNs).
 
 
 ## Viewer picks & light/dark

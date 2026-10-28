@@ -1,0 +1,142 @@
+/*
+  Hyperspace theme for blogtini -- light DOM, so HTML5 UP's original css works as is.
+  assets/ is the HTML5 UP original (w/ its Font Awesome `@import` => the shared `../html5up/`); below are blogtini additions.
+  (Hyperspace uses Arial & Courier New -- no web fonts to self-host)
+*/
+@import url(assets/css/main.css);
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* a long line in a code block (etc.) shouldn't widen the page */
+#wrapper {
+  min-width: 0;
+}
+#wrapper pre {
+  overflow-x: auto;
+}
+#wrapper img,
+#wrapper video,
+#wrapper iframe {
+  max-width: 100%;
+}
+.post-body img {
+  height: auto;
+}
+
+/* sidebar: our site links (menu, Scheme) under Hyperspace's section links -- just on wide screens,
+   where the sidebar is the tall left column (narrower, it's a one-line top bar) */
+#sidebar nav > ul.site-links {
+  margin-top: 3em;
+}
+#sidebar nav > ul.site-links a {
+  font-size: 0.5em;
+}
+@media screen and (max-width: 1280px) {
+  #sidebar nav > ul.site-links {
+    display: none;
+  }
+}
+
+/* posts: spotlight rows (the image is the row's background).
+   Hyperspace tints just rows 2 & 3 (its demo has 3) -- cycle that, for any number of posts */
+.spotlights > section:nth-child(3n + 2) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.spotlights > section:nth-child(3n + 3) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.spotlights .date,
+.date {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85em;
+  margin: -0.5em 0 1em 0;
+}
+.post-tags a {
+  margin-right: 1em;
+  border-bottom: 0;
+}
+
+/* Explore: search, categories, tags, theme picker */
+#explore .features section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#explore .features section li {
+  padding: 0.15em 0;
+}
+#explore .count,
+.histogram .count {
+  float: right;
+  opacity: 0.6;
+}
+#explore h3 a {
+  border-bottom: 0;
+}
+.tagcloud a {
+  border-bottom: 0;
+  margin-right: 0.35em;
+}
+#explore #search-input {
+  margin-top: 0.5em;
+}
+#explore #search-results:empty {
+  display: none;
+}
+#explore #search-results .mini-post {
+  border-top: solid 1px rgba(255, 255, 255, 0.15);
+  padding: 0.6em 0;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+#explore #search-results .mini-post h2 {
+  font-size: 1em;
+  margin: 0;
+}
+#explore #search-results .mini-post time {
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+#explore #search-results .mini-post p {
+  margin: 0.25em 0 0 0;
+}
+
+/* About: the site image */
+#about .image.avatar img {
+  width: 6em;
+  border-radius: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+
+/* dark scheme (blogtini's "Scheme" lightbulb / nighttime + `prefers-color-scheme: dark`):
+   Hyperspace is dark already -- so just deepen its colors */
+[scheme="dark"] body,
+[scheme="dark"] #sidebar {
+  background-color: #1f1733;
+}
+[scheme="dark"] #header,
+[scheme="dark"] .wrapper.style1 {
+  background-color: #3d2b6d;
+}
+[scheme="dark"] .wrapper.style1-alt {
+  background-color: #2f2155;
+}
+[scheme="dark"] .wrapper.style2 {
+  background-color: #343677;
+}
+[scheme="dark"] .wrapper.style2-alt {
+  background-color: #282a5f;
+}
+[scheme="dark"] .wrapper.style3 {
+  background-color: #7a335f;
+}
+[scheme="dark"] img {
+  filter: grayscale(30%);
+}

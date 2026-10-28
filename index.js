@@ -63,6 +63,7 @@ const THEMES = [
   'strata',
   'helios',
   'strongly-typed',
+  'hyperspace',
   'grid',
 ]
 

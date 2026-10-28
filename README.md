@@ -79,8 +79,8 @@ node ../blogtini/bin/build.js    # node
 
 
 ## Themes
-10 themes ship w/ blogtini: future imperfect (default), editorial, massively, phantom, striped, forty, strata,
-helios, strongly typed, grid -- many ported from [HTML5 UP](https://html5up.net).
+11 themes ship w/ blogtini: future imperfect (default), editorial, massively, phantom, striped, forty, strata,
+helios, strongly typed, hyperspace, grid -- many ported from [HTML5 UP](https://html5up.net).
 Pick one in `config.yml` (`theme: editorial`), or try them live w/ the theme picker: a viewer's pick
 (and light/dark choice) sticks for 24hr, just for them.  How themes plug in, & adding your own: [THEMES.md](THEMES.md).
 
