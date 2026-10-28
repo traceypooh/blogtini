@@ -1,4 +1,49 @@
+# Ideas: design notes
 
+## Finding posts w/o any list (no build, no `index.txt`)
+- **GitHub tree API**: `GET https://api.github.com/repos/OWNER/REPO/git/trees/main` (top level; `?recursive=1` for
+  all) -- one CORS-open call.  Top level is usually enough: post dirs *are* the post list.
+  OWNER/REPO come from `OWNER.github.io/REPO/`; a custom domain needs `repo:` in `config.yml`.  Public repos only.
+  The catch (why it was pulled, `b04131a`): unauthenticated, it's 60 requests/hour *per client IP*, shared by every
+  unauthenticated GitHub call from that IP (plane wifi, VPNs, iCloud Private Relay, carrier CGNAT).  If revived:
+  cache the list ~1h keyed by OWNER/REPO (sites on one `*.github.io` origin share localStorage), read
+  `x-ratelimit-remaining`, & on `403`/`429` wait for `x-ratelimit-reset`.
+  GitLab's is similar: `gitlab.com/api/v4/projects/OWNER%2FREPO/repository/tree?per_page=100`.
+- **Crawl local links**: a homepage that links to its posts already *is* a sitemap -- fetch it, follow its local
+  links (a level or two), read each one's front matter.  So the docs could say "list your posts on your homepage".
+- Use one or the other, never both (merging the lists is where duplicates & url normalizing get messy).
+
+## Homepage post list for no-JS readers
+The build could bake a plain markdown list of every post into the homepage, between markers -- the client skips
+it when it renders the real list, & w/o a build a hand-written one is what a crawl would follow:
+```markdown
+<!-- bt:index -->
+- [Blogtini Turns One!](2025-02-blogtini-turns-one/index.html) 2025-02-14
+<!-- /bt:index -->
+```
+
+## Combo sites: you + your friends, one page
+Interleave several people's posts, newest first, w/ one shared tag cloud & search (like old "Planet" sites).
+Every blogtini `index.xml` has the same rich items, and GitHub Pages serves it CORS-open -- so it works live, no
+build (~60 KB gzipped per feed):
+```yaml
+combo:
+  - https://blogtini.com/index.xml
+  - https://friend1.github.io/blog/index.xml
+  - https://mastodon.social/@friend3.rss   # same parser, thinner data
+```
+Merge the items (keeping each one's site), sort by date; post links go to the original sites (nothing copied).
+CORS, checked 2026-10-02: GitHub Pages `*`, Mastodon `*`, Bluesky *none* -- feeds w/o CORS (Bluesky, many
+WordPress sites) need the build to fetch & merge them.  Other feeds need defaults: Mastodon items have no
+`<title>`; neither has our `<category domain=…>` tags (title = first line, tags from `#hashtags`?).
+
+## Wishlist: browsers & crawlers that understand this natively
+If a `text/html` response starts w/ `---\n`, treat it as YAML front matter + markdown, & honor one key:
+`theme: ../theme.js` (one ES module that "paints" the page).  No theme?  Render the markdown plainly.
+We get this today w/o browser help: the HTML parser runs the `<script>` in the front matter; YAML sees a string.
+
+
+# Older notes
 
 add storj, codepen, etc.
 

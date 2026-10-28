@@ -242,14 +242,6 @@
 },
 #ev
 #ew
-{
-  "path": "about",
-  "body": "another comment to show them working",
-  "date": "2025-01-27T04:16:51.486Z",
-  "id": "888dd9a0-dc65-11ef-a99f-e535e0580b9d",
-  "name": "tracey pooh",
-  "website": "blogtini.com"
-},
 #ex
 #ey
 #ez
@@ -268,16 +260,6 @@
 #fc
 #fd
 #fe
-{
-  "path": "about",
-  "body": "this is one of my favorite websites",
-  "date": "2025-01-26T07:06:32.833Z",
-  "id": "12916750-dbb4-11ef-b943-9d76ec21f8a0",
-  "name": "tha pooh",
-  "website": "traceypooh.com",
-  "identity": "f3b52f33f8085add3cec135579f725f5",
-  "type": "png"
-},
 #ff
 #fg
 #fh
@@ -490,17 +472,6 @@
 #ky
 #kz
 #l0
-{
-  "path": "about",
-  "body": "replies are mostly working now, too (yay)",
-  "date": "2025-01-26T09:27:41.102Z",
-  "id": "ca2a0120-dbc7-11ef-a09a-e792f2461bc4",
-  "replyID": "12916750-dbb4-11ef-b943-9d76ec21f8a0",
-  "name": "tracey pooh",
-  "website": "archive.org",
-  "identity": "e847e6b9c8c60de11584e15ba0ae89cf",
-  "type": "png"
-},
 #l1
 #l2
 #l3

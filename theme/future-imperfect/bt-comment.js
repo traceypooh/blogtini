@@ -6,6 +6,10 @@ import {
   css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome, css_normalize,
 } from './css.js'
 
+/*
+Identicons: 5×5 grid, left 3 columns from hash bits, mirrored; one hue from the hash on light gray (GitHub's
+recipe; theirs hashes your user id). ~15 lines + a small string hash (FNV-1a + murmur3 final mix).
+*/
 
 /** A 32-bit string hash: FNV-1a, then murmur3's final mix (so similar strings look nothing alike) */
 function hash(str) {

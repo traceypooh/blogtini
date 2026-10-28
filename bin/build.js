@@ -14,7 +14,6 @@
     robots.txt            (only if missing) pointing crawlers to index.xml
 
   Idempotent: rerunning replaces its own head lines, so running twice changes nothing.
-  See V2.md for the why of all of it.
 
   Runs on Deno *and* Node, eg:  node ../blogtini/bin/build.js  (or ▶ in iOS Code App).  See DENODE.md:
   - `Deno` comes from `deno.js` (the real one on Deno; a small `node:*` stand-in on Node)
@@ -225,7 +224,6 @@ function main() {
     Deno.exit(1)
   }
 
-  // (no comments step: staticmin keeps every comment in `comments.json`, which the client reads as is)
   const seo = Deno.args.includes('--seo')
   const cfg = yml.load(Deno.readTextFileSync('config.yml')) ?? {}
   const site = site_url(cfg)
