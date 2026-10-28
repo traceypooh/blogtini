@@ -3,6 +3,9 @@
 A theme is a dir under `theme/` with an `index.js` (and optional `index.css`).
 Pick one in `config.yml` (`theme: editorial`), or try them live from the theme picker.
 
+## Share a theme preview
+https://blogtini.com/#theme=librarian
+
 ## How a theme plugs in
 blogtini's `index.js` finds and parses posts, then writes `<bt-body>` into `<body>`, with the page's main content
 inside it: `<bt-posts>` (w/ `<bt-post>`s), `<bt-post-full>`, `<bt-histogram>` or `<bt-contact>`.

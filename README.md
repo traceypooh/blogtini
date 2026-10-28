@@ -84,6 +84,9 @@ helios, strongly typed, hyperspace, librarian, grid -- many ported from [HTML5 U
 is our own (a card catalog, on Tufte CSS).
 Pick one in `config.yml` (`theme: editorial`), or try them live w/ the theme picker: a viewer's pick
 (and light/dark choice) sticks for 24hr, just for them.  How themes plug in, & adding your own: [THEMES.md](THEMES.md).
+- a post can pick its own theme: `theme: librarian` in its front matter (a viewer's pick still wins)
+- a link can switch a viewer's theme, like the picker does: `[Try it](#theme=librarian)` in markdown,
+  or share https://blogtini.com/#theme=librarian
 
 
 ## Comments

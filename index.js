@@ -313,9 +313,18 @@ async function main() {
     cfg = /** @type {typeof cfg} */ (merged)
   }
 
+  // a post can pick its own theme (front matter `theme:`), eg: a post showing off a theme
+  if (filter_post && my_frontmatter?.theme)
+    cfg.theme = my_frontmatter.theme
+
   // a viewer trying out themes w/ the theme picker overrides the site's theme (for them, for 24h)
   if (!globalThis.Deno && viewer_prefs().theme)
     cfg.theme = viewer_prefs().theme
+
+  // a link to try a theme, eg: https://blogtini.com/#theme=librarian -- same as picking it in the theme picker
+  const hash_theme = globalThis.Deno ? null : location.hash.match(/^#theme=([\w-]+)$/)?.[1]
+  if (hash_theme && THEMES.includes(hash_theme))
+    cfg.theme = hash_theme
 
   // a bare theme name (eg: `grid`) is one shipped alongside this `index.js` -- so it follows a pinned version
   if (cfg.theme.match(/^[\w-]+$/))
@@ -386,6 +395,11 @@ ${homepage_markdown(await self_prom) || body_contents}
   await import('https://esm.ext.archive.org/redefine-custom-elements@0.1.3')
 
   await import(path_to_theme_url(cfg.theme))
+
+  if (hash_theme && THEMES.includes(hash_theme)) {
+    history.replaceState(null, '', location.href.replace(/#.*$/, '')) // (it's saved -- tidy the url)
+    viewer_prefs_set('theme', hash_theme)
+  }
 
 
   globalThis.onunhandledrejection = (unhandled_rejection) => {
@@ -1025,12 +1039,16 @@ function add_interactivity() {
 
     // (`.theme-menu`, too: for a theme w/ a 2nd picker, eg: in a phone nav panel -- ids must be unique)
     const link = path.find((e) => e.matches?.('#theme-menu a, .theme-menu a'))
-    if (!link)
+    // a "try this theme" link, eg: in a post's markdown: `[Try it now](#theme=librarian)`
+    const try_link = path.find((e) => e.matches?.('a[href^="#theme="]'))
+    if (!link && !try_link)
       return
 
     evt.preventDefault()
-    const theme = link.textContent.trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
-    if (!theme)
+    const theme = link
+      ? link.textContent.trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '')
+      : try_link.getAttribute('href').replace(/^#theme=/, '')
+    if (!theme || !THEMES.includes(theme))
       return
 
     log({ theme })
