@@ -33,6 +33,8 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 - **Fail open.**  If the JS never loads, a page still shows its text.  Don't add `display:none`-forever styles.
 - **Browser-native**: ES modules, no bundler, no TypeScript, no `npm install` (libraries are pinned esm.ext.archive.org urls).
 - No symlinks in what ships (GitHub Pages, the esm mirror & Windows checkouts may not follow them).
+- Shadow or light DOM: light for an imported theme's page layout, lit + shadow DOM for reusable widgets
+  (see THEMES.md "Shadow DOM or light DOM?").
 - New theme?  Add it to `THEMES` in `index.js`, a section in THEMES.md, & keep HTML5 UP `main.css` files as is
   (only their `@import` lines change).
 - Change behavior => update README.md / THEMES.md in the same change.  Date new notes, eg: `(2026-10-28)`.

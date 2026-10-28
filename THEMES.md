@@ -55,6 +55,27 @@ fetches it once, eg: while flipping thru themes w/ the picker:
 No symlinks: GitHub Pages & the esm.ext.archive.org mirror may not follow them, nor Windows checkouts.
 
 
+## Shadow DOM or light DOM?  Both -- by piece (2026-10-28)
+Not one way for everything.  The plan was all lit & shadow DOM -- then the HTML5 UP ports showed how fast and
+faithful light DOM is.  (Irony: future-imperfect *started* as an HTML5 UP theme -- years in poohbot getting it off
+jQuery, then pulled apart into shadow DOM components.)
+
+The question is: who owns the page-wide css?
+
+| piece | DOM | why |
+|---|---|---|
+| an imported theme's page layout | light | its css is global (`#main > .inner > section`, `body.is-preload`) & selectors can't cross a shadow boundary.  Light DOM keeps it as is -- that's what makes ports fast |
+| reusable widgets: comments, search results, share, calendar, ... | lit, shadow DOM, w/ `::part()`s | isolated, all js/css/markup in one file, works inside every theme |
+| our own themes (eg: librarian) | either -- lit *in light DOM* is a nice middle | lit templates & reactive props, one file per component -- & global css still applies |
+
+- `<bt-comments>` is the model widget: lit & shadow DOM, used by every light DOM theme, restyled per theme via
+  its `::part()`s (librarian does).  New widgets: expose `::part()`s or css custom properties for theming.
+- Lit in light DOM: `createRenderRoot() { return this }` -- no shadow root, so the page's css styles it.
+  (No `static styles` then -- those need a shadow root.  No `<slot>`s either.)
+- Next widget candidates, from `html5up/shared.js`'s html-string helpers: tag cloud, search box & results,
+  contact form, pager -- once each is a widget, every theme gets it.
+
+
 ## Adding an HTML5 UP theme
 HTML5 UP themes are one global `main.css` + plain markup + a little jQuery.  So go light DOM, like `editorial`:
 
@@ -363,7 +384,8 @@ future imperfect & striped use it now, too.
 - [ ] Share menu (`<bt-share>`) not ported
 - [x] the theme picker's list was copied into each theme -- now blogtini's `THEMES` export (2026-10-18)
 - [ ] comments reuse future-imperfect's `<bt-comments>` (lit, shadow DOM) -- so they look like future-imperfect.
-      Port to light DOM, styled by `main.css` forms & buttons
+      Keep it shadow DOM (see [Shadow DOM or light DOM?](#shadow-dom-or-light-dom--both----by-piece-2026-10-28));
+      give each theme a look via more `::part()`s / css custom properties (eg: fonts, colors, buttons from its `main.css`)
 - [ ] `html5up/shared.js` imports all of `future-imperfect/css.js` (~2400 lines, w/ lit) just for `css_hljs`
       (code highlight colors).  Move `css_hljs` somewhere shared
 - [ ] social icons are a subset of future-imperfect's `socnet_icon()` list -- share one list
