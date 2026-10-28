@@ -136,6 +136,3 @@ customElements.define('bt-post', class extends LitElement {
   }
 })
 ```
-
-
-
