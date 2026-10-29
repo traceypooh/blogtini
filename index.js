@@ -448,6 +448,50 @@ function reveal() {
     state.scrolled_to_hash = true
     document.getElementById(location.hash.slice(1))?.scrollIntoView()
   }
+
+  rendered()
+}
+
+
+/**
+ * Tells a page's own scripts that the page is drawn.  A page's `<script>`s run while it's still raw markdown,
+ * so they wait for it (see README):  `<html data-blogtini-rendered>` says it already happened, else a
+ * `data-blogtini-rendered` event on `document` (w/ `evt.detail.query_all`) says when it does.
+ * (A theme pick reloads the page -- so once per page load)
+ */
+function rendered() {
+  if (state.rendered)
+    return // (a theme may call `reveal()` more than once)
+  state.rendered = true
+  // a frame later: lit (shadow DOM) themes finish drawing their children
+  requestAnimationFrame(() => {
+    after_reload()
+    if (PREVIEW_THEME && globalThis.parent !== globalThis) {
+      // tell the previewer page (same site only) what we're showing
+      const bt_preview = {
+        theme: PREVIEW_THEME, themes: THEMES, url: location.href, title: document.title,
+      }
+      globalThis.parent.postMessage({ bt_preview }, location.origin)
+    }
+    document.documentElement.setAttribute('data-blogtini-rendered', '') // (same name as the event)
+    document.dispatchEvent(new CustomEvent('data-blogtini-rendered', { detail: { query_all } }))
+  })
+}
+
+/**
+ * Returns every element matching a css selector -- in the page *and* inside shadow DOM (eg: future-imperfect).
+ * So a page's scripts can find their elements in any theme.
+ *
+ * @param {string} selector
+ * @returns {Element[]}
+ */
+function query_all(selector, root = document) {
+  const ret = [...root.querySelectorAll(selector)]
+  for (const e of root.querySelectorAll('*')) {
+    if (e.shadowRoot)
+      ret.push(...query_all(selector, e.shadowRoot))
+  }
+  return ret
 }
 
 
@@ -1268,4 +1312,5 @@ export {
   all_posts,
   word_count,
   reading_time,
+  query_all,
 }

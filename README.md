@@ -38,6 +38,20 @@ It was *delicious*.
 
 **Fail open:** if the JS never loads, a page still shows its text after ~3s, instead of staying blank.
 
+**Your own scripts:** a page can add its own `<script>`s (eg: a photo gallery) -- but they run while the page
+is still raw markdown, before blogtini draws it.  So wait for blogtini -- in a `type="module"` script:
+```js
+// once the page is drawn -- even if it already was.  (A theme pick reloads the page: so again, in it)
+await new Promise((resolve) => (document.documentElement.hasAttribute('data-blogtini-rendered')
+  ? resolve()
+  : document.addEventListener('data-blogtini-rendered', resolve, { once: true })))
+// your stuff
+```
+- `<html data-blogtini-rendered>` says it's drawn; a `data-blogtini-rendered` event on `document` says when.
+- (A classic script can't `await` -- use `new Promise(...).then(main)` instead.)
+- To find your elements in any theme -- including inside shadow DOM (eg: future imperfect): `query_all(selector)`,
+  from the event's `evt.detail`, or `import { query_all } from` the same blogtini `index.js` url your `theme.js` does.
+
 
 ## How a site finds its posts
 A static host won't list its files, so the browser builds a post list (cached daily) from the first of:
