@@ -65,6 +65,7 @@ const THEMES = [
   'strongly-typed',
   'hyperspace',
   'librarian',
+  'terminal',
   'grid',
 ]
 

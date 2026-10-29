@@ -41,6 +41,7 @@ Two styles so far:
 | `strongly-typed` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `hyperspace` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `librarian` | plain custom elements, light DOM | our own: Tufte CSS, as is, + `index.css` |
+| `terminal` | plain custom elements, light DOM | panr's Hugo Terminal theme's original css, as is |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -378,6 +379,39 @@ future imperfect & striped use it now, too.
 - [ ] check phone widths & the dark scheme by eye; the stamp's noise mask in Safari & Firefox
 
 
+## Terminal
+Port of [panr/hugo-theme-terminal](https://github.com/panr/hugo-theme-terminal) v4.2.0 (MIT: `LICENSE.md`),
+2026-10-29.  A Hugo theme, but its css is plain css (w/ css variables) -- so it ports like the HTML5 UP ones:
+light DOM, `shared.js` helpers.
+
+What changed from the original:
+- `assets/css/`: its css files, as is.  (`fonts.css` self-hosts Fira Code, in `assets/fonts/`.)
+  Left out: `syntax.css` & `gist.css` (Hugo code highlighting & gists) and its empty `terminal.css` placeholder.
+  So code blocks are monochrome -- no highlight.js.
+- `menu.js` (dropdowns) => vanilla js in `index.js` -- w/o its `stopPropagation()` in dropdowns
+  (blogtini's theme picker listens on the document)
+- `index.css`: our additions -- incl. a light scheme ("paper teletype": cream, ink, rust).  Dark is Terminal's own
+  amber on near black, so it's the default: the Scheme toggle goes dark => light => dark.
+
+Mapping:
+- header: logo (site title, w/ a blinking cursor), the menu (names only -- no icons in a terminal), Scheme,
+  a "Theme ▾" dropdown (the theme picker); phone widths: one "Menu ▾" w/ all of those
+- search: a shell prompt -- `guest@blogtini.com:~$ grep -ri ▮`
+- each page starts w/ a prompt & a command for what it shows: `ls -t posts/ | head -10` (homepage),
+  `... | tail -n +11 | head -10` (later pages), `grep -l 'tags:.*x' posts/*` (a tag), `cat <slug>/index.md` (a post),
+  `cut -d: -f2 tags | sort | uniq -c | sort -rn` (tags list), `mail -s 'hello' ...` (contact),
+  `cat README.md` (the homepage's own content, framed)
+- posts: Terminal's list -- title, date :: author :: reading time, `#tags`, cover (featured image), summary,
+  `[Read more]`; `< [Newer posts] :: [Older posts] >`
+- single post: same, w/ word count; featured caption as Terminal's figcaption bar; "Read other posts"; comments
+- footer: copyright :: social links :: theme credit :: blogtini
+
+### TODO / FIXME
+- [ ] comments: future-imperfect's form, recolored via its css variables (`--color1` etc.) & `::part()`s
+- [ ] code highlighting: a terminal-ish highlight.js palette?  (or stay monochrome)
+- [ ] check by eye: phone widths, the light scheme, the dropdowns
+
+
 ## HTML5 UP ports: shared TODO / FIXME
 - [ ] the phone width nav panels (helios, strongly typed) have no search box yet
 - [ ] `sidebar.position`: future-imperfect, editorial & striped could honor it, too (they're left only, so far)
@@ -453,7 +487,7 @@ our web components.  Check each license (these are MIT or Apache-2.0, afaik -- v
 | theme | look | why |
 |---|---|---|
 | [Docsy](https://github.com/google/docsy) / [Doks](https://github.com/thuliteio/doks) | documentation site: left nav tree, page TOC | a look we don't have: docs, manuals, project sites |
-| [Terminal](https://github.com/panr/hugo-theme-terminal) | retro terminal, monospace, accent color | fun & distinctive; tiny |
+| [Terminal](https://github.com/panr/hugo-theme-terminal) -- **ported** | retro terminal, monospace, accent color | fun & distinctive; tiny |
 | [Ananke](https://github.com/theNewDynamic/gohugo-theme-ananke) | Hugo's starter theme: hero image, clean cards | familiar, friendly default |
 | [Clean White](https://github.com/zhaohuabing/hugo-theme-cleanwhite) | big header photo, clean centered posts, sidebar | very nice classic blog |
 

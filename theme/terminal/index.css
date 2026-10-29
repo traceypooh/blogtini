@@ -1,0 +1,204 @@
+/*
+  Terminal theme for blogtini -- assets/css/ is the original's css (panr/hugo-theme-terminal v4.2.0), as is.
+  (Its fonts.css self-hosts Fira Code, in assets/fonts/.  Left out: syntax.css & gist.css, for Hugo's code
+  highlighting & gists)  Below: blogtini additions.
+*/
+@import url(assets/css/fonts.css);
+@import url(assets/css/main.css);
+@import url(assets/css/header.css);
+@import url(assets/css/menu.css);
+@import url(assets/css/post.css);
+@import url(assets/css/pagination.css);
+@import url(assets/css/footer.css);
+@import url(assets/css/terms.css);
+@import url(assets/css/buttons.css);
+@import url(assets/css/code.css);
+
+
+/* blogtini additions */
+
+bt-body {
+  display: block;
+}
+
+/* light scheme: a paper teletype.  (Dark -- the default -- is Terminal's own amber on near black) */
+[scheme="light"] {
+  --background: #f5f1e6;
+  --foreground: #26231c;
+  --accent: #a4520c;
+}
+
+/* a blinking cursor after the logo */
+.header__logo .logo::after {
+  content: "_";
+  margin-left: 2px;
+  animation: bt-blink 1.1s step-end infinite;
+}
+@keyframes bt-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header__logo .logo::after {
+    animation: none;
+  }
+}
+
+/* shell prompts */
+.prompt {
+  margin: 30px 0 0 0;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+.prompt .ps1 {
+  color: var(--accent);
+  font-weight: bold;
+}
+.prompt + .posts .post:first-child,
+.prompt + .post,
+.prompt + .terms h1 {
+  padding-top: 10px;
+}
+
+/* search: a `grep -ri` prompt */
+.search {
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+  margin-top: 10px;
+}
+.search .prompt {
+  margin: 0;
+  white-space: nowrap;
+}
+#search-input {
+  flex: 1;
+  min-width: 6ch;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: var(--foreground);
+  caret-color: var(--accent);
+}
+#search-input:focus-visible {
+  outline: 0;
+}
+#search-results:empty {
+  display: none;
+}
+#search-results {
+  margin: 10px 0 0 0;
+  padding: 10px 15px;
+  border: 1px dashed var(--accent);
+}
+#search-results .mini-post a {
+  display: block;
+  text-decoration: none;
+  margin: 8px 0;
+}
+#search-results .mini-post h2 {
+  font-size: inherit;
+  margin: 0;
+}
+#search-results .mini-post time {
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  font-size: 0.85em;
+}
+#search-results .mini-post p {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.9em;
+}
+
+/* the theme picker, in the menus */
+#theme-menu,
+.theme-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+#theme-menu li a,
+.theme-menu li a {
+  padding: 3px 5px;
+}
+.menu__dropdown hr {
+  margin: 5px 0;
+}
+.menu__dropdown .theme-head {
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+.scheme-toggle {
+  cursor: pointer;
+}
+
+/* posts */
+.post-cover,
+.post-content img {
+  height: auto;
+}
+.post-tags a {
+  text-decoration: none;
+}
+.post-tags a:hover {
+  text-decoration: underline;
+}
+
+/* tags & categories lists: `name (n)` */
+.terms .count::before {
+  content: "(";
+}
+.terms .count::after {
+  content: ")";
+}
+.terms .count {
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+
+/* contact form: full width fields */
+.contact form input[type="text"],
+.contact form input[type="email"],
+.contact form textarea {
+  display: block;
+  width: 100%;
+  margin: 0 0 15px 0;
+}
+.contact form ul.actions {
+  list-style: none;
+  margin: 0;
+}
+.contact form ul.actions li::before {
+  content: none;
+}
+.contact form input[type="submit"] {
+  color: var(--accent);
+  border: 4px solid var(--accent);
+  padding: 5px 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* comments (future-imperfect's, in their shadow DOM): its css variables inherit in, & its `::part()`s */
+bt-comments {
+  --color1: var(--foreground);
+  --color2: var(--accent);
+  --background1: var(--background);
+  --background2: transparent;
+}
+bt-comments::part(comments) {
+  max-width: none;
+  margin: 50px 0 0 0;
+  padding: 0;
+}
+bt-comments::part(heading) {
+  font-family: "Fira Code", Monaco, Consolas, "Ubuntu Mono", monospace;
+  font-size: calc(var(--font-size) * 1.35);
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  color: var(--accent);
+}
+bt-comments::part(heading)::before {
+  content: "## ";
+}
