@@ -387,7 +387,8 @@ light DOM, `shared.js` helpers.
 What changed from the original:
 - `assets/css/`: its css files, as is.  (`fonts.css` self-hosts Fira Code, in `assets/fonts/`.)
   Left out: `syntax.css` & `gist.css` (Hugo code highlighting & gists) and its empty `terminal.css` placeholder.
-  So code blocks are monochrome -- no highlight.js.
+  Code: the shared `highlight_code()` (highlight.js), recolored in `index.css` w/ a few shades of the accent --
+  like the original's demo -- so it follows the light & dark schemes, too.
 - `menu.js` (dropdowns) => vanilla js in `index.js` -- w/o its `stopPropagation()` in dropdowns
   (blogtini's theme picker listens on the document)
 - `index.css`: our additions -- incl. a light scheme ("paper teletype": cream, ink, rust).  Dark is Terminal's own
@@ -408,7 +409,6 @@ Mapping:
 
 ### TODO / FIXME
 - [ ] comments: future-imperfect's form, recolored via its css variables (`--color1` etc.) & `::part()`s
-- [ ] code highlighting: a terminal-ish highlight.js palette?  (or stay monochrome)
 - [ ] check by eye: phone widths, the light scheme, the dropdowns
 
 

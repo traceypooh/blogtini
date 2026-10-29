@@ -13,6 +13,7 @@ import {
 } from '../../index.js'
 import {
   esc, nodes, navurl, theme_items, social_list, pager, comments, histogram_items, contact_form,
+  highlight_code,
 } from '../html5up/shared.js'
 
 
@@ -258,7 +259,8 @@ customElements.define('bt-post-full', class extends HTMLElement {
 
     // the homepage's own content: framed, before the posts
     if (post.type === 'homepage') {
-      this.replaceWith(nodes(`${prompt('cat README.md')}<div class="index-content framed">${body}</div>`))
+      this.replaceWith(nodes(`${prompt('cat README.md')}<div class="index-content framed post-body">${body}</div>`))
+      highlight_code()
       return
     }
 
@@ -275,9 +277,11 @@ ${prompt(`cat ${slug}/index.md`)}
   ${is_post ? meta(post, true) : ''}
   ${tags(post)}
   ${cover && post.featuredcaption ? `<figure>${cover}<figcaption>${esc(post.featuredcaption)}</figcaption></figure>` : cover}
-  <div class="post-content"><div>${body}</div></div>
+  <div class="post-content"><div class="post-body">${body}</div></div>
   ${comments(post)}
 </article>`))
+
+    highlight_code()
   }
 })
 

@@ -145,6 +145,64 @@ bt-body {
   text-decoration: underline;
 }
 
+/* code highlighting (shared `highlight_code()`: highlight.js) -- a few shades of the accent, like the original's
+   demo.  (`.post-body` beats the shared GitHub colors' specificity: they're for light backgrounds) */
+.post-body .hljs {
+  color: var(--foreground);
+  background: transparent;
+  padding: 0;
+}
+.post-body .hljs-keyword,
+.post-body .hljs-selector-tag,
+.post-body .hljs-built_in,
+.post-body .hljs-builtin-name,
+.post-body .hljs-name,
+.post-body .hljs-title,
+.post-body .hljs-section,
+.post-body .hljs-selector-id,
+.post-body .hljs-class .hljs-title {
+  color: var(--accent);
+  font-weight: normal;
+}
+.post-body .hljs-string,
+.post-body .hljs-doctag,
+.post-body .hljs-regexp,
+.post-body .hljs-link,
+.post-body .hljs-selector-class,
+.post-body .hljs-addition {
+  color: color-mix(in srgb, var(--accent) 60%, var(--foreground));
+  background: transparent;
+}
+.post-body .hljs-number,
+.post-body .hljs-literal,
+.post-body .hljs-symbol,
+.post-body .hljs-bullet,
+.post-body .hljs-variable,
+.post-body .hljs-template-variable,
+.post-body .hljs-attr,
+.post-body .hljs-tag .hljs-attr,
+.post-body .hljs-attribute,
+.post-body .hljs-type,
+.post-body .hljs-params,
+.post-body .hljs-meta {
+  color: color-mix(in srgb, var(--accent) 30%, var(--foreground));
+  font-weight: normal;
+}
+/* html: a tag's `<`, `>`, `=` & quotes dim -- so its name (accent), attributes & values stand apart */
+.post-body .hljs-tag {
+  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+}
+.post-body .hljs-comment,
+.post-body .hljs-quote {
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  font-style: italic;
+}
+.post-body .hljs-deletion {
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  background: transparent;
+  text-decoration: line-through;
+}
+
 /* tags & categories lists: `name (n)` */
 .terms .count::before {
   content: "(";
