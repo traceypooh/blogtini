@@ -11,8 +11,13 @@ blogtini's `index.js` finds and parses posts, then writes `<bt-body>` into `<bod
 inside it: `<bt-posts>` (w/ `<bt-post>`s), `<bt-post-full>`, `<bt-histogram>` or `<bt-contact>`.
 The theme defines those custom elements, and so decides what the page looks like.
 
-- `index.css` is loaded into the page (light DOM) -- by `main()` for the configured theme,
-  and swapped by the theme picker on a switch.  (Links get `data-theme-css`, so the old one gets removed.)
+- `index.css` is loaded into the page (light DOM) -- by `main()`, for the configured theme.
+- `preview/` (theme previewer): its iframe's name, eg: `bt-preview:librarian`, sets the theme -- nothing saved;
+  a pick inside it just renames the frame.  The framed page posts `{ bt_preview: { theme, themes, url, title } }`
+  to it, each time it's drawn.
+- A theme picker pick saves it (for that viewer, 24h) & reloads the page -- so each theme starts w/ a clean page:
+  no prior theme's custom elements, css, listeners or flags.  (It used to swap themes in place -- but eg:
+  future-imperfect's many files don't re-run on a 2nd visit, so its elements stayed the prior theme's.)
 - The theme must call `reveal()` (from `index.js`) once it has rendered -- the body is hidden until then.
 - blogtini looks for these ids in `<bt-body>` (its shadow root, or itself for a light DOM theme -- see `btbody_root()`):
   - `#theme-menu a` -- theme picker links.  The link text maps to the theme dir, eg: `future imperfect` => `future-imperfect`.
@@ -426,8 +431,8 @@ Mapping:
 - [ ] self-hosted fonts are the latin subset only (other scripts fall back to system fonts)
 - [ ] ignores `config.yml` `attribution` (its default credits future-imperfect); always credits HTML5 UP (CC BY 3.0)
 - [ ] `cfg.site_header` image (blogtini logo) isn't used
-- [ ] after switching away w/ the picker, a theme's page-wide scroll/click/resize listeners stay
-      (they no-op w/o its elements)
+- [ ] the themes' "page-wide listeners: once" guards (eg: `bt_hyperspace_listening`) were for in-place theme
+      switches -- a pick reloads the page now, so they could go
 
 
 ## Next ports

@@ -69,6 +69,15 @@ const THEMES = [
   'grid',
 ]
 
+// in the theme previewer (`preview/`), its iframe is named for the theme to show, eg: 'bt-preview:librarian'
+const PREVIEW_PREFIX = 'bt-preview:'
+const PREVIEW_THEME = (() => {
+  const theme = globalThis.Deno ? '' : `${globalThis.name ?? ''}`
+  return theme.startsWith(PREVIEW_PREFIX) && THEMES.includes(theme.slice(PREVIEW_PREFIX.length))
+    ? theme.slice(PREVIEW_PREFIX.length)
+    : null
+})()
+
 /**
  * Returns the absolute url of a theme shipped alongside *this* `index.js` --
  * so a site pinning a blogtini version (eg: `blogtini@1.0.5/index.js`) gets that version's theme, too.
@@ -327,6 +336,11 @@ async function main() {
   if (hash_theme && THEMES.includes(hash_theme))
     cfg.theme = hash_theme
 
+  // in the theme previewer (`preview/`): its iframe's name says the theme -- & a name sticks as you click
+  // around in it.  So nothing gets saved (the viewer's real picks stay as they were)
+  if (PREVIEW_THEME)
+    cfg.theme = PREVIEW_THEME
+
   // a bare theme name (eg: `grid`) is one shipped alongside this `index.js` -- so it follows a pinned version
   if (cfg.theme.match(/^[\w-]+$/))
     cfg.theme = theme_url(cfg.theme)
@@ -397,7 +411,7 @@ ${homepage_markdown(await self_prom) || body_contents}
 
   await import(path_to_theme_url(cfg.theme))
 
-  if (hash_theme && THEMES.includes(hash_theme)) {
+  if (hash_theme && THEMES.includes(hash_theme) && !PREVIEW_THEME) {
     history.replaceState(null, '', location.href.replace(/#.*$/, '')) // (it's saved -- tidy the url)
     viewer_prefs_set('theme', hash_theme)
   }
@@ -495,6 +509,8 @@ function add_recache_button() {
 */
 const VIEWER_PREFS_KEY = `${STORAGE_KEY}-viewer`
 const VIEWER_PREFS_MS = 24 * 60 * 60 * 1000
+// a theme pick reloads the page: whether to show the notice, after -- just for this tab
+const RELOAD_KEY = `${STORAGE_KEY}-reload`
 
 /**
  * Returns the viewer's unexpired picks, eg: { theme: 'editorial', scheme: 'dark' }
@@ -518,8 +534,9 @@ function viewer_prefs() {
  *
  * @param {string} key  'theme' or 'scheme'
  * @param {string} val  eg: 'editorial' or 'dark'
+ * @param {boolean} notice  false: no notice (eg: the page is about to reload -- it shows after)
  */
-function viewer_prefs_set(key, val) {
+function viewer_prefs_set(key, val, notice = true) {
   if (!val || !`${val}`.match(/^[\w-]+$/))
     return
   const had_prefs = Object.keys(viewer_prefs()).length
@@ -530,7 +547,19 @@ function viewer_prefs_set(key, val) {
   } catch {
     return
   }
-  if (!had_prefs)
+  if (!had_prefs && notice)
+    viewer_prefs_notice()
+}
+
+/** After a theme pick's reload: the notice, if it was their first pick */
+function after_reload() {
+  let notice = false
+  try {
+    notice = sessionStorage.getItem(RELOAD_KEY) === 'notice'
+    sessionStorage.removeItem(RELOAD_KEY)
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+  if (notice)
     viewer_prefs_notice()
 }
 
@@ -1027,14 +1056,14 @@ function add_interactivity() {
     return
   }
 
-  // one listener for the page -- so the theme menu keeps working after each theme switch re-renders it
-  state.theme_change_number = 0
-  document.addEventListener('click', async (evt) => {
+  // one listener for the page -- for every theme's Scheme toggle & theme picker
+  document.addEventListener('click', (evt) => {
     const path = evt.composedPath()
 
     // a theme's "Scheme" lightbulb.  (Its own click handler already toggled the scheme -- remember it)
     if (path.some((e) => e.matches?.('.scheme-toggle'))) {
-      viewer_prefs_set('scheme', document.documentElement.getAttribute('scheme'))
+      if (!PREVIEW_THEME)
+        viewer_prefs_set('scheme', document.documentElement.getAttribute('scheme'))
       return
     }
 
@@ -1054,23 +1083,25 @@ function add_interactivity() {
 
     log({ theme })
 
-    state.theme_change_number += 1
-    // (a variable, not an inline template, so bundlers (eg: esm.ext.archive.org/gh/) dont try to resolve it)
-    const url = theme_url(theme)
+    if (PREVIEW_THEME) {
+      // in the previewer: just rename our frame (the previewer page hears about it after the reload)
+      globalThis.name = `${PREVIEW_PREFIX}${theme}`
+      location.reload()
+      return
+    }
 
-    // swap in the new theme's light DOM css
-    document.querySelectorAll('link[data-theme-css]').forEach((e) => e.remove())
-    add_css(url.replace(/\?.*$/, '').replace(/[^/]+\.js$/, 'index.css'))
-
-    await import(`${url}${url.includes('?') ? '&' : '?'}${state.theme_change_number}`)
-
-    bt_body()
-
-    search_setup(STORAGE.docs, cfg) // the new theme's search box
-    if (state.filedev || state.localdev)
-      add_recache_button() // (`bt_body()` replaced the whole `<body>`)
-
-    viewer_prefs_set('theme', theme)
+    // Remember it, & reload -- so each theme starts w/ a clean page.  (Swapping themes in place left the old
+    // theme behind: eg: future-imperfect's many files don't re-run on a 2nd visit, so its elements stayed the
+    // prior theme's -- and themes' page-wide listeners & flags piled up.)  It starts at the top.
+    const first_pick = !Object.keys(viewer_prefs()).length
+    viewer_prefs_set('theme', theme, false)
+    try {
+      if (first_pick)
+        sessionStorage.setItem(RELOAD_KEY, 'notice')
+      /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+    } catch {}
+    history.scrollRestoration = 'manual' // (else browsers restore the scroll spot -- often a strange place)
+    location.reload()
   })
 
   search_setup(STORAGE.docs, cfg)
@@ -1083,7 +1114,7 @@ function add_css(file) {
   e.type = 'text/css'
   e.rel = 'stylesheet'
   e.href = file
-  e.dataset.themeCss = '' // so a theme switch can swap it out
+  e.dataset.themeCss = '' // (marks the theme's css)
   head.appendChild(e)
 }
 

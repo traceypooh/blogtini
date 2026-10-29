@@ -85,6 +85,9 @@ terminal from [panr's Hugo theme](https://github.com/panr/hugo-theme-terminal); 
 catalog, on Tufte CSS).
 Pick one in `config.yml` (`theme: editorial`), or try them live w/ the theme picker: a viewer's pick
 (and light/dark choice) sticks for 24hr, just for them.  How themes plug in, & adding your own: [THEMES.md](THEMES.md).
+- step thru them all: [blogtini.com/preview/](https://blogtini.com/preview/) -- a ← → bar over the site, in an
+  iframe you can click around in.  (Its frame's name sets the theme, so nothing's saved.  Copy its dir to your site
+  to preview yours: it's one file)
 - a post can pick its own theme: `theme: librarian` in its front matter (a viewer's pick still wins)
 - a link can switch a viewer's theme, like the picker does: `[Try it](#theme=librarian)` in markdown,
   or share https://blogtini.com/#theme=librarian
@@ -165,10 +168,13 @@ V=2.0.0 &&\
 - combo sites: interleave your & your friends' blogtini (or Mastodon) feeds on one page
 - port forward from [hugo-future-imperfect-slim](https://github.com/traceypooh/hugo-future-imperfect-slim):
   eg: `loading="lazy"` on *every* rendered `<img>` (raw `<img>` tags in markdown, too)
-- `draft: true` front matter.  (The build skips dirs named `test`, `theme`, `js`, `img`, `avatars`,
+- `draft: true` front matter.  (The build skips dirs named `test`, `theme`, `js`, `img`, `avatars`, `preview`,
   `node_modules`, `.*`, `_*` -- so a real post can't use those names.)
 - `config.yml` `scheme: light | dark | auto` for the site's light/dark
 - staticmin: check `allowedOrigins` (not enforced yet -- PR review is the gate); move netlify to Node 22
+- preview *your own* site in each theme, from blogtini.com: `preview/?site=https://you.example/` -- the
+  frame's name works across sites (your site's blogtini reads it); needs `postMessage()` to blogtini.com, &
+  new frames (not reloads) to switch.  Plus a themes page w/ a big "Live preview themes" button
 - wishlist: browsers & crawlers that render front matter + markdown natively, w/ a `theme:` module to "paint" it
 - Fail-open tests & findings: [test/fail-open/](test/fail-open/README.md).
 
