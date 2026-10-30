@@ -6,6 +6,25 @@ Pick one in `config.yml` (`theme: editorial`), or try them live from the theme p
 ## Share a theme preview
 https://blogtini.com/#theme=librarian
 
+## Screenshots (for the [Themes page](themes/index.html))
+Each theme's card has a screenshot: `img/themes/<theme>.png`.  So they all match:
+1. Open the previewer at a list of posts (not the homepage, whose own text is up top -- & changes):
+   http://localhost:8888/preview/?start=?page/1#terminal
+2. The browser window: **1440 wide**, as tall as your screen allows -- w/ DevTools *undocked* (its own window:
+   DevTools ⋮ → Dock side → undock), so the frame is ~1440 × 700+.  The cards crop to 2:1, from the top -- so a
+   frame a bit shorter than 720 just loses a sliver at the sides.  (Chrome: `osascript -e 'tell application
+   "Google Chrome" to set bounds of front window to {0, 0, 1440, 900}'`)
+   Not 1280 wide: HTML5 UP themes switch to their smaller layouts at <= 1280 (eg: hyperspace's sidebar,
+   editorial's menu).  Future imperfect's widest breakpoint is 1024.
+3. Capture *just the frame* -- no previewer bar, no browser chrome:
+   - Chrome: DevTools → Elements → right-click the `<iframe id="frame">` → **Capture node screenshot**
+   - Firefox: in the console: `:screenshot --selector #frame`
+4. Save as `img/themes/<theme>.png`.  Then → for the next theme.
+5. Shrink them for the web -- the cards show them at most ~500px wide, so 1000 covers retina screens (macOS):
+   `sips -Z 1000 img/themes/*.png`
+
+A new theme: add it to `THEMES` in `index.js`, a card on [themes/index.html](themes/index.html), & a screenshot.
+
 ## How a theme plugs in
 blogtini's `index.js` finds and parses posts, then writes `<bt-body>` into `<body>`, with the page's main content
 inside it: `<bt-posts>` (w/ `<bt-post>`s), `<bt-post-full>`, `<bt-histogram>` or `<bt-contact>`.
@@ -19,6 +38,10 @@ The theme defines those custom elements, and so decides what the page looks like
   no prior theme's custom elements, css, listeners or flags.  (It used to swap themes in place -- but eg:
   future-imperfect's many files don't re-run on a 2nd visit, so its elements stayed the prior theme's.)
 - The theme must call `reveal()` (from `index.js`) once it has rendered -- the body is hidden until then.
+- The homepage (w/ its own text) also gets an `<h2 class="bt-posts-heading">` (`config.yml` `posts_heading:`,
+  default "Latest posts"; `''` for none) between that text & `<bt-posts>` -- style it (eg: future-imperfect: a
+  box like a post's; hyperspace: a band) or hide it, if the theme titles its posts itself (librarian's
+  "Card catalog", editorial & helios' "Posts", strata's "Recent Posts", strongly typed's "Latest from ...").
 - blogtini looks for these ids in `<bt-body>` (its shadow root, or itself for a light DOM theme -- see `btbody_root()`):
   - `#theme-menu a` -- theme picker links.  The link text maps to the theme dir, eg: `future imperfect` => `future-imperfect`.
     (`.theme-menu a`, too -- for a 2nd picker, eg: in a phone width nav panel, since ids must be unique)

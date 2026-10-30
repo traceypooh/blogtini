@@ -111,6 +111,8 @@ let cfg = {
   site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
   reading_time: true,
   summary_length: 500,
+  // homepage: a heading between its own text & its posts (`<h2 class="bt-posts-heading">`).  '' for none
+  posts_heading: 'Latest posts',
   menu: {
     main: [], // xxx add some defaults
   },
@@ -243,7 +245,8 @@ function main_section(histogram) {
 
   return `
     ${state.show_top_content
-      ? '<bt-post-full url="homepage/"></bt-post-full> <hr style="height:1px;padding:0;border:0;border-bottom:1px solid #a1a1a166;margin:2em 0">'
+      ? `<bt-post-full url="homepage/"></bt-post-full> <hr style="height:1px;padding:0;border:0;border-bottom:1px solid #a1a1a166;margin:2em 0">
+        ${cfg.posts_heading ? `<h2 class="bt-posts-heading">${cfg.posts_heading}</h2>` : ''}`
       : ''}
 
     <bt-posts>
@@ -267,9 +270,13 @@ function bt_body() {
     ? tags_histogram
     : (state.list_cats ? categories_histogram : null)
 
+  // the newest posts -- not pages (eg: about, docs), which are for the nav menu
+  const recent_posts = STORAGE.docs.filter((e) => !e.type || e.type === 'post')
+    .slice(0, cfg.sidebar.post_amount).map((e) => e.url)
+
   document.querySelector('body').innerHTML =
     `<bt-body
-      recent_posts='${JSON.stringify(STORAGE.docs.slice(0, cfg.sidebar.post_amount).map((e) => e.url))}'
+      recent_posts='${JSON.stringify(recent_posts)}'
       tags='${JSON.stringify(tags_histogram)}'
       categories='${JSON.stringify(categories_histogram)}'
     >${main_section(histogram)}</bt-body>`
@@ -972,10 +979,16 @@ function storage_loop() {
     if (state.list_tags || state.list_cats)
       continue
 
+    // a page (eg: `type: page` -- about, docs) is for the nav menu: not in the list of posts, nor a post's
+    // prior/next.  (Tag & category lists still show it -- it was tagged on purpose)
+    const is_page = post.type && post.type !== 'post'
+
     if (filter_tag.length  &&       !(post.tags.includes(filter_tag))) continue
     if (filter_cat.length  && !(post.categories.includes(filter_cat))) continue
     if (filter_post) {
       if (!is_filter_post(post.url) && STORAGE.docs.length !== 1) {
+        if (is_page)
+          continue
         // note prior and next posts
         if (!state.filter_post_url)
           state.filter_post_url_prior = urlify(post.url)
@@ -985,6 +998,7 @@ function storage_loop() {
         continue
       }
       state.filter_post_url = urlify(post.url)
+      state.filter_post_is_page = is_page
     }
 
     if (filter_post) {
@@ -997,8 +1011,14 @@ function storage_loop() {
       head_insert_titles(`posts in category: ${filter_cat} - ${cfg.title}`)
     }
 
-    if (!filter_post)
+    if (!filter_post && (!is_page || filter_tag.length || filter_cat.length))
       state.urls_filtered.push(post.url)
+  }
+
+  // a page has no prior/next posts
+  if (state.filter_post_is_page) {
+    state.filter_post_url_prior = null
+    state.filter_post_url_next = null
   }
 
   const postL = state.page * cfg.posts_per_page

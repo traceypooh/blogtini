@@ -150,3 +150,9 @@ bt-body {
 [scheme="dark"] img {
   filter: grayscale(30%);
 }
+
+
+/* homepage: blogtini's heading before the posts -- this theme titles its posts itself (eg: "Posts") */
+.bt-posts-heading {
+  display: none;
+}

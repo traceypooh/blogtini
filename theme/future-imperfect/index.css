@@ -91,3 +91,22 @@ body {
   font-family: "Source Sans Pro", Helvetica, sans-serif;
   line-height: 1.75em;
 }
+
+
+/* homepage: the heading between its own text & its posts (`cfg.posts_heading`) -- the same box as a post's
+   (css.js `css_post` `.post` -- which lives in each post's shadow DOM, so: its values, here).
+   Its em sizes are divided by this font-size, so its edges line up w/ the posts' */
+.bt-posts-heading {
+  box-sizing: border-box;
+  max-width: calc(55em / 1.1);
+  margin: calc(1.5em / 1.1) auto;
+  padding: calc(1em / 1.1);
+  background: var(--background2);
+  color: var(--color1);
+  font-family: "Raleway", Helvetica, sans-serif;
+  font-size: 1.1em;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-align: center;
+  text-transform: uppercase;
+}

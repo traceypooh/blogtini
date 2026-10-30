@@ -140,3 +140,19 @@ bt-body {
 [scheme="dark"] img {
   filter: grayscale(30%);
 }
+
+
+/* homepage: blogtini's heading before the posts -- a band like the posts' own (style2), w/ its padding */
+.bt-posts-heading {
+  margin: 0;
+  padding: 2em 4em 0 4em;
+  background-color: #5052b5;
+}
+@media screen and (max-width: 736px) {
+  .bt-posts-heading {
+    padding: 1.5em 2em 0 2em;
+  }
+}
+[scheme="dark"] .bt-posts-heading {
+  background-color: #343677;
+}

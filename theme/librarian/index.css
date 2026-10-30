@@ -641,3 +641,9 @@ footer.colophon .credits {
 [scheme="dark"] img {
   filter: brightness(0.9);
 }
+
+
+/* homepage: blogtini's heading before the posts -- our "Card catalog" title already says it */
+.bt-posts-heading {
+  display: none;
+}

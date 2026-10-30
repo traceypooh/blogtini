@@ -54,6 +54,8 @@ customElements.define('bt-body', class extends LitElement {
     }
 
     const navurl = (e) => {
+      if (/^[a-z][a-z0-9+.-]*:/i.test(e.url))
+        return e.url // off-site, eg: https://github.com/...
       const url =
         `${state.top_dir}${e.url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}`
       return (url === '') ? './' : url

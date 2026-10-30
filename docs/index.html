@@ -1,0 +1,159 @@
+---
+title: Documentation
+date: 2026-10-30
+type: page
+description: How to make, write, theme & host a blogtini site
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+Your site is a folder of markdown files in a free git repo.  Each post is one plain text file; a single line of
+JS has blogtini "paint" it, in the browser, w/ your theme.
+**No build step is required.  An optional build step makes it better.**
+
+
+## Get started
+Easiest: the [blogtini-go](https://github.com/traceypooh/blogtini-go) template -- a ready-to-go site, w/ a
+homepage, an about page, a first post, & publishing on each push.  Click **Use this template**, turn on Pages, &
+edit `config.yml` -- its README walks you thru it, in 2 minutes.
+
+Or by hand: your site's top folder needs just three files -- then add posts:
+- `theme.js` -- one line, loading blogtini:
+  ```js
+  import 'https://blogtini.com/index.js'
+  ```
+- `config.yml` -- your site's settings, eg:
+  ```yaml
+  title: My blog
+  site_url: https://you.github.io/myblog/
+  theme: librarian
+  ```
+- `index.html` -- your homepage: copy the top of [blogtini's](https://github.com/traceypooh/blogtini/blob/main/index.html),
+  down thru its `body` line (the one w/ `class="homepage"`) -- then write your homepage, in markdown, below that.
+
+Then host it, free, w/ GitHub (or GitLab) Pages: push it, and turn on Pages in the repo's settings.
+Optionally, use your own domain (~$20 USD/year) -- like blogtini.com.
+
+
+## Write a post
+A post is a folder w/ an `index.html` that's really front matter + markdown, eg: `2026-01-i-baked-a-pie/index.html`:
+```markdown
+---
+title: I baked a pie
+date: 2026-01-15
+tags:
+  - baking
+featured: pie.jpg
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+It was *delicious*.
+```
+- The `comment:` line is what makes it work: the browser runs that script tag (the front matter just sees a
+  string) -- so `https://you.example/2026-01-i-baked-a-pie/` shows your post, in your theme.
+- Images go in `img/` (eg: `featured: pie.jpg` is `img/pie.jpg`).
+- Optional: `description:` (a one-liner for feeds & link previews), `featuredcaption:`, `categories:`, `author:`.
+- `type: page` makes it a page (eg: about): for your nav menu, not the list of posts.
+- `theme: terminal` shows just that post in another theme.
+
+If JS never loads, a page still shows its text after a few seconds -- it's never stuck blank.
+
+
+## Your site's settings
+In `config.yml` -- just what you want to change.  Some favorites:
+```yaml
+title: My blog
+site_url: https://you.github.io/myblog/   # your live site, ending w/ /
+theme: librarian
+posts_per_page: 10
+img_site: img/me.jpg                       # your picture, for sidebars & "about" bits
+menu:
+  main:
+    - name: About
+      url: /about/
+    - name: Contact
+      url: /?contact
+sidebar:
+  about: I bake pies, & write about them.
+social:
+  rss: index.xml
+  github: you
+  mastodon: mastodon.social/@you
+contact:
+  email_service: https://formspree.io/f/your-form-id   # for the contact page: /?contact
+reading_time: true
+```
+blogtini's own [config.yml](https://github.com/traceypooh/blogtini/blob/main/config.yml) has more.
+Settings like `sidebar:` merge w/ the defaults -- so set just the parts you want.
+
+
+## Themes
+13 themes come w/ blogtini -- see them all, live: [Themes](../themes/).
+- Pick yours in `config.yml`, eg: `theme: editorial`.
+- Visitors can try others w/ the theme picker -- their pick lasts 24 hours, just for them.
+- See *your* site in every theme: add the 5-line `preview/index.html` from the
+  [README](https://github.com/traceypooh/blogtini#themes), then open `https://you.example/preview/`.
+- A link can switch a visitor to a theme, like the picker does: `[Try it](#theme=terminal)`.
+
+Make your own: [THEMES.md](https://github.com/traceypooh/blogtini/blob/main/THEMES.md).
+
+
+## How your posts get found
+A static host won't list your files -- so blogtini finds your posts from the first of:
+1. `index.xml` -- made by the [build](#the-build-optional): a feed, sitemap & search index, in one file
+2. `index.txt` -- a plain list, one post per line.  Hand-edit it, or: `find . -name index.html > index.txt`
+3. `sitemap.xml`
+4. else: the pages each visitor has opened.  Search, tags & prior/next still work -- so even a one-post site
+   shows every feature.  (Crawlers need the build, or an `index.txt`.)
+
+The page you're on always shows its own file -- so your edits show right away.
+
+
+## The build (optional)
+It makes your site better for everything that doesn't run JS: link previews, search engines, RSS readers.
+It writes `index.xml` (your RSS feed & sitemap, w/ every post) -- and w/ `--seo`, a tiny head line atop each post.
+It runs on [deno](https://deno.com) or `node`, from your site's top folder:
+```sh
+deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
+  --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
+```
+Easiest: a GitHub Action runs it each time you push -- copy blogtini's
+[.github/workflows/](https://github.com/traceypooh/blogtini/tree/main/.github/workflows).
+
+
+## Comments
+- Visitors comment on a post -- each one arrives as a pull request on your repo.  Merge it to publish it.
+  (Via [staticmin](https://github.com/traceypooh/staticmin), a tiny comment service.)
+- They all live in one easy-to-read `comments.json`.  To remove a comment, delete its few lines.
+- No emails are stored.  Commenters' Gravatars (if any) get saved into your repo -- so your readers never
+  call gravatar.com.  No Gravatar: a GitHub-style "identicon".
+- Replies nest under their parent.
+
+
+## Your own scripts
+A page can have its own script tags (eg: a photo gallery).  They run before blogtini has drawn the page --
+so wait for it, in a `type="module"` script:
+```js
+await new Promise((resolve) => (document.documentElement.hasAttribute('data-blogtini-rendered')
+  ? resolve()
+  : document.addEventListener('data-blogtini-rendered', resolve, { once: true })))
+// your stuff
+```
+To find your elements in any theme (some draw inside shadow DOM): `import { query_all } from` the same blogtini
+url your `theme.js` imports, eg: `query_all('.my-gallery')`.
+
+
+## Versions
+`https://blogtini.com/index.js` is always the latest.  Or pin a release (any git tag), for a site that never
+changes under you:
+```js
+import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
+```
+(Keep the `?bundle=false`.)  The themes come from that same version.
+[Releases](https://github.com/traceypooh/blogtini/releases) say what's new.
+
+
+## Work on it locally
+Any static file webserver, from your site's top folder, eg:
+```sh
+python3 -m http.server
+```
+then open http://localhost:8000.  If the list of posts looks wrong, run the build (it reads `index.xml`).
+After adding or deleting a post, click the bottom ↻ button (just on `localhost`) to have blogtini look again.

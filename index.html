@@ -27,96 +27,38 @@
 </head>
 <body class="homepage">
 
-# Welcome to Blogtini!
 
-A modern "content first" approach to blogs & websites made entirely from easy to write and human readable `markdown` text files.
+<style>
+.bt-hero { font-size: 1.15em; }
+.bt-cta { display: inline-block; margin: 0.4em 0 0.6em 0; padding: 0.55em 1.5em; border-radius: 999px;
+  background: #f2c14e; color: #1d1f24 !important; font-weight: 800; font-size: clamp(1.15em, 3.4vw, 1.55em);
+  line-height: 1.2; text-decoration: none !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s, box-shadow 0.15s; }
+.bt-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3); }
+.bt-buttons { display: flex; flex-wrap: wrap; gap: 0.6em; margin: 0.5em 0 1.5em 0; }
+.bt-buttons a { padding: 0.45em 1.2em; border-radius: 999px; font-weight: 700; text-decoration: none !important;
+  border: 2px solid currentColor; }
+</style>
 
-## Overview
-- All your pages and blog posts are in [markdown](https://en.wikipedia.org/wiki/Markdown#Examples) -- this means your content is clean and **just** content.  No formatting mixed into your files.
-- A single line of javascript in each post or page file is used to load the page contents and process it.  eg:
-```html
-comment: <script src="../theme.js" type="module" charset="utf-8"></script>
-```
-In turn, the single `theme.js` at the top of your website, is _itself_ a simple one line `import 'https://...'` file, pointing to whatever theme URL you'd like to use for your site.
-- To change your theme, all you have to do is change that one line in your `theme.js` file to use another theme URL.
-- See [here](2025-02-blogtini-turns-one/) for using specific versions of blogtini.
+# Your blog, as plain text files.  Forever.
 
+<p class="bt-hero">
+Write in markdown.
+Keep it in a free git repo.
+blogtini paints it with javascript, right in the browser -- in any of 13 themes.
+No JS, no network, 1000 years from now?  Still a readable text file.
+</p>
 
-## Features
-- no build step
-- static pages
-- sitewide quick search in nav
-- comments can still be integrated
+<a class="bt-cta" href="preview/?start=?page/1">Live preview themes →</a>
 
-## Example page
-```markdown
----
-title: Blogtini Overview
-date: 2022-07-25
-categories:
-  - website
-tags:
-  - markdown
-  - javascript
-featured: https://blogtini.com/img/profile.jpg
-comment:  <script src="https://blogtini.com/index.js" type="module" charset="utf-8"></script>
----
-# Blogtini!
+<div class="bt-buttons"><a href="docs/">Get started</a> <a href="themes/">All the themes</a> <a href="https://github.com/traceypooh/blogtini">GitHub</a></div>
 
-An entire website, blog, or mixed setup which is entirely `markdown` and one line of `javascript`.
+**No build step required.**  (An optional one makes it better.)
+- Each post is one file: a few lines of settings, then markdown.
+- One word in `config.yml` picks your theme -- & visitors can try the others, live.
+- Free hosting w/ GitHub Pages.  Comments arrive as pull requests.  No server, no database.
+- Search, tags, categories, RSS, light & dark -- all built in.
 
-This is a new paragraph.
-
-## This is a 2nd level heading
-Here is a list:
-- blogtini is _exciting in italics_!
-- blogtini boldly **loves** you
-```
-
-## Get Started in seconds
-- Copy all the text in the "Example Page" box above
-- Paste it into a new file called `index.html` (change text if desired)
-- Run any simple static file server, eg: `python3 -m http.server` in a `terminal` in the same directory where `index.html` lives
-- Load the printed serving url in a browser, eg: http://localhost:8000/
-
-
-## Take it to the next level
-For multiple posts & pages:
-- Change the `https://blogtini.com/index.js` in your markdown file(s) to `./theme.js`
-- Create a `theme.js` file with `import 'https://blogtini.com/index.js'`
-- Now you can change the `theme.js` contents to another theme anytime you like and your entire site will change with one line change :)
-- Create directory names that "sort in reverse order", to make an `index.xml` file easier.
-- We like directory and filenames like:
-```
-2023-05-may-the-fourth-was-wild-this-year/index.html
-2022-12-christmas-with-family/index.html
-index.html
-theme.js
-index.xml
-```
-You can add days into the filenames/urls, too:
-```
-2023-05-04-may-the-fourth-was-wild-this-year/index.html
-2022-12-25-christmas-with-family/index.html
-index.html
-theme.js
-index.xml
-```
-
-- If you have `deno` installed (mac users: `brew install deno`) are in a terminal `cd`-ed into your website, you can create an `index.xml` from your content via:
-```sh
-deno run --allow-import=esm.ext.archive.org:443,blogtini.com:443 --allow-read=. --allow-write=index.xml https://blogtini.com/bin/build.js
-```
-- Or you can manually create/maintain a `index.xml` with contents like https://blogtini.com/index.xml
-- Reload your simple web server browser url to see the site
-- You can create a free https://github.com/ (new account if needed) and new repository and add your files there
-- xxxxx document sitemap auto-generator setup & explain sitemap importance
-- xxxxx document setting up top-level `index.html` file
-
-
-## More info
-- https://tracey.archive.org/dweb-2023 (tracey talk at https://dwebcamp.org )
-
-## Example Blog <i class="fa fa-angle-down"></i>
+Start your own in 2 minutes: the [blogtini-go](https://github.com/traceypooh/blogtini-go) template.
 
 </body>

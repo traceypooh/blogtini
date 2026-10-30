@@ -12,7 +12,7 @@
   (`index.js`) shows that theme & saves nothing -- the viewer's own theme picks stay as they were.  A frame's name
   sticks as it navigates.  Each time the framed page is drawn, it tells us (postMessage) its theme, url, & the
   list of themes -- its own blogtini's, so the list always matches the blogtini version that site runs.
-  Link to a theme: preview/#librarian
+  Link to a theme: preview/#librarian -- & to a page in it: preview/?start=?page/1#librarian
 */
 
 const CSS = `
@@ -136,9 +136,21 @@ const BAR = `
 const NO_REPLY_MS = 8000
 
 
+/**
+ * Returns the page to start on: `?start=` (a page of this site, from its top, eg: `?start=?page/1` or
+ * `?start=about/`) -- else the site's top.  (We're in `preview/` -- so the site is up one)
+ */
+function start_url() {
+  const start = new URLSearchParams(location.search).get('start')?.replace(/^\/+/, '') ?? ''
+  // just this site's pages -- nothing w/ a scheme (eg: `https:`, `javascript:`) or a host (`//`, `\\`)
+  if (/^[a-z][a-z0-9+.-]*:|^[/\\]{2}/i.test(start))
+    return '../'
+  return `../${start}`
+}
+
 let themes = []
 let theme = decodeURIComponent(location.hash.slice(1)) || 'future-imperfect'
-let url = '../' // the page the frame is showing.  (We're in `preview/` -- the site is up one)
+let url = start_url() // the page the frame is showing
 
 const $ = (id) => document.getElementById(id)
 
@@ -153,7 +165,7 @@ const frame = document.createElement('iframe')
 frame.id = 'frame'
 frame.title = 'theme preview'
 frame.name = `bt-preview:${theme}`
-frame.src = '../'
+frame.src = url
 document.body.append(frame)
 
 

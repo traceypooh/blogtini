@@ -42,8 +42,10 @@ function site_img() {
   return cfg.img_site.startsWith('https://') ? cfg.img_site : `${state.top_dir}${cfg.img_site}`
 }
 
-/** Returns a menu url, relative to this page */
+/** Returns a menu url, relative to this page -- or as is, if off-site (eg: `https://github.com/...`) */
 function navurl(url) {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url))
+    return url
   const ret = `${state.top_dir}${url.replace(/^\/+/, '').concat(state.filedev ? 'index.html' : '')}`
   return ret === '' ? './' : ret
 }
