@@ -1131,6 +1131,21 @@ function add_interactivity() {
       return
     }
 
+    // In the previewer, a link to the previewer (eg: the "Live preview themes" button, or a Themes page card's
+    // `preview/#librarian`) would nest one inside our frame.  Instead: the site's homepage, in that theme
+    // (else the one we're showing) -- the previewer's bar hears about it, as for any page
+    if (PREVIEW_THEME) {
+      const a = path.find((e) => e.matches?.('a[href]'))
+      const to = a ? new URL(a.getAttribute('href'), location.href) : null
+      if (to?.origin === location.origin && /\/preview\/(index\.html)?$/.test(to.pathname)) {
+        evt.preventDefault()
+        const theme = to.hash.slice(1)
+        globalThis.name = `${PREVIEW_PREFIX}${THEMES.includes(theme) ? theme : PREVIEW_THEME}`
+        location.href = new URL('../', to).href // (the previewer's dir is atop the site)
+        return
+      }
+    }
+
     // (`.theme-menu`, too: for a theme w/ a 2nd picker, eg: in a phone nav panel -- ids must be unique)
     const link = path.find((e) => e.matches?.('#theme-menu a, .theme-menu a'))
     // a "try this theme" link, eg: in a post's markdown: `[Try it now](#theme=librarian)`

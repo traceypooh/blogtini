@@ -135,6 +135,15 @@ const BAR = `
 // if the framed page hasn't said anything by then: its blogtini is older than previews (or isn't blogtini)
 const NO_REPLY_MS = 8000
 
+// Loaded inside a frame (eg: our own preview's)?  Take over the whole window instead -- no previewer in a
+// previewer.  (blogtini itself turns links to us, in a preview, into theme switches -- so this is rare)
+if (globalThis.parent !== globalThis) {
+  try {
+    globalThis.parent.location.href = location.href
+    /* eslint-disable-next-line no-empty */ // deno-lint-ignore no-empty
+  } catch {}
+}
+
 
 /**
  * Returns the page to start on: `?start=` (a page of this site, from its top, eg: `?start=?page/1` or
