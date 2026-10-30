@@ -100,8 +100,16 @@ catalog, on Tufte CSS).
 Pick one in `config.yml` (`theme: editorial`), or try them live w/ the theme picker: a viewer's pick
 (and light/dark choice) sticks for 24hr, just for them.  How themes plug in, & adding your own: [THEMES.md](THEMES.md).
 - step thru them all: [blogtini.com/preview/](https://blogtini.com/preview/) -- a ← → bar over the site, in an
-  iframe you can click around in.  (Its frame's name sets the theme, so nothing's saved.  Copy its dir to your site
-  to preview yours: it's one file)
+  iframe you can click around in.  (Its frame's name sets the theme, so nothing's saved.)  To preview *your* site
+  in every theme, add a `preview/index.html`:
+  ```html
+  <!doctype html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>theme previews</title>
+  <script type="module" src="https://blogtini.com/js/preview.js"></script>
+  ```
+  It lists the themes of the blogtini your site runs (eg: a pinned version's).
 - a post can pick its own theme: `theme: librarian` in its front matter (a viewer's pick still wins)
 - a link can switch a viewer's theme, like the picker does: `[Try it](#theme=librarian)` in markdown,
   or share https://blogtini.com/#theme=librarian

@@ -1,0 +1,241 @@
+/*
+  Theme previewer: a bar to step thru blogtini's themes, over the site in an iframe -- click around in it freely.
+  Any blogtini site can have one: a `preview/index.html` stub that loads this (see README), eg:
+    <!doctype html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>theme previews</title>
+    <script type="module" src="https://blogtini.com/js/preview.js"></script>
+
+  The stub is on the site itself -- so the iframe (`../`, the site's top) is the same site, & we can rename &
+  reload it, and hear from it.  The iframe's name says its theme (eg: `bt-preview:librarian`): the site's blogtini
+  (`index.js`) shows that theme & saves nothing -- the viewer's own theme picks stay as they were.  A frame's name
+  sticks as it navigates.  Each time the framed page is drawn, it tells us (postMessage) its theme, url, & the
+  list of themes -- its own blogtini's, so the list always matches the blogtini version that site runs.
+  Link to a theme: preview/#librarian
+*/
+
+const CSS = `
+:root {
+  --bar: #1d1f24;
+  --fg: #ecedef;
+  --muted: #9aa0aa;
+  --chip: #2b2e35;
+  --accent: #f2c14e;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bar);
+  color: var(--fg);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+}
+header a {
+  color: var(--fg);
+}
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+  margin-right: 4px;
+}
+button {
+  font: inherit;
+  color: var(--fg);
+  background: var(--chip);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--muted);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#name {
+  min-width: 9.5em;
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+}
+#count,
+#note {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+/* the themes: their own row, always one line -- swipe it sideways (no scrollbar), or use the arrows.
+   A fade at the right edge hints at more */
+#themes {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  padding-right: 28px;
+}
+#themes::-webkit-scrollbar {
+  display: none;
+}
+#themes button {
+  white-space: nowrap;
+  font-size: 0.85em;
+}
+#themes button[aria-current="true"] {
+  background: var(--accent);
+  color: var(--bar);
+}
+#use {
+  margin-left: auto;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+#frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+`
+
+const BAR = `
+<header>
+  <a class="brand" href="../" target="_top"></a>
+  <div class="step">
+    <button id="prev" aria-label="previous theme" title="previous theme (←)">←</button>
+    <span id="name"></span>
+    <button id="next" aria-label="next theme" title="next theme (→)">→</button>
+    <span id="count"></span>
+  </div>
+  <span id="note"></span>
+  <a id="use" href="../" target="_top" title="this page, in this theme -- your pick lasts 24 hours, just for you">use this theme ↗</a>
+  <nav id="themes" aria-label="themes"></nav>
+</header>`
+
+// if the framed page hasn't said anything by then: its blogtini is older than previews (or isn't blogtini)
+const NO_REPLY_MS = 8000
+
+
+let themes = []
+let theme = decodeURIComponent(location.hash.slice(1)) || 'future-imperfect'
+let url = '../' // the page the frame is showing.  (We're in `preview/` -- the site is up one)
+
+const $ = (id) => document.getElementById(id)
+
+const style = document.createElement('style')
+style.textContent = CSS
+document.head.append(style)
+document.body.innerHTML = BAR
+document.querySelector('.brand').textContent = location.hostname || 'site'
+
+// (the name is set before the frame is in the page -- so its window starts w/ it)
+const frame = document.createElement('iframe')
+frame.id = 'frame'
+frame.title = 'theme preview'
+frame.name = `bt-preview:${theme}`
+frame.src = '../'
+document.body.append(frame)
+
+
+/** Updates the bar for the current theme */
+function bar() {
+  const idx = themes.indexOf(theme)
+  $('name').textContent = theme.replace(/-/g, ' ')
+  $('count').textContent = idx >= 0 ? `${idx + 1} / ${themes.length}` : ''
+  $('prev').disabled = themes.length < 2
+  $('next').disabled = themes.length < 2
+  $('use').href = `${url.replace(/#.*$/, '')}#theme=${theme}`
+  for (const b of $('themes').children) {
+    b.setAttribute('aria-current', b.dataset.theme === theme ? 'true' : 'false')
+    if (b.dataset.theme === theme)
+      reveal_button(b)
+  }
+  document.title = `${theme.replace(/-/g, ' ')} :: theme previews`
+  history.replaceState(null, '', `#${theme}`)
+}
+
+/** Scrolls the themes row so a button shows -- clear of the right edge's fade (& a little room at the left) */
+function reveal_button(b) {
+  const row = $('themes')
+  const FADE = 28 + 12
+  const left = b.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft
+  const right = left + b.offsetWidth
+  if (right > row.scrollLeft + row.clientWidth - FADE)
+    row.scrollTo({ left: right - row.clientWidth + FADE, behavior: 'smooth' })
+  else if (left < row.scrollLeft)
+    row.scrollTo({ left: Math.max(0, left - 12), behavior: 'smooth' })
+}
+
+/** Shows a theme: renames the frame & reloads it -- same page, new theme */
+function show(t) {
+  theme = t
+  const name = `bt-preview:${t}`
+  frame.name = name
+  try {
+    frame.contentWindow.name = name
+    frame.contentWindow.location.reload()
+  } catch {
+    frame.src = url
+  }
+  bar()
+}
+
+const step = (dir) => themes.length &&
+  show(themes[(themes.indexOf(theme) + dir + themes.length) % themes.length])
+
+$('prev').addEventListener('click', () => step(-1))
+$('next').addEventListener('click', () => step(1))
+document.addEventListener('keydown', (evt) => {
+  if (evt.key === 'ArrowLeft')
+    step(-1)
+  if (evt.key === 'ArrowRight')
+    step(1)
+})
+
+// the page in the frame says what it's showing, each time it's drawn
+globalThis.addEventListener('message', (evt) => {
+  const msg = evt.origin === location.origin ? evt.data?.bt_preview : null
+  if (!msg)
+    return
+  if (!themes.length) {
+    themes = msg.themes
+    for (const t of themes) {
+      const b = document.createElement('button')
+      b.textContent = t.replace(/-/g, ' ')
+      b.dataset.theme = t
+      b.addEventListener('click', () => show(t))
+      $('themes').append(b)
+    }
+  }
+  $('note').textContent = ''
+  theme = msg.theme
+  url = msg.url
+  bar()
+})
+
+setTimeout(() => {
+  if (!themes.length)
+    $('note').textContent = "(no reply from this site's blogtini -- previews need a newer version)"
+}, NO_REPLY_MS)
+
+bar()

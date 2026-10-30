@@ -12,7 +12,7 @@ inside it: `<bt-posts>` (w/ `<bt-post>`s), `<bt-post-full>`, `<bt-histogram>` or
 The theme defines those custom elements, and so decides what the page looks like.
 
 - `index.css` is loaded into the page (light DOM) -- by `main()`, for the configured theme.
-- `preview/` (theme previewer): its iframe's name, eg: `bt-preview:librarian`, sets the theme -- nothing saved;
+- `preview/` (theme previewer -- a stub page; it's all in `js/preview.js`, so any site can have one): its iframe's name, eg: `bt-preview:librarian`, sets the theme -- nothing saved;
   a pick inside it just renames the frame.  The framed page posts `{ bt_preview: { theme, themes, url, title } }`
   to it, each time it's drawn.
 - A theme picker pick saves it (for that viewer, 24h) & reloads the page -- so each theme starts w/ a clean page:
@@ -491,7 +491,7 @@ our web components.  Check each license (these are MIT or Apache-2.0, afaik -- v
 
 | theme | look | why |
 |---|---|---|
-| [Docsy](https://github.com/google/docsy) / [Doks](https://github.com/thuliteio/doks) | documentation site: left nav tree, page TOC | a look we don't have: docs, manuals, project sites |
+| [Doks](https://github.com/thuliteio/doks) (or  [Docsy](https://github.com/google/docsy)) | documentation site: left nav tree, page TOC | a look we don't have: docs, manuals, project sites |
 | [Terminal](https://github.com/panr/hugo-theme-terminal) -- **ported** | retro terminal, monospace, accent color | fun & distinctive; tiny |
 | [Ananke](https://github.com/theNewDynamic/gohugo-theme-ananke) | Hugo's starter theme: hero image, clean cards | familiar, friendly default |
 | [Clean White](https://github.com/zhaohuabing/hugo-theme-cleanwhite) | big header photo, clean centered posts, sidebar | very nice classic blog |
