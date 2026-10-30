@@ -7,7 +7,7 @@ Pick one in `config.yml` (`theme: editorial`), or try them live from the theme p
 https://blogtini.com/#theme=librarian
 
 ## Screenshots (for the [Themes page](themes/index.html))
-Each theme's card has a screenshot: `img/themes/<theme>.png`.  So they all match:
+Each theme's card has a screenshot: `img/themes/<theme>.jpg`.  So they all match:
 1. Open the previewer at a list of posts (not the homepage, whose own text is up top -- & changes):
    http://localhost:8888/preview/?start=?page/1#terminal
 2. The browser window: **1440 wide**, as tall as your screen allows -- w/ DevTools *undocked* (its own window:
@@ -20,8 +20,9 @@ Each theme's card has a screenshot: `img/themes/<theme>.png`.  So they all match
    - Chrome: DevTools → Elements → right-click the `<iframe id="frame">` → **Capture node screenshot**
    - Firefox: in the console: `:screenshot --selector #frame`
 4. Save as `img/themes/<theme>.png`.  Then → for the next theme.
-5. Shrink them for the web -- the cards show them at most ~500px wide, so 1000 covers retina screens (macOS):
-   `sips -Z 1000 img/themes/*.png`
+5. Shrink them for the web -- the cards show them at most ~500px wide, so 1000 covers retina screens -- & JPEG
+   (screenshots are ~4x smaller than PNG), in `img/themes/` (macOS):
+   `for f in *.png; do sips -Z 1000 -s format jpeg -s formatOptions 85 "$f" --out "${f%.png}.jpg"; done; rm *.png`
 
 A new theme: add it to `THEMES` in `index.js`, a card on [themes/index.html](themes/index.html), & a screenshot.
 
