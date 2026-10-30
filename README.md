@@ -81,7 +81,7 @@ Our GitHub Action runs it on each push -- with `--seo`, for the live site.  Loca
 usually all you want: no head lines to `git checkout` (revert) afterwards.  Rerunning it changes nothing.
 From the top of your site repo:
 ```sh
-deno run --reload=https://blogtini.com --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
+deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
   --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
 ```
 or, w/ a blogtini checkout next to your site repo:
