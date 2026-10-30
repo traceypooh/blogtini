@@ -69,8 +69,13 @@ function site_url(cfg) {
   let url = cfg.site_url
   if (!url && exists('CNAME')) url = `https://${Deno.readTextFileSync('CNAME').trim()}/`
   if (!url) {
-    // eg: GITHUB_REPOSITORY=traceypooh/blogtini
-    const [owner, repo] = (Deno.env.get('GITHUB_REPOSITORY') ?? '').split('/')
+    // eg: GITHUB_REPOSITORY=traceypooh/blogtini (in GitHub Actions) -- else (eg: a build on your own computer)
+    // the clone's GitHub `origin`, eg: `url = git@github.com:traceypooh/blogtini.git` in .git/config
+    let [owner, repo] = (Deno.env.get('GITHUB_REPOSITORY') ?? '').split('/')
+    if (!(owner && repo) && exists('.git/config')) {
+      const origin = Deno.readTextFileSync('.git/config').split(/^\[/m).find((e) => e.startsWith('remote "origin"'))
+      ;[, owner, repo] = origin?.match(/url\s*=\s*\S*github\.com[:/]([^/\s]+)\/([^/\s]+?)(?:\.git)?\s/) ?? []
+    }
     if (owner && repo)
       url = repo === `${owner}.github.io` ? `https://${repo}/` : `https://${owner}.github.io/${repo}/`
   }

@@ -790,6 +790,11 @@ async function posts_from_feed() {
   if (!STORAGE.base)
     setup_base(items.map((e) => e.querySelector('link')?.textContent ?? ''))
 
+  // the feed's images are absolute (for feed readers), eg: https://example.com/img/pie.jpg -- but a post's own
+  // file says just `pie.jpg`.  Back to that, so it works wherever the site is (eg: localhost, before it's live)
+  const site = doc.querySelector('channel > link')?.textContent.trim() ?? ''
+  const featured = (url) => (site && url.startsWith(`${site}img/`) ? url.slice(`${site}img/`.length) : url)
+
   for (const item of items) {
     const text = (tag) => item.querySelector(tag)?.textContent.trim() ?? ''
     const cats = (domain) => [...item.querySelectorAll(`category[domain="${domain}"]`)]
@@ -809,7 +814,7 @@ async function posts_from_feed() {
       body_raw: ns(CONTENT, 'encoded')?.textContent ?? '',
       tags: cats('tag'),
       categories: cats('category'),
-      featured: ns(MEDIA, 'content')?.getAttribute('url') ?? '',
+      featured: featured(ns(MEDIA, 'content')?.getAttribute('url') ?? ''),
       featuredcaption: ns(MEDIA, 'description')?.textContent.trim() ?? '',
     }
     const [type] = cats('type')
