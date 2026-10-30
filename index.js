@@ -330,6 +330,11 @@ async function main() {
     cfg = /** @type {typeof cfg} */ (merged)
   }
 
+  // no `site_url:` in config.yml?  It's where we are: this site's top.  (The build does the same, from CNAME or
+  // GitHub's repo name -- so a new site needn't set it)
+  if (!tmp?.site_url && !globalThis.Deno)
+    cfg.site_url = new URL(state.top_dir || './', location.href).href
+
   // a post can pick its own theme (front matter `theme:`), eg: a post showing off a theme
   if (filter_post && my_frontmatter?.theme)
     cfg.theme = my_frontmatter.theme

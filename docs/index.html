@@ -24,7 +24,6 @@ Or by hand: your site's top folder needs just three files -- then add posts:
 - `config.yml` -- your site's settings, eg:
   ```yaml
   title: My blog
-  site_url: https://you.github.io/myblog/
   theme: librarian
   ```
 - `index.html` -- your homepage: copy the top of [blogtini's](https://github.com/traceypooh/blogtini/blob/main/index.html),
@@ -61,7 +60,8 @@ If JS never loads, a page still shows its text after a few seconds -- it's never
 In `config.yml` -- just what you want to change.  Some favorites:
 ```yaml
 title: My blog
-site_url: https://you.github.io/myblog/   # your live site, ending w/ /
+# site_url: https://example.com/blog/     # your live site, ending w/ /.  Usually automatic: from your
+#                                         # GitHub repo's name, or your own domain's CNAME file
 theme: librarian
 posts_per_page: 10
 img_site: img/me.jpg                       # your picture, for sidebars & "about" bits
