@@ -1223,6 +1223,14 @@ function head_insert_generics() {
     e.setAttribute('content', 'width=device-width, initial-scale=1')
     document.head.appendChild(e)
   }
+  // the site's own favicon.ico (atop it) -- else a post's browser looks at the *domain's* top, eg: for a
+  // https://you.github.io/REPO/ site: https://you.github.io/favicon.ico -- someone else's, or none
+  if (!document.querySelector('link[rel~="icon"]')) {
+    const e = document.createElement('link')
+    e.setAttribute('rel', 'icon')
+    e.setAttribute('href', `${state.top_dir}favicon.ico`)
+    document.head.appendChild(e)
+  }
 }
 
 function imgurl(post, nohash = true, relative = false) {
