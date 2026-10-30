@@ -32,12 +32,13 @@
 .bt-hero { font-size: 1.15em; }
 .bt-cta { display: inline-block; margin: 0.4em 0 0.6em 0; padding: 0.55em 1.5em; border-radius: 999px;
   background: #f2c14e; color: #1d1f24 !important; font-weight: 800; font-size: clamp(1.15em, 3.4vw, 1.55em);
-  line-height: 1.2; text-decoration: none !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  line-height: 1.2; text-decoration: none !important; border: 0 !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   transition: transform 0.15s, box-shadow 0.15s; }
 .bt-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3); }
 .bt-buttons { display: flex; flex-wrap: wrap; gap: 0.6em; margin: 0.5em 0 1.5em 0; }
 .bt-buttons a { padding: 0.45em 1.2em; border-radius: 999px; font-weight: 700; text-decoration: none !important;
-  border: 2px solid currentColor; }
+  border: 2px solid currentColor !important; transition: background-color 0.15s; }
+.bt-buttons a:hover { background-color: color-mix(in srgb, currentColor 12%, transparent); }
 </style>
 
 # Your blog, as plain text files.  Forever.
@@ -54,7 +55,7 @@ No JS, no network, 1000 years from now?  Still a readable text file.
 <div class="bt-buttons"><a href="docs/">Get started</a> <a href="themes/">All the themes</a> <a href="https://github.com/traceypooh/blogtini">GitHub</a></div>
 
 **No build step required.**  (An optional one makes it better.)
-- Each post is one file: a few lines of settings, then markdown.
+- Each post is one file: a title, date & tags up top, then markdown.
 - One word in `config.yml` picks your theme -- & visitors can try the others, live.
 - Free hosting w/ GitHub Pages.  Comments arrive as pull requests.  No server, no database.
 - Search, tags, categories, RSS, light & dark -- all built in.
