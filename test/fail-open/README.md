@@ -12,7 +12,7 @@ w/ CSS alone: hide the body briefly, then show it regardless:
   so `visibility: hidden` is as good as `display: none` there).
 
 Who the 3s reveal is for: browsers that apply CSS but never run our JS -- JS off, NoScript, a blocking proxy,
-esm.ext.archive.org or blogtini.com down, a browser too old for ES modules.  Crawlers & text browsers don't apply
+esm.archive.org or blogtini.com down, a browser too old for ES modules.  Crawlers & text browsers don't apply
 CSS, so they see the text regardless; screen readers ride along in normal JS browsers.
 
 

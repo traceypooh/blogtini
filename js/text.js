@@ -1,5 +1,5 @@
-import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
-import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
+import yml from 'https://esm.archive.org/js-yaml@4.1.0'
+import showdown from 'https://esm.archive.org/showdown@2.1.0'
 
 const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true })
 

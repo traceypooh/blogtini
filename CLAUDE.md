@@ -27,11 +27,11 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 
 ## House rules
 - **No third-party CDNs** (Google Fonts, jsDelivr, unpkg, cdnjs, gravatar.com, ...): they leak readers' IPs.
-  Self-host (fonts, images), or import from `https://esm.ext.archive.org/` (the Internet Archive's esm.sh mirror).
+  Self-host (fonts, images), or import from `https://esm.archive.org/` (the Internet Archive's esm.sh mirror).
   Every runtime import host must also allow crawlers in its `robots.txt` -- a blocked import blanks the page for Google.
 - **No required build.**  Raw markdown files + the `<script>` line must keep working, w/o `index.xml`.
 - **Fail open.**  If the JS never loads, a page still shows its text.  Don't add `display:none`-forever styles.
-- **Browser-native**: ES modules, no bundler, no TypeScript, no `npm install` (libraries are pinned esm.ext.archive.org urls).
+- **Browser-native**: ES modules, no bundler, no TypeScript, no `npm install` (libraries are pinned esm.archive.org urls).
 - No symlinks in what ships (GitHub Pages, the esm mirror & Windows checkouts may not follow them).
 - Shadow or light DOM: light for an imported theme's page layout, lit + shadow DOM for reusable widgets
   (see THEMES.md "Shadow DOM or light DOM?").

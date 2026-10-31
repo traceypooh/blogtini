@@ -199,7 +199,7 @@ function highlight_code() {
   // future-imperfect's highlight.js colors -- into the (light DOM) document, once
   if (!document.adoptedStyleSheets.includes(css_hljs.styleSheet))
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, css_hljs.styleSheet]
-  void import('https://esm.ext.archive.org/highlightjs@9.16.2').then(
+  void import('https://esm.archive.org/highlightjs@9.16.2').then(
     (esm) => codes.forEach(esm.default.highlightBlock),
   )
 }

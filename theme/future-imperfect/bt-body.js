@@ -1,6 +1,6 @@
 
-import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { unsafeHTML } from 'https://esm.archive.org/lit@3.2.1/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 import {
   css_buttons, css_headers, css_links, css_forms, css_normalize, css_theme, css_fontawesome,
 } from './css.js'

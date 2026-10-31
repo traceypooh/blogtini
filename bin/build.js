@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --no-lock --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY --allow-import=esm.ext.archive.org:443
+#!/usr/bin/env -S deno run --no-lock --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY --allow-import=esm.archive.org:443
 /*
   The (optional) blogtini build step.  Makes your site better for everything that doesn't run JS:
   link previews, crawlers, RSS readers, and people w/o JS.
@@ -26,7 +26,7 @@ if (!globalThis.Deno) { // Node (`deno.js` never sets the global)
   const { register } = await import('node:module')
   register('./https-hooks.js', import.meta.url)
 }
-const { default: yml } = await import('https://esm.ext.archive.org/js-yaml@4.1.0')
+const { default: yml } = await import('https://esm.archive.org/js-yaml@4.1.0')
 const {
   markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS,
 } = await import('../js/text.js')

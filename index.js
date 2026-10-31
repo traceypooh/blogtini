@@ -1,8 +1,8 @@
 
 
-import yml from 'https://esm.ext.archive.org/js-yaml@4.1.0'
-import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
-import showdown from 'https://esm.ext.archive.org/showdown@2.1.0'
+import yml from 'https://esm.archive.org/js-yaml@4.1.0'
+import dayjs from 'https://esm.archive.org/dayjs@1.11.13'
+import showdown from 'https://esm.archive.org/showdown@2.1.0'
 
 // adds header click actions, etc.
 
@@ -82,7 +82,7 @@ const PREVIEW_THEME = (() => {
  * Returns the absolute url of a theme shipped alongside *this* `index.js` --
  * so a site pinning a blogtini version (eg: `blogtini@1.0.5/index.js`) gets that version's theme, too.
  *
- * esm.sh-style mirrors (eg: esm.ext.archive.org/gh/) run us from a rebuilt `.../es2022/index.nobundle.mjs`,
+ * esm.sh-style mirrors (eg: esm.archive.org/gh/) run us from a rebuilt `.../es2022/index.nobundle.mjs`,
  * so map back to the repo url, w/ `?bundle=false` -- so theme and `index.js` share one `cfg` & `state`.
  *
  * @param {string} theme eg: 'future-imperfect'
@@ -419,7 +419,7 @@ ${homepage_markdown(await self_prom) || body_contents}
   add_interactivity()
 
   // if (state.filedev || state.localdev) // xxx ideally use normal customElements for production
-  await import('https://esm.ext.archive.org/redefine-custom-elements@0.1.3')
+  await import('https://esm.archive.org/redefine-custom-elements@0.1.3')
 
   await import(path_to_theme_url(cfg.theme))
 

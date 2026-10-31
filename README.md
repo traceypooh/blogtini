@@ -82,7 +82,7 @@ usually all you want: no head lines to `git checkout` (revert) afterwards.  Reru
 From the top of your site repo:
 ```sh
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
-  --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
+  --allow-import=blogtini.com:443,esm.archive.org:443  https://blogtini.com/bin/build.js
 ```
 or, w/ a blogtini checkout next to your site repo:
 ```sh
@@ -140,7 +140,7 @@ Older comments (one file each, in `comments/<post>/`): convert once w/ staticmin
 Use the latest (`https://blogtini.com/index.js`), or pin a release -- served from any git tag by the
 Internet Archive's esm.sh mirror:
 ```js
-import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
+import 'https://esm.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
 ```
 The default theme comes from that same version, so `theme:` in `config.yml` is optional.
 Always use `?bundle=false`: otherwise the theme gets its own bundled copy of `index.js`, and the two don't share

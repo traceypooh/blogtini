@@ -1,4 +1,4 @@
-import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html } from 'https://esm.archive.org/lit@3.2.1'
 import { css_links, css_headers, css_normalize } from './css.js'
 import { state } from '../../index.js'
 import { vrsort } from '../../js/text.js'

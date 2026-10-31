@@ -1,6 +1,6 @@
 import {
   LitElement, html, svg, css,
-} from 'https://esm.ext.archive.org/lit@3.2.1'
+} from 'https://esm.archive.org/lit@3.2.1'
 import { datetime, state } from '../../index.js'
 import {
   css_footer, css_title, css_buttons, css_headers, css_links, css_fontawesome, css_normalize,

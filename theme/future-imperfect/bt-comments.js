@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 import { state, cfg } from '../../index.js'
 import {
   css_headers, css_buttons, css_post, css_forms, css_normalize, css_fontawesome,

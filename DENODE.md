@@ -14,7 +14,7 @@
 
 **The general idea, for any repo with Deno scripts:**
 1. Use `node:` built-ins (`node:fs`, `node:process`, …) instead of `Deno.*`. Deno supports `node:` imports natively, so this is one code path with no `if (globalThis.Deno)` branches.
-2. Keep importing ES modules from https URLs (eg: `https://esm.ext.archive.org/js-yaml@4.1.0`), the same way browsers and Deno do. Node can't do that natively, so a small **loader hook** fetches them, with a **local cache** for repeat and offline runs.
+2. Keep importing ES modules from https URLs (eg: `https://esm.archive.org/js-yaml@4.1.0`), the same way browsers and Deno do. Node can't do that natively, so a small **loader hook** fetches them, with a **local cache** for repeat and offline runs.
 3. The script **registers the hook itself**, on Node only, then loads its https imports with `await import()`. Same file for both.
 
 Then `node bin/build.js` works from a Mac/Unix CLI, from CI, and from Code App's ▶. `deno run … bin/build.js` keeps working unchanged.
@@ -70,7 +70,7 @@ if (!globalThis.Deno) {                         // Node (deno.js never sets the 
   const { register } = await import('node:module')
   register('./https-hooks.js', import.meta.url)
 }
-const { default: yml } = await import('https://esm.ext.archive.org/js-yaml@4.1.0')
+const { default: yml } = await import('https://esm.archive.org/js-yaml@4.1.0')
 const { markdown_parse, markdown_to_html } = await import('../js/text.js')   // has https imports
 ```
 
@@ -153,7 +153,7 @@ A reusable file for any repo, which could grow into its own small project. It wo
 - **No sandbox.** `--allow-read` etc don't exist on Node, so it's harmless but unprotected.
 - **Prior art:** Deno's own `@deno/shim-deno` (npm, from their `dnt` tool) implements much of the `Deno` namespace on Node. Worth reading, or using, even if ours stays small. It's unknown whether it loads cleanly through an esm.sh-style mirror.
 
-**Self-loading from a URL** (eg: `https://esm.ext.archive.org/…/denode.js`):
+**Self-loading from a URL** (eg: `https://esm.archive.org/…/denode.js`):
 - **Chicken-and-egg:** Node can't import the hooks over https until the hooks are installed.
 - **The way around it:** `module.register()` accepts a `data:` URL. A tiny local bootstrap `fetch()`es the hooks' source and registers it as `data:text/javascript,…`. Everything after that (the shim, the script's imports) comes over https through the cache.
 - **First run needs the network.** The bootstrap's own fetch has no cache until it keeps one.
@@ -171,7 +171,7 @@ A reusable file for any repo, which could grow into its own small project. It wo
 - **Node gets it from npm**, not over https: `npm i deno-polyfill`, then `import { Deno } from 'deno-polyfill'`.
   An https import of it would need the very hooks it ships (chicken-and-egg, above).
 - **Deno side:** esm.sh-style mirrors build npm packages for *browsers* by default, so a package of `node:fs`
-  imports may not load cleanly from `esm.ext.archive.org`. Serve its files raw (`?raw`) or as plain static files.
+  imports may not load cleanly from `esm.archive.org`. Serve its files raw (`?raw`) or as plain static files.
 - **Why another one?** Small and grows as needed; https imports w/ a cache; runs on iOS Node (no WebAssembly,
   so `node:https`, not `fetch()`).
 - **Prior art to read first:** Deno's own `@deno/shim-deno` (repo `denoland/node_deno_shims`, MIT; latest 0.19.2,

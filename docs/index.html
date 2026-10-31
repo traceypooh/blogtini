@@ -113,7 +113,7 @@ It writes `index.xml` (your RSS feed & sitemap, w/ every post) -- and w/ `--seo`
 It runs on [deno](https://deno.com) or `node`, from your site's top folder:
 ```sh
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
-  --allow-import=blogtini.com:443,esm.ext.archive.org:443  https://blogtini.com/bin/build.js
+  --allow-import=blogtini.com:443,esm.archive.org:443  https://blogtini.com/bin/build.js
 ```
 Easiest: a GitHub Action runs it each time you push -- copy blogtini's
 [.github/workflows/](https://github.com/traceypooh/blogtini/tree/main/.github/workflows).
@@ -145,7 +145,7 @@ url your `theme.js` imports, eg: `query_all('.my-gallery')`.
 `https://blogtini.com/index.js` is always the latest.  Or pin a release (any git tag), for a site that never
 changes under you:
 ```js
-import 'https://esm.ext.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
+import 'https://esm.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
 ```
 (Keep the `?bundle=false`.)  The themes come from that same version.
 [Releases](https://github.com/traceypooh/blogtini/releases) say what's new.

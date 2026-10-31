@@ -12,7 +12,7 @@ fi
 
 # same flags as build.js's shebang -- GH Action's alpine image busybox `env` lacks `-S` (or: `apk add coreutils` & just run build.js)
 deno run --no-lock --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY \
-  --allow-import=esm.ext.archive.org:443 "$(dirname "$0")/build.js" "$@"
+  --allow-import=esm.archive.org:443 "$(dirname "$0")/build.js" "$@"
 
 # in GitHub Actions only: cleanup, remove `.git/` etc. before the site gets uploaded
 if [ "${GITHUB_ACTIONS:-}" = true ]; then

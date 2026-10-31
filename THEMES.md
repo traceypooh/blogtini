@@ -82,7 +82,7 @@ fetches it once, eg: while flipping thru themes w/ the picker:
 - `fonts.css` & `fonts/` -- self-hosted fonts, in place of their Google Fonts.
   (Browsers only download the ones a theme uses)
 
-No symlinks: GitHub Pages & the esm.ext.archive.org mirror may not follow them, nor Windows checkouts.
+No symlinks: GitHub Pages & the esm.archive.org mirror may not follow them, nor Windows checkouts.
 
 
 ## Shadow DOM or light DOM?  Both -- by piece (2026-10-28)

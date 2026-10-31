@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 import { url2post, urlify, datetime } from '../../index.js'
 import { css_headers, css_links, css_normalize } from './css.js'
 

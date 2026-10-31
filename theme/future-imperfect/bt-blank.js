@@ -1,4 +1,4 @@
-import { LitElement, html } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html } from 'https://esm.archive.org/lit@3.2.1'
 import {
   css_buttons, css_links, css_forms, css_normalize,
 } from './css.js'

@@ -1,5 +1,5 @@
-import lunr from 'https://esm.ext.archive.org/lunr@2.3.9'
-import dayjs from 'https://esm.ext.archive.org/dayjs@1.11.13'
+import lunr from 'https://esm.archive.org/lunr@2.3.9'
+import dayjs from 'https://esm.archive.org/dayjs@1.11.13'
 
 import { summarize_markdown } from './text.js'
 

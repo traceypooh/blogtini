@@ -1,5 +1,5 @@
 
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 
 customElements.define('bt-page', class extends LitElement {
   static get styles() {

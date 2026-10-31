@@ -1,5 +1,5 @@
-import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { unsafeHTML } from 'https://esm.archive.org/lit@3.2.1/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 
 import { url2post, markdown_to_html, cfg } from '../../index.js'
 import {
@@ -81,7 +81,7 @@ customElements.define('bt-post-full', class extends LitElement {
     // add code highlighting
     const codes = this.shadowRoot.querySelectorAll('pre code')
     if (codes.length) {
-      void import('https://esm.ext.archive.org/highlightjs@9.16.2').then(
+      void import('https://esm.archive.org/highlightjs@9.16.2').then(
         (esm) => codes.forEach(esm.default.highlightBlock),
       )
     }

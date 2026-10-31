@@ -1,4 +1,4 @@
-import { css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { css } from 'https://esm.archive.org/lit@3.2.1'
 
 export const css_normalize = css`
 /* First, some github.com/necolas/normalize.css styles that inherit into shadow DOM components */

@@ -1,5 +1,5 @@
-import { unsafeHTML } from 'https://esm.ext.archive.org/lit@3.2.1/directives/unsafe-html.js'
-import { LitElement, html, css } from 'https://esm.ext.archive.org/lit@3.2.1'
+import { unsafeHTML } from 'https://esm.archive.org/lit@3.2.1/directives/unsafe-html.js'
+import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 import {
   url2post, cfg, state, urlify, PR, imgurl,
 } from '../../index.js'
