@@ -151,7 +151,16 @@ function vrsort(map) {
 const SKIP_DIRS = new Set(['node_modules', 'test', 'theme', 'js', 'img', 'avatars', 'preview'])
 
 
+/**
+ * Returns the markdown in a homepage file: everything inside its `<body>`.  Shared w/ `bin/build.js`
+ * @returns {string|undefined}
+ */
+function homepage_markdown(text) {
+  return text?.match(/<body[^>]*>([\s\S]*?)(<\/body>|$)/i)?.[1].trim()
+}
+
+
 export {
   markdown_to_html, summarize, summarize_markdown, markdown_parse,
-  friendly_truncate, krsort, vsort, vrsort, SKIP_DIRS,
+  friendly_truncate, krsort, vsort, vrsort, SKIP_DIRS, homepage_markdown,
 }

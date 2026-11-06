@@ -8,7 +8,7 @@ import showdown from 'https://esm.archive.org/showdown@2.1.0'
 
 import search_setup, { btbody_root } from './js/search-setup.js'
 import {
-  markdown_to_html, summarize_markdown, markdown_parse, krsort, SKIP_DIRS,
+  markdown_to_html, summarize_markdown, markdown_parse, krsort, SKIP_DIRS, homepage_markdown,
 } from './js/text.js'
 
 
@@ -693,12 +693,6 @@ function viewer_prefs_notice() {
 }
 
 
-/** @returns {string|undefined} the markdown in a homepage file: everything inside its `<body>` */
-function homepage_markdown(text) {
-  return text?.match(/<body[^>]*>([\s\S]*?)(<\/body>|$)/i)?.[1].trim()
-}
-
-
 /**
  * Puts this page's post into the cache, replacing any older copy of it (keeping that copy's url).
  * Leaves the cache (and its localStorage write, of every post) alone when the copy is the same.
@@ -1059,9 +1053,15 @@ function is_filter_post(url) {
     // deal with IPFS immutable (and unknowable a priori) CID
     (filter_post.startsWith('https://ipfs.io/ipfs/') && !url_no_args.startsWith('https://') &&
       filter_post.replace(/^https:\/\/ipfs\.io\/ipfs\/[^/]+\//, '') === url_no_args) ||
-    // local file:// dev
-      ((state.filedev || state.localdev) && STORAGE.base && filter_post.endsWith(url_no_args.replace(RegExp(`^${STORAGE.base}`), ''))), // xxxx endsWith() lame
+    // local file:// dev.  (Not the homepage -- its url is just the base, so '' -- & every url "ends w/" '')
+      ((state.filedev || state.localdev) && STORAGE.base && local_tail(url_no_args) &&
+        filter_post.endsWith(local_tail(url_no_args))), // xxxx endsWith() lame
   )
+}
+
+/** Returns a url w/o the live site's base, eg: 'https://blogtini.com/2026-10-x/' => '2026-10-x/' */
+function local_tail(url) {
+  return url.replace(RegExp(`^${STORAGE.base}`), '')
 }
 
 

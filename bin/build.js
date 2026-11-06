@@ -28,7 +28,7 @@ if (!globalThis.Deno) { // Node (`deno.js` never sets the global)
 }
 const { default: yml } = await import('https://esm.archive.org/js-yaml@4.1.0')
 const {
-  markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS,
+  markdown_parse, markdown_to_html, friendly_truncate, SKIP_DIRS, homepage_markdown,
 } = await import('../js/text.js')
 
 // hides body for up to 3s (so no flash of raw markdown before JS renders), then shows it regardless.
@@ -91,7 +91,7 @@ function find_files(dir = '.') {
     const path = dir === '.' ? e.name : `${dir}/${e.name}`
     if (e.isDirectory && !e.name.startsWith('.') && !e.name.startsWith('_') && !SKIP_DIRS.has(e.name))
       ret.push(...find_files(path))
-    else if (e.isFile && e.name === 'index.html' && dir !== '.')
+    else if (e.isFile && e.name === 'index.html' && dir !== '.') // (the homepage: see `homepage_item()`)
       ret.push(path)
   }
   return ret.sort()
@@ -168,8 +168,44 @@ function posts(cfg, site, seo) {
     items.push({ path, fm, body, img, date })
   }
 
+  // the homepage, too -- a page (so: in search, the sitemap & the feed -- not in lists of posts)
+  const home = homepage_item(cfg, items)
+  if (home)
+    items.push(home)
+
   // newest first; ties by path, so output is deterministic
   return items.sort((a, b) => (b.date - a.date) || (a.path < b.path ? 1 : -1))
+}
+
+
+/**
+ * Returns the homepage (the top `index.html`), as a `type: page` feed item -- or null.  It's real html, w/ its
+ * markdown in its `<body>` -- no front matter.  So:
+ * - title: its `<title>` -- else the site's title
+ * - date: the oldest post's -- a date that stays put (so rerunning the build changes nothing)
+ * - body: its markdown, w/o any `<style>` & `<script>`s
+ */
+function homepage_item(cfg, items) {
+  if (!exists('index.html')) return null
+  const text = Deno.readTextFileSync('index.html')
+  const body = homepage_markdown(text)
+    ?.replace(/<(style|script)[\s>][\s\S]*?<\/\1>/gi, '').trim()
+  if (!body) return null
+
+  const title = text.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]
+    .replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ').trim()
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+  const oldest = items.length
+    ? items.reduce((min, e) => (e.date < min ? e.date : min), items[0].date)
+    : new Date('2000-01-01T00:00:00Z')
+  return {
+    path: 'index.html',
+    fm: { title: title || cfg.title || 'blogtini', type: 'page' },
+    body,
+    img: cfg.img_site ? `${site_url(cfg)}${cfg.img_site}` : '',
+    date: oldest,
+  }
 }
 
 
