@@ -25,7 +25,8 @@ const state = {
   urls_filtered: [],
   num_posts: 0,
   filedev: location?.protocol === 'file:',
-  localdev: location?.hostname === 'localhost',
+  // dev on your own computer: localhost, 127.0.0.1, ::1, or eg: `mymac.local` (a computer on your network)
+  localdev: /^(localhost|127\.0\.0\.1|\[::1\]|.*\.local)$/.test(location?.hostname ?? ''),
   pathrel: '',
   is_homepage: globalThis.document?.querySelector('body').classList.contains('homepage'),
   filter_post_url: null,
@@ -397,9 +398,19 @@ ${homepage_markdown(await self_prom) || body_contents}
   }
 
 
-  if (!Object.keys(STORAGE).length || STORAGE.created !== dayjs().format('MMM D, YYYY'))
+  // The cache is for *this* site.  (Eg: several sites dev'd on the same localhost:8888 share one localStorage --
+  // so w/o this, one site could show another's cached posts -- & its links -- for the rest of the day)
+  const site_id = `${cfg.title}|${cfg.site_url}`
+  if (STORAGE.site !== site_id) {
+    for (const key of Object.keys(STORAGE))
+      delete STORAGE[key]
+    STORAGE.base ||= base
+  }
 
+  if (!STORAGE.created || STORAGE.created !== dayjs().format('MMM D, YYYY')) {
+    STORAGE.site = site_id
     await storage_create()
+  }
 
   // trust this post's own file over the (up to a day old) cache -- eg: it was just edited
   const self = filter_post ? await self_prom : null
