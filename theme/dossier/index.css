@@ -1,0 +1,946 @@
+/*
+  Dossier theme for blogtini -- our own.  Nearly all black & white: typed sheets on a gray desk, red rubber stamps.
+  Fonts, self-hosted: Special Elite (Apache 2.0) & Allerta Stencil (OFL) in fonts/;
+  Courier Prime (OFL) from librarian's fonts/.
+*/
+@import url(../html5up/fontawesome/css/fontawesome-all.min.css);
+
+@font-face {
+  font-family: "Special Elite";
+  src: url("fonts/special-elite-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Allerta Stencil";
+  src: url("fonts/allerta-stencil-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("../librarian/fonts/courier-prime-latin-400-normal.woff2") format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("../librarian/fonts/courier-prime-latin-700-normal.woff2") format("woff2");
+  font-weight: bold;
+  font-display: swap;
+}
+
+:root {
+  --desk: #d8d8d4;
+  --paper: #fbfbf8;
+  --ink: #161616;
+  --muted: #5d5d5a;
+  --rule: #b9b9b4;
+  --folder: #c9c9c2;          /* a gray file folder */
+  --redact: #111;
+  --stamp: #c0262b;           /* the one color: the stamp pad */
+  --stamp-blend: multiply;
+  --typed: "Special Elite", "Courier Prime", "Courier New", Courier, monospace;
+  --text: "Courier Prime", "Courier New", Courier, monospace;
+  --stencil: "Allerta Stencil", "Arial Black", Impact, sans-serif;
+}
+
+/* night ops */
+[scheme="dark"] {
+  --desk: #0d0d0d;
+  --paper: #1b1b1a;
+  --ink: #dcdcd6;
+  --muted: #9a9a94;
+  --rule: #3c3c39;
+  --folder: #2c2c2a;
+  --redact: #000;
+  --stamp: #ff4a4f;
+  --stamp-blend: screen;
+}
+
+html {
+  font-size: 16px;
+}
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--ink);
+  font-family: var(--text);
+  line-height: 1.6;
+}
+bt-body {
+  display: block;
+}
+a {
+  color: inherit;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* the classification banners, top & bottom */
+.banner {
+  background: var(--stamp);
+  color: #fff;
+  font-family: var(--stencil);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.8rem;
+  padding: 0.25rem 1rem;
+}
+
+
+/* masthead */
+.masthead {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 0.5rem 1.5rem;
+  text-align: center;
+}
+.masthead .agency {
+  font-family: var(--stencil);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: clamp(1.8rem, 6vw, 3.2rem);
+  line-height: 1.1;
+  margin: 0;
+}
+.masthead p.agency {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+}
+.masthead .agency a {
+  text-decoration: none;
+}
+.masthead .division {
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.4rem 0 0 0;
+  border-top: 3px double var(--ink);
+  border-bottom: 3px double var(--ink);
+  display: inline-block;
+  padding: 0.15rem 1rem;
+}
+.masthead .motto {
+  max-width: 40rem;
+  margin: 1rem auto 0 auto;
+  color: var(--muted);
+}
+.masthead nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.2rem 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 1.4rem;
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+.masthead nav a {
+  text-decoration: none;
+}
+.masthead nav a:hover {
+  text-decoration: underline;
+}
+
+main#wrapper {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* section titles: stenciled, between rules */
+.case-files > h2,
+.archives > h2 {
+  font-family: var(--stencil);
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  font-size: 1.3rem;
+  margin: 2.5rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.5rem;
+}
+/* (blogtini's homepage "Latest posts" heading: our "Case files" says it) */
+.bt-posts-heading {
+  display: none;
+}
+
+
+/* a typed sheet of paper */
+.sheet {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 1.6rem 1.8rem 1.8rem 1.8rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* typed fields: SUBJECT ...... */
+dl.fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.15rem 1rem;
+  margin: 0;
+  font-family: var(--typed);
+}
+dl.fields dt {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+dl.fields dt::after {
+  content: ":";
+}
+dl.fields dd {
+  margin: 0;
+}
+dl.fields a {
+  text-decoration: none;
+  font-weight: bold;
+}
+dl.fields a:hover {
+  text-decoration: underline;
+}
+
+/* redactions: a black bar over the words -- hover to peek.  (Markdown ~~strikethrough~~, in a post, too) */
+.redact,
+.post-body del {
+  background: var(--redact);
+  color: transparent;
+  text-decoration: none;
+  border-radius: 1px;
+  padding: 0 0.1em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: color 0.2s;
+  cursor: help;
+}
+.redact:hover,
+.post-body del:hover {
+  color: #888;
+}
+
+
+/* case files: each post a file folder */
+.folders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+  gap: 2.4rem 2rem;
+  margin: 0 0 2rem 0;
+}
+.folder,
+article.dossier {
+  position: relative;
+  scroll-margin-top: 2rem;
+}
+.tab {
+  display: inline-block;
+  background: var(--folder);
+  color: var(--ink);
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  padding: 0.3rem 1.2rem 0.2rem 1rem;
+  border-radius: 6px 14px 0 0;
+  margin-left: 1rem;
+}
+.folder .sheet,
+article.dossier .sheet {
+  border-top: 10px solid var(--folder);
+}
+.folder .sheet {
+  min-height: 15rem;
+  padding-bottom: 4.5rem;
+}
+.folder .file-head {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.folder .summary {
+  margin: 1rem 0 0.5rem 0;
+}
+.associates {
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+.associates span {
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.associates a {
+  margin-right: 0.5em;
+}
+.open-file {
+  font-family: var(--typed);
+  margin: 0.8rem 0 0 0;
+}
+.open-file a {
+  text-decoration: none;
+}
+.open-file a:hover {
+  text-decoration: underline;
+}
+
+/* photos: black & white, paper-clipped */
+.photo {
+  position: relative;
+  display: block;
+}
+.photo img {
+  display: block;
+  filter: grayscale(100%) contrast(1.15);
+  border: 6px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: crosshair;
+}
+.folder .photo {
+  flex: 0 0 7.5rem;
+  transform: rotate(2.5deg);
+}
+.folder .photo img {
+  width: 7.5rem;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+/* the paper clip */
+.clip {
+  position: absolute;
+  z-index: 1;
+  top: -14px;
+  left: 18px;
+  width: 14px;
+  height: 40px;
+  border: 3px solid #8d8d88;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 3px transparent, 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.clip::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 2px;
+  width: 4px;
+  height: 24px;
+  border: 3px solid #8d8d88;
+  border-radius: 6px;
+}
+
+/* the rubber stamps: double border, tilted, uneven ink (a noise mask) */
+.stamp {
+  position: absolute;
+  display: inline-block;
+  padding: 0.25em 0.6em 0.15em 0.6em;
+  border: 3px double currentColor;
+  border-radius: 4px;
+  color: var(--stamp);
+  font-family: var(--stencil);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0.85;
+  transform: rotate(var(--tilt, -6deg));
+  mix-blend-mode: var(--stamp-blend);
+  pointer-events: none;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.stamp small {
+  display: block;
+  font-size: 0.6em;
+  letter-spacing: 0.25em;
+}
+.stamp b {
+  display: block;
+  font-weight: normal;
+  font-size: 1.35em;
+}
+.folder .marking {
+  left: 1.6rem;
+  bottom: 1.1rem;
+  font-size: 1rem;
+}
+.folder .briefing {
+  right: 1.4rem;
+  bottom: 0.9rem;
+  font-size: 0.85rem;
+}
+.stamp.big {
+  top: 1.6rem;
+  right: 1.4rem;
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  border-width: 4px;
+}
+
+
+/* a file: one post */
+article.dossier,
+article.memo {
+  margin: 2rem 0;
+}
+article.dossier .sheet {
+  padding: 2rem clamp(1.2rem, 5vw, 3.5rem) 2.5rem clamp(1.2rem, 5vw, 3.5rem);
+}
+article.dossier h1 {
+  font-family: var(--typed);
+  font-weight: normal;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  line-height: 1.2;
+  margin: 2.6rem 0 1rem 0;
+  padding-right: 6rem; /* (clear of the stamp) */
+}
+article.dossier dl.fields {
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.6rem 0;
+  margin-bottom: 1.8rem;
+}
+article.dossier .exhibit {
+  margin: 1.8rem auto;
+  max-width: 44rem;
+}
+article.dossier .exhibit img {
+  margin: 0 auto;
+}
+figcaption {
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  text-align: center;
+}
+.post-body {
+  font-size: 1.05rem;
+}
+.post-body pre {
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.8rem 1rem;
+}
+.post-body h2,
+.post-body h3 {
+  font-family: var(--typed);
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.post-body blockquote {
+  margin: 1.2rem 0;
+  padding: 0.2rem 1rem;
+  border-left: 4px solid var(--ink);
+  font-style: italic;
+}
+.end-of-file {
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  text-align: center;
+  color: var(--muted);
+  margin: 2.5rem 0 1rem 0;
+}
+
+/* Exhibit A: thru a camera's viewfinder -- corner focus brackets, a small center circle w/ 4 ticks & a dot, a
+   split-image focusing screen in it (its upper left & lower right quarters blurred & shaded), "● REC", & a soft
+   vignette.  Light strokes w/ a thin dark shadow -- so they show on any photo, light or dark.
+   Hover: a little zoom, in color -- & the viewfinder fades */
+.surveil {
+  position: relative;
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.surveil img {
+  border: 0;
+  box-shadow: none;
+  cursor: default;
+  transition: filter 0.6s, transform 0.6s;
+}
+.surveil:hover img {
+  filter: none;
+  transform: scale(1.06);
+}
+.viewfinder {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse farthest-corner, transparent 55%, rgba(0, 0, 0, 0.5) 100%);
+  transition: opacity 0.6s;
+}
+.viewfinder::before,
+.viewfinder::after,
+.viewfinder .center {
+  position: absolute;
+  --stroke: #f2f2f2;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.75));
+  transition: opacity 0.6s;
+}
+/* the 4 corner brackets: a frame in the middle of the photo */
+.viewfinder::before {
+  content: "";
+  inset: 16% 22%;
+  background:
+    linear-gradient(var(--stroke), var(--stroke)) left top / 34px 2px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) left top / 2px 34px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) right top / 34px 2px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) right top / 2px 34px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) left bottom / 34px 2px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) left bottom / 2px 34px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) right bottom / 34px 2px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) right bottom / 2px 34px no-repeat;
+}
+/* "● REC", top left -- a muted red, that blinks off now & then (an easter egg: "whoa, it's flashing") */
+.viewfinder::after {
+  content: "\25CF  REC";
+  left: 5%;
+  top: 7%;
+  font: 0.8rem/1 "Courier New", monospace;
+  letter-spacing: 0.15em;
+  color: #d8504a;
+  animation: dossier-rec 9s step-end infinite;
+}
+@keyframes dossier-rec {
+  /* off for ~1.2s, twice in each 9s */
+  40%,
+  80% {
+    color: transparent;
+  }
+  53%,
+  93% {
+    color: #d8504a;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .viewfinder::after {
+    animation: none;
+  }
+}
+/* the center circle: its ring, 4 ticks pointing in, & a dot */
+.viewfinder .center,
+.viewfinder .split {
+  left: 50%;
+  top: 50%;
+  height: 22%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.viewfinder .center {
+  border: 2px solid var(--stroke);
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle, var(--stroke) 0 2px, transparent 2.5px),
+    linear-gradient(var(--stroke), var(--stroke)) top / 2px 18% no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) bottom / 2px 18% no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) left / 18% 2px no-repeat,
+    linear-gradient(var(--stroke), var(--stroke)) right / 18% 2px no-repeat;
+}
+/* the split-image focusing screen: in the circle, its upper left & lower right quarters blurred & shaded */
+.viewfinder .split {
+  position: absolute;
+  backdrop-filter: blur(1.5px) brightness(0.8);
+  -webkit-backdrop-filter: blur(1.5px) brightness(0.8);
+  -webkit-mask-image: conic-gradient(transparent 0 90deg, #000 90deg 180deg, transparent 180deg 270deg, #000 270deg);
+  mask-image: conic-gradient(transparent 0 90deg, #000 90deg 180deg, transparent 180deg 270deg, #000 270deg);
+  transition: opacity 0.6s;
+}
+/* & the other two quarters (upper right & lower left): a little lighter, & sharp.  So whatever the photo, one
+   pair shows: the darker on light photos, the lighter on dark ones */
+.viewfinder .split.lighter {
+  backdrop-filter: brightness(1.35);
+  -webkit-backdrop-filter: brightness(1.35);
+  -webkit-mask-image: conic-gradient(#000 0 90deg, transparent 90deg 180deg, #000 180deg 270deg, transparent 270deg);
+  mask-image: conic-gradient(#000 0 90deg, transparent 90deg 180deg, #000 180deg 270deg, transparent 270deg);
+}
+.surveil:hover .viewfinder {
+  opacity: 0.6;
+}
+.surveil:hover .viewfinder::before,
+.surveil:hover .viewfinder::after,
+.surveil:hover .viewfinder .center,
+.surveil:hover .viewfinder .split,
+.surveil:hover .camstamp {
+  opacity: 0;
+}
+
+.camstamp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12%;
+  white-space: nowrap;
+  font: 0.75rem/1 "Courier New", monospace;
+  letter-spacing: 0.08em;
+  color: #fff;
+  /* a faint dark strip behind it, like a camera's overlay -- so it reads on light photos, too */
+  background: rgba(0, 0, 0, 0.45);
+  padding: 0.25em 0.6em;
+  text-shadow: 0 0 1px #000;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+
+/* the routing slip, at the end of a file */
+.routing {
+  max-width: 34rem;
+  margin: 0 auto 2rem auto;
+  padding: 0.6rem 1rem;
+  border: 1px dashed var(--rule);
+  font-family: var(--typed);
+  font-size: 0.8rem;
+  text-align: center;
+}
+.routing p {
+  margin: 0.15rem 0;
+}
+.routing span:not(.redact) {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* a coffee ring, by "-- End of file --" & known associates -- away from the photos.  (Each post: a bit
+   left or right, up or down, & turned) */
+article.dossier .end-of-file {
+  position: relative;
+}
+article.dossier .end-of-file::after {
+  content: "";
+  position: absolute;
+  left: var(--ring-x, 70%);
+  top: var(--ring-y, -40px);
+  width: 120px;
+  height: 120px;
+  transform: rotate(var(--ring-turn, 0deg));
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  /* a darker rim, a faint tint inside -- coffee brown */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='2' seed='5'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='6'/%3E%3C/filter%3E%3Cg filter='url(%23r)'%3E%3Ccircle cx='50' cy='50' r='38' fill='%23a0703c' fill-opacity='0.12'/%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%237a4a1e' stroke-width='4' stroke-opacity='0.75'/%3E%3Ccircle cx='50' cy='50' r='37' fill='none' stroke='%237a4a1e' stroke-width='1.2' stroke-opacity='0.5' stroke-dasharray='40 12 70 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+[scheme="dark"] article.dossier .end-of-file::after {
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+
+/* the homepage's own text: a memo */
+article.memo .sheet {
+  border-left: 6px solid var(--stamp);
+}
+.memo-head {
+  font-family: var(--stencil);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.4rem;
+}
+
+
+/* the spy camera's zoom lens */
+.lens {
+  position: fixed;
+  z-index: 9000;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 3px solid #111;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7), 0 8px 24px rgba(0, 0, 0, 0.45);
+  background-repeat: no-repeat;
+  background-color: #000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.lens[hidden] {
+  display: none;
+}
+/* crosshairs, & a ring */
+.lens::before,
+.lens::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(rgba(255, 40, 40, 0.75), rgba(255, 40, 40, 0.75)) center / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 40, 40, 0.75), rgba(255, 40, 40, 0.75)) center / 100% 1px no-repeat;
+}
+.lens::after {
+  inset: 35%;
+  background: none;
+  border: 1px solid rgba(255, 40, 40, 0.75);
+}
+.lens span {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 10px/1 var(--stencil);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ff4a4f;
+  white-space: nowrap;
+}
+
+
+/* prior & next */
+nav.shelf {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 61rem;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+nav.shelf a {
+  text-decoration: none;
+  max-width: 48%;
+}
+nav.shelf a small {
+  display: block;
+  font-family: var(--typed);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+nav.shelf .next {
+  text-align: right;
+}
+
+
+/* archives: search, associates, departments, theme picker */
+.archives {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem 1.5rem;
+}
+.boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 1.5rem;
+}
+.box {
+  background: var(--paper);
+  padding: 1rem 1.2rem;
+  border-top: 8px solid var(--folder);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.box.search {
+  grid-column: 1 / -1;
+}
+.box h3 {
+  font-family: var(--typed);
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1rem;
+  margin: 0 0 0.6rem 0;
+}
+.box h3 a,
+.tagcloud a,
+ul.index a {
+  text-decoration: none;
+}
+.box h3 a:hover,
+.tagcloud a:hover,
+ul.index a:hover {
+  text-decoration: underline;
+}
+.tagcloud {
+  margin: 0;
+  line-height: 1.5;
+}
+.tagcloud a {
+  margin-right: 0.35em;
+}
+#search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em 0.7em;
+  font: inherit;
+  font-family: var(--typed);
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  outline: none;
+}
+#search-results:empty {
+  display: none;
+}
+#search-results .mini-post a {
+  display: block;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 1px dotted var(--rule);
+}
+#search-results .mini-post h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+#search-results .mini-post time {
+  font-size: 0.85em;
+  color: var(--muted);
+}
+#search-results .mini-post p {
+  font-size: 0.9rem;
+  margin: 0.2rem 0 0 0;
+}
+
+/* lists w/ counts, w/ dot leaders */
+ul.index {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul.index li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin: 0.15rem 0;
+}
+ul.index li::after {
+  content: "";
+  order: 1;
+  flex: 1;
+  border-bottom: 2px dotted var(--rule);
+  margin: 0 0.2em 0.3em 0.2em;
+}
+ul.index li .count {
+  order: 2;
+  color: var(--muted);
+}
+#theme-menu li::after {
+  display: none;
+}
+
+
+/* contact */
+.contact form input[type="text"],
+.contact form input[type="email"],
+.contact form textarea {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  box-sizing: border-box;
+  margin: 0 0 0.8rem 0;
+  padding: 0.5em 0.7em;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+}
+.contact form ul.actions {
+  list-style: none;
+  padding: 0;
+}
+.contact form input[type="submit"] {
+  font-family: var(--stencil);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 0.5em 1.4em;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  cursor: pointer;
+}
+
+
+/* comments (future-imperfect's, in their shadow DOM): their colors, & typed headings w/ our own words */
+bt-comments {
+  --color1: var(--ink);
+  --color2: var(--ink);
+  --background1: var(--paper);
+  --background2: transparent;
+}
+bt-comments::part(comments) {
+  max-width: none;
+  margin: 2rem 0 0 0;
+  padding: 0;
+}
+bt-comments::part(heading) {
+  font-size: 0;
+  text-align: left;
+}
+bt-comments::part(heading)::before {
+  content: "Intercepted transmissions";
+  font: 1.15rem var(--typed);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+bt-comments::part(say-something)::before {
+  content: "File a report";
+}
+
+
+/* footer */
+footer.colophon {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+footer.colophon p {
+  margin: 0.3rem 0;
+}
+footer.colophon .social a {
+  margin: 0 0.4em;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+
+/* phones */
+@media (max-width: 600px) {
+  .folder .file-head {
+    flex-direction: column-reverse;
+  }
+  .folder .photo {
+    flex: none;
+    align-self: center;
+  }
+  .stamp.big {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-bottom: 0.5rem;
+  }
+  article.dossier h1 {
+    margin-top: 1rem;
+    padding-right: 0;
+  }
+}
+
+[scheme="dark"] .photo img {
+  border-color: #2a2a28;
+}
+[scheme="dark"] .post-body pre {
+  background: rgba(255, 255, 255, 0.05);
+}

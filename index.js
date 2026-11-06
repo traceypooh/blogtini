@@ -66,6 +66,7 @@ const THEMES = [
   'hyperspace',
   'librarian',
   'terminal',
+  'dossier',
   'grid',
 ]
 

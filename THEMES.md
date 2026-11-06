@@ -7,22 +7,22 @@ Pick one in `config.yml` (`theme: editorial`), or try them live from the theme p
 https://blogtini.com/#theme=librarian
 
 ## Screenshots (for the [Themes page](themes/index.html))
-Each theme's card has a screenshot: `img/themes/<theme>.jpg`.  So they all match:
-1. Open the previewer at a list of posts (not the homepage, whose own text is up top -- & changes):
-   http://localhost:8888/preview/?start=?page/1#terminal
-2. The browser window: **1440 wide**, as tall as your screen allows -- w/ DevTools *undocked* (its own window:
-   DevTools ⋮ → Dock side → undock), so the frame is ~1440 × 700+.  The cards crop to 2:1, from the top -- so a
-   frame a bit shorter than 720 just loses a sliver at the sides.  (Chrome: `osascript -e 'tell application
-   "Google Chrome" to set bounds of front window to {0, 0, 1440, 900}'`)
-   Not 1280 wide: HTML5 UP themes switch to their smaller layouts at <= 1280 (eg: hyperspace's sidebar,
+Each theme's card has a screenshot: `img/themes/<theme>.jpg`.  One way, on any screen (laptop or 4K), so they
+all match (2026-11-06):
+1. Open a list of posts -- not the homepage, whose own text is up top (& changes) -- in the theme:
+   http://localhost:8888/?page/1#theme=dossier
+   (That also makes it *your* pick, for 24h -- switch back w/ the theme picker, after.)
+2. DevTools *undocked* (its own window: DevTools ⋮ → Dock side → undock), & the browser window **1440 wide**,
+   ~1000 tall (or as tall as fits).
+   **Not** 1280 wide: HTML5 UP themes switch to their smaller layouts at <= 1280 (eg: hyperspace's sidebar,
    editorial's menu).  Future imperfect's widest breakpoint is 1024.
-3. Capture *just the frame* -- no previewer bar, no browser chrome:
-   - Chrome: DevTools → Elements → right-click the `<iframe id="frame">` → **Capture node screenshot**
-   - Firefox: in the console: `:screenshot --selector #frame`
-4. Save as `img/themes/<theme>.png`.  Then → for the next theme.
-5. Shrink them for the web -- the cards show them at most ~500px wide, so 1000 covers retina screens -- & JPEG
+3. In DevTools: **⌘⇧P** → **Capture screenshot** -- just the visible page, no browser chrome.
+   A retina screen captures at 2x (eg: 2880 × 1974) -- fine, the shrink  below handles it.
+4. Save as `img/themes/<theme>.png`.
+5. Shrink for the web -- the cards show them at most ~500px wide, so 1000 covers retina screens -- & JPEG
    (screenshots are ~4x smaller than PNG), in `img/themes/` (macOS):
    `for f in *.png; do sips -Z 1000 -s format jpeg -s formatOptions 85 "$f" --out "${f%.png}.jpg"; done; rm *.png`
+   => ~1000 × 690.  The cards crop to 2:1, from the top.
 
 A new theme: add it to `THEMES` in `index.js`, a card on [themes/index.html](themes/index.html), & a screenshot.
 
@@ -71,6 +71,7 @@ Two styles so far:
 | `hyperspace` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `librarian` | plain custom elements, light DOM | our own: Tufte CSS, as is, + `index.css` |
 | `terminal` | plain custom elements, light DOM | panr's Hugo Terminal theme's original css, as is |
+| `dossier` | plain custom elements, light DOM | our own: classified case files |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -104,6 +105,32 @@ The question is: who owns the page-wide css?
   (No `static styles` then -- those need a shadow root.  No `<slot>`s either.)
 - Next widget candidates, from `html5up/shared.js`'s html-string helpers: tag cloud, search box & results,
   contact form, pager -- once each is a widget, every theme gets it.
+
+### The light DOM trick: `this.replaceWith(nodes(...))` (2026-11-06)
+How every light DOM theme (the HTML5 UP ports, librarian, terminal, dossier) draws itself -- no framework:
+1. **blogtini writes placeholder tags.**  `index.js` puts plain custom element tags in the page, eg:
+   `<bt-post url="...">` -- it doesn't know or care what they'll look like.
+2. **The theme defines them.**  `customElements.define('bt-post', class extends HTMLElement { connectedCallback()
+   { ... } })` tells the browser: when a `<bt-post>` lands in the page, run this.  `connectedCallback` is that moment.
+3. **The element replaces itself w/ plain html.**  `nodes(htm)` (`html5up/shared.js`) turns an html string into
+   real DOM (via a `<template>`), & `this.replaceWith(...)` swaps the custom tag out for it.  Afterwards there's no
+   `<bt-post>` left -- just ordinary markup, eg: `<article class="folder">...`.
+
+```js
+customElements.define('bt-post', class extends HTMLElement {
+  connectedCallback() {
+    const post = url2post(this.getAttribute('url'))
+    this.replaceWith(nodes(`<article class="card"><h2>${esc(post.title)}</h2> ...</article>`))
+  }
+})
+```
+- **Light DOM, so plain css:** the result is ordinary page html -- a theme's `index.css` (or an HTML5 UP
+  `main.css`, as is) styles it directly.
+- **Each theme decides everything:** the same `<bt-post>` becomes a catalog card (librarian), a case file folder
+  (dossier), or `ls -t` output (terminal).
+- **Need to adjust it first?**  Build the fragment, change it, then swap it in -- eg: dossier's post page letters
+  its exhibits: `const frag = nodes(...)`; `exhibits(frag.querySelector('.post-body'))`; `this.replaceWith(frag)`.
+- Always `esc()` text you put in the html (titles, tags, ...): it's a string, so markup in a title would be markup.
 
 
 ## Adding an HTML5 UP theme
@@ -439,6 +466,47 @@ Mapping:
 ### TODO / FIXME
 - [ ] comments: future-imperfect's form, recolored via its css variables (`--color1` etc.) & `::part()`s
 - [ ] check by eye: phone widths, the light scheme, the dropdowns
+
+
+## Dossier
+Our own theme (2026-11-05): classified case files, out of the spy movies -- the markings & the mood, but no real
+agencies (no names, seals or logos).  Built like librarian: light DOM, `shared.js` helpers.
+- `fonts/`: Special Elite (Apache 2.0; typed fields) & Allerta Stencil (OFL; stamps & headings), from
+  `@fontsource`.  Body text: Courier Prime, from `../librarian/fonts/`
+- nearly all black & white -- the one color is the red stamp pad.  Dark scheme: "night ops"
+
+Mapping:
+- classification banners, top & bottom: "UNCLASSIFIED // FOR BLOG USE ONLY"
+- masthead: the site title, stenciled, & "Central Files · Records Division"
+- posts: "Case files" -- each a file folder: a tab (file number from the date & title, eg: `26-1027-B`), typed
+  fields (subject, filed, agent -- a blacked out "J. Doe" if no author), a paper-clipped b&w photo, a summary w/
+  2-3 small words blacked out (the same ones each visit -- a hash of the post; the words stay in the page for
+  screen readers & search, & hovering reveals them), "known associates" (categories & tags), "[ Open file ]",
+  & two stamps: a classification marking (each post its own: Top Secret, Eyes Only, Burn After Reading, ...)
+  & "Briefing: 4 min" (the reading time)
+- a post: the file -- a big marking stamp, a brown coffee ring by "-- End of file --" (each post: its own spot &
+  turn -- kept away from the photos), fields (filed, agent,
+  clearance, briefing), the featured photo as "Exhibit A" -- through a camera's viewfinder: corner focus
+  brackets, a small center circle (4 ticks & a dot) w/ a split-image focusing screen (its upper left & lower right
+  quarters blurred & shaded, the other two a little lighter -- so one pair shows on any photo), a muted "● REC" that blinks off now & then (an easter egg), a soft vignette --
+  light strokes w/ a thin dark shadow, so they show on dark & light photos.  (Rifle-scope-ish reticles were tried
+  & retired, 2026-11-06: surveillance, not a sniper.)  Hover: a little zoom, in color, the viewfinder & timestamp fade
+  (not the zoom lens: Exhibit A has its own);
+  a camera timestamp (`CAM 03 · 2026-10-27 14:32:07`, the
+  post's date -- & a made up time, for a date-only post) -- a picture alone in its paragraph as "Exhibit B" (& on -- its alt text the caption),
+  markdown `~~strikethrough~~` as redactions, known associates, "-- End of file --", a routing slip
+  ("Distribution: File · Director · ██ · You", doc. no., page, copy N of 7), comments ("File a report",
+  "Intercepted transmissions" -- via `bt-comments`' `::part()`s)
+- photos: grayscale -- & w/ a mouse, hovering one puts a spy camera's zoom lens on it: 3x, crosshairs, in color
+- prior & next: "Previous / Next file" (posts), "Prior / Next box" (pages of posts)
+- "Archives" (every page): "Query the archives" (search), "Known associates" (tags), "Departments"
+  (categories), "Change cover" (theme picker); contact: "Leave a dead drop"
+- the homepage's own text: a briefing memo; blogtini's "Latest posts" heading is hidden ("Case files" says it)
+
+### TODO / FIXME
+- [ ] touch screens: no zoom lens (no hover) -- press & hold?
+- [ ] check by eye: phone widths, night ops, the stamps' noise mask in Safari & Firefox
+- [ ] a screenshot for the Themes page: `img/themes/dossier.jpg`
 
 
 ## HTML5 UP ports: shared TODO / FIXME

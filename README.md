@@ -93,10 +93,10 @@ node ../blogtini/bin/build.js    # node
 
 
 ## Themes
-13 themes ship w/ blogtini: future imperfect (default), editorial, massively, phantom, striped, forty, strata,
-helios, strongly typed, hyperspace, librarian, terminal, grid -- many ported from [HTML5 UP](https://html5up.net),
-terminal from [panr's Hugo theme](https://github.com/panr/hugo-theme-terminal); librarian is our own (a card
-catalog, on Tufte CSS).
+14 themes ship w/ blogtini: future imperfect (default), editorial, massively, phantom, striped, forty, strata,
+helios, strongly typed, hyperspace, librarian, terminal, dossier, grid -- many ported from
+[HTML5 UP](https://html5up.net), terminal from [panr's Hugo theme](https://github.com/panr/hugo-theme-terminal);
+librarian (a card catalog, on Tufte CSS) & dossier (classified case files) are our own.
 Pick one in `config.yml` (`theme: editorial`), or try them live w/ the theme picker: a viewer's pick
 (and light/dark choice) sticks for 24hr, just for them.  How themes plug in, & adding your own: [THEMES.md](THEMES.md).
 - step thru them all: [blogtini.com/preview/](https://blogtini.com/preview/) -- a ← → bar over the site, in an
