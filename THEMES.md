@@ -1,6 +1,6 @@
 # Themes
 
-A theme is a dir under `theme/` with an `index.js` (and optional `index.css`).
+A theme is a dir under `theme/` with an `index.js` and `index.css`.
 Pick one in `config.yml` (`theme: editorial`), or try them live from the theme picker.
 
 ## Share a theme preview
@@ -72,6 +72,7 @@ Two styles so far:
 | `librarian` | plain custom elements, light DOM | our own: Tufte CSS, as is, + `index.css` |
 | `terminal` | plain custom elements, light DOM | panr's Hugo Terminal theme's original css, as is |
 | `dossier` | plain custom elements, light DOM | our own: classified case files |
+| `cosmos` | plain custom elements, light DOM | our own: a vector arcade game, in space -- all svg, no images or webfonts |
 
 `theme/html5up/` (not a theme) has what the light DOM HTML5 UP ports share -- one copy, so the browser
 fetches it once, eg: while flipping thru themes w/ the picker:
@@ -506,14 +507,53 @@ Mapping:
 ### TODO / FIXME
 - [ ] touch screens: no zoom lens (no hover) -- press & hold?
 - [ ] check by eye: phone widths, night ops, the stamps' noise mask in Safari & Firefox
-- [ ] a screenshot for the Themes page: `img/themes/dossier.jpg`
+
+
+## Cosmos
+Our own theme (2026-11-06): an early-80s vector arcade game, in space -- glowing phosphor lines on black.  For
+Carl Sagan's *Cosmos*: look up!  Built like librarian & dossier: light DOM, `shared.js` helpers.
+- no images or webfonts: the scenery, planets & headings are svg, drawn by `index.js`; text is the system's fonts.
+  Seeded randomness (a hash of a fixed string, or a post's url), so the sky, terrain & each post's planet are the
+  same every visit
+- headings in our own vector font: single strokes on a 4x6 grid, like the old vector arcade games (`GLYPHS`)
+- phosphor color: green (default), amber or cyan -- buttons in the header; a viewer's pick sticks (localStorage,
+  `bt-cosmos-phosphor`).  Always dark: the "Scheme" lightbulb doesn't apply (it has no link here)
+- `prefers-reduced-motion`: everything holds still (stars, floor, pyramids, radar, rover)
+
+Mapping:
+- behind every page: a star field in 3 layers, each scrolling at its own speed (subtle -- an easter egg), some stars
+  twinkling.  Drawn once, on a fixed 2000x1400 tile (`<use>`d 4x) -- regenerating it per window size reshuffled
+  every star on each resize event: a strobe.  Hidden in the middle layer: a pale blue dot (w/ a hover title), a
+  tiny ringed planet, a red one & a crescent
+- CRT scanlines & a vignette over everything (`bt-body::after`, `pointer-events: none`)
+- header: the site title in the vector font, the menu, "Scan" (to Mission control), the phosphor picker
+- homepage (first page): a vector hero -- wireframe mountains, a volcano, a crescent moon, a grid floor rolling
+  toward you w/ wireframe pyramids, & the site title.  Capped at 1600px wide (wider, the floor's long lines strobed)
+- posts: "Latest transmissions" -- each a card w/ chamfered corners: its own wireframe planet (size, tilt, hue,
+  rings or craters, bands -- from its url), "SECTOR 2026-11-06" (its date -- a beat, then "oh, duh!"), title,
+  summary, star charts (✦ tags, ◎ categories), & a FUEL gauge: the reading time
+- a post: the same, big, w/ its planet top right, the featured image as a glowing "viewscreen", body, star charts,
+  comments ("Incoming transmissions", "Transmit" -- via `bt-comments`' `::part()`s).  Pages: no sector or fuel
+- the homepage's own text: a "Mission briefing"; blogtini's "Latest posts" heading is hidden
+- prior & next: "< PREV SECTOR / NEXT SECTOR >" (w/ the post titles, on a post)
+- "Mission control" (every page): Scan -- a radar scope (sweep; a blip per post, from its url) & the search box:
+  matching posts' blips light up -- star charts (tags), galaxies (categories), Warp (theme picker)
+- HIGH SCORES: the 10 longest posts, 10 points a word
+- colophon: social links, "We are made of star-stuff" -- Carl Sagan, & credits
+- the footer: our lunar rover (inspired by JAXA & Toyota's Lunar Cruiser concept, not a copy): a pressurized cabin,
+  a dish tipped back 30°, 6 wheels (3 show) that roll, a headlight beam -- & a martini glass antenna, for
+  blog-*tini*.  It bobs on its suspension (body & fenders) over cratered ground, below 2 parallax ridges
+
+### TODO / FIXME
+- [ ] check by eye: phone widths, Safari & Firefox (svg filters, `<use>` twinkles), amber & cyan
+- [ ] a picture alone in its paragraph: a viewscreen, too?
+- [ ] the rover could hop a crater now & then
 
 
 ## HTML5 UP ports: shared TODO / FIXME
 - [ ] the phone width nav panels (helios, strongly typed) have no search box yet
 - [ ] `sidebar.position`: future-imperfect, editorial & striped could honor it, too (they're left only, so far)
 - [ ] Share menu (`<bt-share>`) not ported
-- [x] the theme picker's list was copied into each theme -- now blogtini's `THEMES` export (2026-10-18)
 - [ ] comments reuse future-imperfect's `<bt-comments>` (lit, shadow DOM) -- so they look like future-imperfect.
       Keep it shadow DOM (see [Shadow DOM or light DOM?](#shadow-dom-or-light-dom--both----by-piece-2026-10-28));
       give each theme a look via more `::part()`s / css custom properties (eg: fonts, colors, buttons from its `main.css`)

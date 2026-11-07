@@ -17,7 +17,7 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 - `index.js` -- the core: finds & parses posts, caches them (localStorage, daily), writes `<bt-body>`, loads the theme.
   Its exports are the theme api (`cfg`, `state`, `url2post`, `all_posts`, `reveal`, `THEMES`, ...)
 - `js/` -- search (lunr), text helpers, a tiny DOM for Deno
-- `theme/<name>/index.js` (+ `index.css`) -- 12 themes.  `future-imperfect` (default) & `grid`: lit, shadow DOM.
+- `theme/<name>/index.js` (+ `index.css`) -- 15 themes.  `future-imperfect` (default) & `grid`: lit, shadow DOM.
   The rest: plain custom elements, light DOM, sharing `theme/html5up/shared.js`, fonts & Font Awesome
 - `bin/build.js` -- the optional build: writes `index.xml` (feed + sitemap + search index); `--seo` adds post head lines.
   `bin/build` is the GitHub Action's entry point (other sites' workflows call it -- keep it working)

@@ -1,0 +1,682 @@
+/*
+  Cosmos theme for blogtini -- our own.  An early-80s vector arcade game, in space: glowing phosphor lines on black.
+  No images & no webfonts: the scenery & headings are svg (index.js), body text is the system's fonts.
+  Always dark -- the lightbulb's "Scheme" doesn't apply.  The phosphor color is the viewer's pick (green, amber, cyan).
+*/
+@import url(../html5up/fontawesome/css/fontawesome-all.min.css);
+
+:root {
+  --ph: #39ff6a;              /* phosphor */
+  --ph-dim: #39ff6a55;
+  --ph-faint: #39ff6a22;
+  --text: #d6ffe0;
+  --muted: #8fb89a;
+  --bg: #02040a;              /* the void (index.js BG, too) */
+  --card: #02040acc;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+:root[data-phosphor="amber"] {
+  --ph: #ffb000; --ph-dim: #ffb00055; --ph-faint: #ffb00022; --text: #ffeccc; --muted: #c7a874;
+}
+:root[data-phosphor="cyan"] {
+  --ph: #36e0ff; --ph-dim: #36e0ff55; --ph-faint: #36e0ff22; --text: #d8f8ff; --muted: #86b6c2;
+}
+
+html {
+  font-size: 17px;
+  background: var(--bg);
+}
+/* no background here: w/ one on `html` too, body's paints as a box *over* the z-index -1 star field */
+body {
+  margin: 0;
+  color: var(--text);
+  background: transparent;
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+bt-body {
+  display: block;
+  min-height: 100vh;
+}
+/* CRT: scanlines & a vignette, over everything, never in the way */
+bt-body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, #0005 2px 3px),
+    radial-gradient(ellipse at center, transparent 55%, #000a 100%);
+}
+a {
+  color: var(--ph);
+  text-decoration: none;
+}
+a:hover {
+  text-shadow: 0 0 8px var(--ph);
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+.glow, svg.vt {
+  filter: drop-shadow(0 0 1.5px var(--ph)) drop-shadow(0 0 6px var(--ph-dim));
+}
+
+/* vector font headings (index.js `vtext()`): strokes in the phosphor color, shrink to fit */
+svg.vt {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  color: var(--ph);
+}
+svg.vt path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+h2, h3 {
+  margin: 0;
+  font-weight: normal;
+}
+
+
+/* scenery */
+#stars {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+#stars .tw {
+  animation: bt-twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes bt-twinkle {
+  to { opacity: 0.15; }
+}
+/* capped: very wide, the rolling floor's long lines strobe against the scanlines */
+#hero {
+  display: block;
+  width: 100%;
+  max-width: 1600px;
+  max-height: 52vh;
+  margin: 0 auto;
+  color: var(--ph);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+#moon {
+  display: block;
+  width: 100%;
+  max-width: 1600px;
+  height: 150px;
+  margin: 1rem auto 0 auto;
+  color: var(--ph);
+}
+.rover-body {
+  animation: bt-bounce 0.7s ease-in-out infinite alternate;
+}
+@keyframes bt-bounce {
+  to { transform: translateY(-1.5px); }
+}
+.wheel {
+  animation: bt-roll 1.2s linear infinite;
+}
+@keyframes bt-roll {
+  to { transform: rotate(360deg); }
+}
+
+
+/* the console: title, menu, phosphor picker */
+header.console {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.6rem;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--ph-dim);
+  background: #02040a99;
+}
+header.console nav {
+  flex: 1;
+}
+header.console nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+header.console nav a {
+  font: 0.85rem var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.phosphor {
+  display: flex;
+  gap: 0.3rem;
+}
+.phosphor button {
+  font: 0.7rem var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ph);
+  background: none;
+  border: 1px solid var(--ph-dim);
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+.phosphor button[data-phosphor="green"] { color: #39ff6a; }
+.phosphor button[data-phosphor="amber"] { color: #ffb000; }
+.phosphor button[data-phosphor="cyan"] { color: #36e0ff; }
+.phosphor button[aria-pressed="true"] {
+  background: var(--ph-faint);
+  border-color: var(--ph);
+}
+
+
+/* main column */
+#wrapper,
+nav.sectors,
+.mission-control,
+.high-scores,
+footer.colophon {
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+#wrapper {
+  min-width: 0;
+  padding-top: 1.5rem;
+}
+section > h2,
+.mission-control > h2 {
+  margin: 2.2rem 0 1rem 0;
+}
+.bt-posts-heading { /* "Latest transmissions" says it */
+  display: none;
+}
+
+
+/* cards: a list of posts */
+.card,
+article.mission,
+.mission-control .box {
+  border: 1px solid var(--ph-dim);
+  background: var(--card);
+  /* chamfered corners, like a cockpit display */
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+}
+.card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1.2rem;
+  padding: 1.2rem;
+  margin: 1.1rem 0;
+}
+.card:hover {
+  border-color: var(--ph);
+  box-shadow: inset 0 0 24px var(--ph-faint);
+}
+.card h2 {
+  margin: 0.1rem 0 0.4rem 0;
+  font: 600 1.2rem/1.25 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px var(--ph-dim);
+}
+.card .summary {
+  margin: 0.4rem 0;
+}
+svg.planet {
+  display: block;
+  width: 120px;
+  height: 120px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+.sector {
+  margin: 0;
+  font: 0.8rem var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ph);
+  opacity: 0.85;
+}
+.charts {
+  margin: 0.5rem 0 0 0;
+  font: 0.75rem var(--mono);
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+.charts a {
+  margin-right: 0.6em;
+}
+.charts a.star::before { content: "\2726  "; }   /* ✦ */
+.charts a.galaxy::before { content: "\25CE  "; } /* ◎ */
+.fuel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin: 0.6rem 0 0 0;
+  font: 0.75rem var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.fuel i {
+  width: 10px;
+  height: 12px;
+  border: 1px solid var(--ph-dim);
+}
+.fuel i.on {
+  background: var(--ph);
+  box-shadow: 0 0 6px var(--ph);
+}
+.fuel span {
+  margin-left: 0.5rem;
+  color: var(--ph);
+}
+
+
+/* a post or page */
+article.mission {
+  position: relative;
+  padding: 1.6rem 1.6rem 2rem 1.6rem;
+  margin: 0 0 1.5rem 0;
+}
+article.mission h1 {
+  margin: 0.2rem 0 0.4rem 0;
+  padding-right: 120px;
+  font: 600 1.7rem/1.2 var(--mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ph);
+  text-shadow: 0 0 8px var(--ph-dim);
+}
+article.mission svg.planet.big {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 130px;
+  height: 130px;
+}
+article.mission.briefing {
+  margin-bottom: 0;
+}
+.viewscreen {
+  margin: 1.4rem 0;
+  border: 1px solid var(--ph-dim);
+  box-shadow: 0 0 18px var(--ph-faint);
+}
+.viewscreen img {
+  display: block;
+  width: 100%;
+}
+.viewscreen figcaption,
+.post-body figcaption {
+  padding: 0.4rem 0.7rem;
+  font: 0.8rem var(--mono);
+  color: var(--muted);
+}
+.post-body {
+  margin-top: 1rem;
+}
+.post-body h1, .post-body h2, .post-body h3, .post-body h4 {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ph);
+  text-shadow: 0 0 6px var(--ph-dim);
+}
+.post-body h1 { font-size: 1.4rem; }
+.post-body h2 { font-size: 1.25rem; margin: 1.6rem 0 0.6rem 0; }
+.post-body h3 { font-size: 1.1rem; margin: 1.3rem 0 0.5rem 0; }
+.post-body a {
+  text-decoration: underline;
+  text-decoration-color: var(--ph-dim);
+  text-underline-offset: 3px;
+}
+.post-body img {
+  border: 1px solid var(--ph-faint);
+}
+.post-body blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 1rem;
+  border-left: 3px solid var(--ph);
+  color: var(--muted);
+}
+.post-body code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+.post-body pre {
+  overflow-x: auto;
+  padding: 0.8rem 1rem;
+  background: #ffffff0a;
+  border: 1px solid var(--ph-faint);
+}
+.post-body table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.post-body th, .post-body td {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--ph-faint);
+}
+.post-body hr {
+  border: 0;
+  border-top: 1px dashed var(--ph-dim);
+}
+
+
+/* prior & next */
+nav.sectors {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.6rem;
+  margin-bottom: 1.6rem;
+}
+nav.sectors a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 48%;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--ph-dim);
+}
+nav.sectors a.next {
+  align-items: flex-end;
+  text-align: right;
+}
+nav.sectors small {
+  font: 0.8rem var(--mono);
+  color: var(--text);
+}
+
+
+/* mission control */
+.mission-control .boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.mission-control .box {
+  padding: 1rem 1.1rem;
+}
+.mission-control .box h3 {
+  margin-bottom: 0.7rem;
+}
+.mission-control .scan {
+  grid-column: 1 / -1;
+}
+.scope {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+#radar {
+  flex: 0 0 110px;
+  width: 110px;
+  height: 110px;
+  color: var(--ph);
+  filter: drop-shadow(0 0 1.5px var(--ph)) drop-shadow(0 0 6px var(--ph-dim));
+}
+#radar .sweep {
+  transform-origin: 60px 60px;
+  animation: bt-sweep 4s linear infinite;
+}
+@keyframes bt-sweep {
+  to { transform: rotate(360deg); }
+}
+#radar .blip {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+#search-input {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.6rem 0.8rem;
+  font: 1rem var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--ph);
+  background: transparent;
+  border: 1px solid var(--ph-dim);
+  outline: none;
+}
+#search-input:focus {
+  box-shadow: 0 0 10px var(--ph-dim);
+}
+#search-input::placeholder {
+  color: var(--muted);
+  text-transform: uppercase;
+}
+#search-results:empty {
+  display: none;
+}
+#search-results {
+  margin-top: 0.8rem;
+}
+#search-results .mini-post a {
+  display: block;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--ph-faint);
+}
+#search-results .mini-post h2 {
+  font: 600 0.95rem var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+#search-results .mini-post time {
+  font: 0.75rem var(--mono);
+  color: var(--muted);
+}
+#search-results .mini-post p {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.tagcloud {
+  margin: 0;
+  line-height: 1.6;
+}
+.tagcloud a {
+  margin-right: 0.4em;
+}
+ul.index,
+ul.warp {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.index li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin: 0.15rem 0;
+}
+ul.index li::after { /* dot leaders */
+  content: "";
+  order: 1;
+  flex: 1;
+  border-bottom: 1px dotted var(--ph-dim);
+  margin: 0 0.2em 0.3em 0.2em;
+}
+ul.index li .count {
+  order: 2;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+ul.warp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  font: 0.85rem var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+
+/* high scores */
+.high-scores ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font: 0.95rem/1.9 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ph);
+  text-shadow: 0 0 6px var(--ph-dim);
+}
+.high-scores li {
+  display: grid;
+  grid-template-columns: 3ch 7ch 1fr;
+  gap: 1.5ch;
+}
+.high-scores li a {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* contact */
+.contact form input[type="text"],
+.contact form input[type="email"],
+.contact form textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 0.8rem 0;
+  padding: 0.6rem 0.8rem;
+  font: 1rem var(--mono);
+  color: var(--ph);
+  background: transparent;
+  border: 1px solid var(--ph-dim);
+}
+.contact form ul.actions {
+  list-style: none;
+  padding: 0;
+}
+.contact form input[type="submit"] {
+  font: 0.9rem var(--mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6em 1.6em;
+  color: var(--bg);
+  background: var(--ph);
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--ph-dim);
+}
+
+
+/* comments (future-imperfect's, in their shadow DOM): our colors & words */
+bt-comments {
+  --color1: var(--ph);
+  --color2: var(--text);
+  --background1: var(--bg);
+  --background2: transparent;
+}
+bt-comments::part(comments) {
+  max-width: none;
+  margin: 2rem 0 0 0;
+  padding: 0;
+}
+bt-comments::part(heading) {
+  font-size: 0;
+  text-align: left;
+}
+bt-comments::part(heading)::before {
+  content: "Incoming transmissions";
+  font: 1.1rem var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ph);
+}
+bt-comments::part(say-something)::before {
+  content: "Transmit";
+}
+
+
+/* colophon */
+footer.colophon {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+footer.colophon p {
+  margin: 0.3rem 0;
+}
+footer.colophon .social a {
+  margin: 0 0.4em;
+  font-size: 1.1rem;
+}
+footer.colophon .star-stuff {
+  margin: 0.8rem 0;
+  font: 1rem var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--ph);
+  text-shadow: 0 0 8px var(--ph-dim);
+}
+footer.colophon .star-stuff small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-shadow: none;
+}
+
+
+/* phones */
+@media (max-width: 560px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+  .card svg.planet {
+    width: 90px;
+    height: 90px;
+  }
+  article.mission {
+    padding: 1.2rem;
+  }
+  article.mission h1 {
+    padding-right: 0;
+    font-size: 1.35rem;
+  }
+  article.mission svg.planet.big {
+    position: static;
+    width: 90px;
+    height: 90px;
+  }
+  .scope {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #radar {
+    align-self: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #stars .tw, #radar .sweep, .rover-body, .wheel {
+    animation: none;
+  }
+}

@@ -68,6 +68,7 @@ const THEMES = [
   'librarian',
   'terminal',
   'dossier',
+  'cosmos',
   'grid',
 ]
 
