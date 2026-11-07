@@ -10,7 +10,7 @@ https://blogtini.com/#theme=librarian
 Each theme's card has a screenshot: `img/themes/<theme>.jpg`.  One way, on any screen (laptop or 4K), so they
 all match (2026-11-06):
 1. Open a list of posts -- not the homepage, whose own text is up top (& changes) -- in the theme:
-   http://localhost:8888/?page/1#theme=dossier
+   http://localhost:8888/?page/1#theme=cosmos
    (That also makes it *your* pick, for 24h -- switch back w/ the theme picker, after.)
 2. DevTools *undocked* (its own window: DevTools ⋮ → Dock side → undock), & the browser window **1440 wide**,
    ~1000 tall (or as tall as fits).
