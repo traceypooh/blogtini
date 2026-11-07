@@ -17,13 +17,13 @@
 */
 
 import {
-  cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, imgurl, reveal, word_count, reading_time,
-  all_posts,
+  cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, imgurl, reveal, word_count,
+  reading_time, all_posts,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
-  esc, nodes, menu_items, theme_items, social_list, pager, comments, highlight_code, histogram_items, tag_cloud,
-  contact_form,
+  esc, nodes, menu_items, theme_items, social_list, pager, comments, highlight_code,
+  histogram_items, tag_cloud, contact_form,
 } from '../html5up/shared.js'
 
 
@@ -157,6 +157,7 @@ const LAYERS = [ // n: stars per 1280 x 800, r: radius, o: opacity, f: parallax 
 
 function draw_stars(svg) {
   const rand = rng('blogtini stars')
+  // eslint-disable-next-line no-param-reassign
   svg.innerHTML = LAYERS.map((L, li) => {
     let dots = ''
     for (let i = 0; i < L.n * (TILE_W * TILE_H) / (1280 * 800); i++) {
@@ -223,6 +224,7 @@ function draw_hero(svg) {
   const s = Math.min(9, 900 / Math.max(1, title.length * 6))
   const verticals = Array.from({ length: 25 }, (_, i) => `<line x1="${VP}" y1="${HZ}" x2="${VP + (i - 12) * 160}" y2="380"/>`).join('')
   const horizontals = Array.from({ length: FLOOR_N }, () => '<line x1="0" x2="1000" class="h"/>').join('')
+  // eslint-disable-next-line no-param-reassign
   svg.innerHTML = `
     <path d="M840,70 a34,34 0 1,0 34,46 a28,28 0 1,1 -34,-46z"/>
     <path d="${ridge_path(peaks.map((y) => y * 0.6), 1000, HZ, HZ)}" fill="${BG}" opacity=".9"/>
@@ -243,6 +245,7 @@ function frame_hero(svg, t) {
     l.setAttribute('y2', y)
     l.setAttribute('opacity', (0.25 + 0.75 * k).toFixed(2))
   })
+  // eslint-disable-next-line no-param-reassign
   svg.querySelector('.obstacles').innerHTML = PYRAMIDS.map(([xo, ph]) => {
     const k = (ph + roll / 1.5) % 1
     const z = k * k
@@ -309,6 +312,7 @@ function draw_moon(svg) {
     craters += `M${x.toFixed(1)},132 q${w / 2},${(8 + rand() * 6).toFixed(1)} ${w.toFixed(1)},0 `
   }
   svg.setAttribute('viewBox', `0 0 ${W} 150`)
+  // eslint-disable-next-line no-param-reassign
   svg.innerHTML = `
     <g fill="${BG}" stroke="currentColor" stroke-linejoin="round">
       <g class="far" stroke-width="1" opacity=".45">${tile(ridge_path(ridge('moon far', 128, 0.6, 140).map((y) => y * 0.55), MOON_W, 110, 150))}</g>
@@ -565,6 +569,7 @@ function radar_blips(btbody) {
     btbody.querySelectorAll('#radar .blip').forEach((b) => {
       const hit = hits.has(b.dataset.url)
       b.setAttribute('r', hit ? '3.5' : '1.8')
+      // eslint-disable-next-line no-param-reassign
       b.style.opacity = q ? (hit ? '1' : '0.15') : ''
     })
   }
