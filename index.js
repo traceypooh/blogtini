@@ -1065,10 +1065,13 @@ function local_tail(url) {
 }
 
 
-/** @returns {string} key for `STORAGE.docs` -- newest first, when reverse sorted */
+/**
+ * @returns {string} key for `STORAGE.docs` -- newest first, when reverse sorted (a string sort).
+ * The timestamp is offset & zero padded to 12 digits, so pre-2001 (9 digit) & pre-1970 (negative) dates sort right.
+ */
 function storage_key(post) {
   const ts = Math.round(new Date(post.date) / 1000)
-  return `p${isNaN(ts) ? '' : ts} ${post.url}`
+  return `p${isNaN(ts) ? '' : String(ts + 1e11).padStart(12, '0')} ${post.url}`
 }
 
 
