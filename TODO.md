@@ -55,13 +55,6 @@ xxx add either:
 
 xxx mobile size tables
 
-Your posts or directories of posts, should ideally natural sort in time order, examples:
-  2022-11-03-a-birthday.md
-  2020-10-31-halloween-fun.md
-
-  2022/11/03/a-birthday.md
-  2020/10/31/halloween-fun.md
-
 
 goals: 0 config/0 build; pull in info from multiple blogs; parents can do it
 

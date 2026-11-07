@@ -41,7 +41,7 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 
 ## Code style
 Match the surrounding code: 2-space indent, no semicolons, `snake_case` functions & vars, terse comments (`w/`, `--`).
-To do / fixmes: `xxxxx` (highest), `xxxx`, `xxx` (lowest).
+To do / fixmes: `xxxx` (highest priority), `xxx` (lower).
 Lint runs in CI (`.github/workflows/cicd.yml`: [dyno](https://github.com/internetarchive/dyno)'s `deno lint` + eslint).
 Locally, `deno lint` catches most of it.
 

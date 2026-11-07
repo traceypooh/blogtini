@@ -200,4 +200,4 @@ V=2.0.0 &&\
 - wishlist: browsers & crawlers that render front matter + markdown natively, w/ a `theme:` module to "paint" it
 - Fail-open tests & findings: [test/fail-open/](test/fail-open/README.md).
 
-To do / fixmes: `git grep xxxxx` (highest priority), `xxxx` (medium), `xxx` (low).
+To do / fixmes: `git grep xxxx` (highest priority), `xxx` (lower).
