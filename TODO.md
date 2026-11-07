@@ -74,7 +74,7 @@ existing WP try-out: /?preview=URL/feed (atom or RSS)
 
 could host entire thing in codepen, etc.?!
 
-xxx go to blogtini.com -> enter in your username and repo and show them how it looks!
+xxx go to blogtini.com -> enter in your username and repo and show them how it looks.
 
 nav search box that prefills google search site:xxx AND ..
 
@@ -83,16 +83,6 @@ xxx gist: either: public GH repo w/ dir of .md files *or* WP/private and parse a
 
 github.com cookie: dotcom_user
 
-minimum:
-setup GH account
-visit: https://github.com/traceypooh/blogtini
-press [Y Fork] button in upper right
-(fork to your account)
-hit [⚙️ Settings] in upper right
-[🗂️ Pages] left menu
-enable GH actions xxx
-
-[pipeline will start..]
 
 wait a few minutes, visit your site at:
 https://[YOUR-GITHUB-USERNAME].github.io/blogtini/?setup
@@ -136,17 +126,8 @@ PAT / tokens for ~30/hr => ~5k/hr rate limits
 - https://raw.githubusercontent.com/traceypooh/blogtini/main/README.md?token=TOKEN
 
 
-[layout]
-posts
-img
-
-pages
-css
-js
-
-
+---
 - 15y, 112 posts, 500k txt, 60k gzip (twitter tp cold load 2.7MB)
-- xxx presently assumes posts list has filenames that are reverse sorted by date/time YYYY-MM-DD-..
 - xxx can still use site w/o .md copied into webroot via api
   https://api.github.com/repos/traceypooh/blogtini/contents look for type: dir and dir with 20\d\d...md
 

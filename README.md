@@ -140,7 +140,7 @@ Older comments (one file each, in `comments/<post>/`): convert once w/ staticmin
 Use the latest (`https://blogtini.com/index.js`), or pin a release -- served from any git tag by the
 Internet Archive's esm.sh mirror:
 ```js
-import 'https://esm.archive.org/gh/traceypooh/blogtini@2.0.0/index.js?bundle=false'
+import 'https://esm.archive.org/gh/traceypooh/blogtini@2.1.0/index.js?bundle=false'
 ```
 The default theme comes from that same version, so `theme:` in `config.yml` is optional.
 Always use `?bundle=false`: otherwise the theme gets its own bundled copy of `index.js`, and the two don't share
@@ -167,13 +167,13 @@ Fun: with the iOS Code App, you can open `bin/build.js` and hit its ▶ button t
 Release notes live in the annotated git tags (1.0.6+), so you can read them from any clone:
 ```sh
 bin/releases       # every release & its notes, newest first
-git show 2.0.0     # one release's notes, atop its commits
+git show 2.1.0     # one release's notes, atop its commits
 ```
 Make a release in one shot (`;` as the comment char, so `#` markdown headers in the notes survive;
 `-F notes.md` instead of the editor works too).  Drop the `gh` lines if you don't have it -- then use
 the [Draft a new release] button on the releases page:
 ```sh
-V=2.0.0 &&\
+V=2.1.0 &&\
   which gh &&\
   git -c core.commentChar=';' tag -a ${V?} &&\
   git push --follow-tags &&\
