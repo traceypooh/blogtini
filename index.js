@@ -119,6 +119,8 @@ let cfg = {
   summary_length: 500,
   // homepage: a heading between its own text & its posts (`<h2 class="bt-posts-heading">`).  '' for none
   posts_heading: 'Latest posts',
+  // img_ratio: '1 / 1' -- placeholder shape for images w/o a width & height (default: the theme's, else 3 / 2).
+  // See `img_ratio_css()`
   menu: {
     main: [], // xxx add some defaults
   },
@@ -383,6 +385,7 @@ async function main() {
 
 
   add_css(path_to_theme_url('index.css'))
+  img_ratio_css()
 
   state.show_top_content = state.is_homepage && body_contents && !location.search
   if (state.show_top_content) {
@@ -1224,6 +1227,22 @@ function add_css(file) {
   e.href = file
   e.dataset.themeCss = '' // (marks the theme's css)
   head.appendChild(e)
+}
+
+/**
+ * Reserves space for images w/o a width & height, before they load -- so they don't shift the page (Google's CLS).
+ * `auto`: a placeholder shape until the image loads, then its real one.  Shape: `config.yml` `img_ratio` (eg: '1 / 1'),
+ * else the theme's `--bt-img-ratio`, else 3 / 2.  `:where()` has no specificity, so a theme's own rule wins (eg: a list's
+ * fixed crop box).  Only an image w/ a definite width (eg: `width: 100%`) gets space -- one w/ `width: auto` is 0 wide
+ * until it loads, as before.  Custom properties reach into shadow DOM, so lit themes can use the same var.
+ * See future-imperfect.md
+ */
+function img_ratio_css() {
+  const e = document.createElement('style')
+  e.textContent = ':where(img) { aspect-ratio: auto var(--bt-img-ratio, 3 / 2) }'
+  document.head.appendChild(e)
+  if (cfg.img_ratio)
+    document.documentElement.style.setProperty('--bt-img-ratio', cfg.img_ratio) // inline: beats a theme's `:root`
 }
 
 function head_insert_generics() {

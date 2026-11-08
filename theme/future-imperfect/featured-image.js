@@ -163,6 +163,8 @@ img[src*="#top"] {
 }
 .image.single img {
   position: relative;
+  height: auto;
+  aspect-ratio: auto var(--bt-img-ratio, 3 / 2); /* space before it loads -- no layout shift.  See index.js img_ratio_css() */
 }
 .image.single:after,
 .image.single:before {

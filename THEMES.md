@@ -58,7 +58,7 @@ Two styles so far:
 
 | theme | DOM | notes |
 |---|---|---|
-| `future-imperfect` | lit, shadow DOM | the original.  css split into per-component chunks (`css.js`) |
+| `future-imperfect` | lit, shadow DOM | the original.  css split into per-component chunks (`css.js`).  Porting forward from its Hugo version: [future-imperfect.md](future-imperfect.md) |
 | `grid` | lit, shadow DOM | imports future-imperfect; just redefines the list of posts |
 | `editorial` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
 | `massively` | plain custom elements, light DOM | HTML5 UP's original `main.css`, as is |
@@ -154,6 +154,10 @@ HTML5 UP themes are one global `main.css` + plain markup + a little jQuery.  So 
 - `index.css`: `@import` the original `main.css` & `../html5up/fonts.css`, then any blogtini additions after them.
   Always add `#main { min-width: 0 }` (or the theme's main column) & `#main pre { overflow-x: auto }` --
   else a long line in a code block widens the page.
+- Images & layout shift (CLS): give list thumbnails a fixed crop box if the design allows (`aspect-ratio` +
+  `object-fit: cover`).  Natural-shape images (a post's featured image, post bodies) already get blogtini's placeholder
+  shape -- set `:root { --bt-img-ratio: 1 / 1 }` (etc.) if the theme's photos are typically another shape.
+  See [future-imperfect.md](future-imperfect.md#placeholder-shapes-done)
 - Add its dir name to `THEMES` in blogtini's `index.js` (the theme pickers).
 
 Next HTML5 UP themes to port: see [Next ports](#next-ports) below.
