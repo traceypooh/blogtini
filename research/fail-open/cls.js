@@ -2,8 +2,8 @@
 // Measures CLS (Google's layout-shift score) for each test page, with JS on and off.
 // No npm deps: serves this dir, drives headless Chrome over the DevTools protocol.
 //
-//   test/fail-open/cls.js
-//   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' test/fail-open/cls.js
+//   research/fail-open/cls.js
+//   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' research/fail-open/cls.js
 
 /* eslint-disable no-console */ // a CLI script: printing results is the point
 import process from 'node:process'

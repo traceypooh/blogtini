@@ -17,12 +17,12 @@ CSS, so they see the text regardless; screen readers ride along in normal JS bro
 
 
 ## Running them
-Serve the repo, open `test/fail-open/`, and click through (also w/ JS disabled in DevTools: Cmd-Shift-P →
+Serve the repo, open `research/fail-open/`, and click through (also w/ JS disabled in DevTools: Cmd-Shift-P →
 "Disable JavaScript").  CLS for every page, JS on & off (headless Chrome, 1280×800, Chrome's own layout-shift
 events, no npm deps):
 ```sh
-test/fail-open/cls.js
-CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' test/fail-open/cls.js   # on a Mac
+research/fail-open/cls.js
+CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' research/fail-open/cls.js   # on a Mac
 ```
 
 

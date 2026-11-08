@@ -222,7 +222,8 @@ function colophon() {
   <p class="credits sans">
     ${cfg.copyright ? esc(cfg.copyright) : `&copy; ${esc(year)} ${esc(cfg.author ?? cfg.title)}`}.
     Set in ET Book &amp; Courier Prime.
-    Design: Librarian, on <a href="https://edwardtufte.github.io/tufte-css/" target="_blank" rel="noopener">Tufte CSS</a>.
+    Design: <a href="https://blogtini.com/themes/" target="_blank" rel="noopener">Librarian by blogtini</a>,
+    on <a href="https://edwardtufte.github.io/tufte-css/" target="_blank" rel="noopener">Tufte CSS</a>.
     Powered by <a href="https://blogtini.com/" target="_blank" rel="noopener">blogtini.com</a>.
   </p>
 </footer>`

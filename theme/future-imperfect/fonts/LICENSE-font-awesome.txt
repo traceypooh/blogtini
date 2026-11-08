@@ -1,0 +1,8 @@
+fa-brands-400.woff2, fa-regular-400.woff2, fa-solid-900.woff2:
+
+Font Awesome Free 5.10.1 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free
+  - Icons: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  - Fonts: SIL OFL 1.1 (https://scripts.sil.org/OFL)
+  - Code: MIT License (https://opensource.org/licenses/MIT)
+(The same notice is atop its css: ../css.js)

@@ -1,0 +1,38 @@
+name: Theme bug
+description: Something looks or works wrong in a theme
+labels: ["theme", "bug"]
+body:
+  - type: input
+    id: theme
+    attributes:
+      label: Which theme?
+      description: eg, dossier -- the theme picker's name for it
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong?
+      description: What you saw, & what you expected.  A screenshot helps a lot -- drag it in here.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where?
+      description: The page's url -- eg, a list of posts, a post, a tag page, the homepage
+  - type: input
+    id: browser
+    attributes:
+      label: Browser & window width
+      description: eg, Safari 19 on a Mac, ~1440 wide -- or Chrome on an Android phone
+  - type: dropdown
+    id: scheme
+    attributes:
+      label: Light or dark?
+      description: (The "Scheme" lightbulb, in each theme)
+      options:
+        - light
+        - dark
+        - both
+        - not sure

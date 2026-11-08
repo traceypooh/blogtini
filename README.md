@@ -9,6 +9,9 @@ No JS, no network, 1000 years from now?  It's still a readable text file.
 - Live: https://blogtini.com (also https://traceypooh.github.io/blogtini/)
 - Slides / talk: https://tracey.archive.org/dweb-2022 (at https://dwebcamp.org)
 - Releases: https://github.com/traceypooh/blogtini/releases
+- **Contributing** -- themes, ideas, & working w/ an AI agent: [CONTRIBUTING.md](CONTRIBUTING.md)
+- License: code MIT, blogtini's own theme designs CC BY 4.0 -- [LICENSE](LICENSE); everyone else's: [CREDITS.md](CREDITS.md).
+  Using blogtini?  A link back is appreciated -- the themes' "Powered by blogtini.com" footer does it.
 
 
 ## Setup
@@ -195,7 +198,7 @@ V=2.1.0 &&\
 - combo sites: interleave your & your friends' blogtini (or Mastodon) feeds on one page
 - port forward from [hugo-future-imperfect-slim](https://github.com/traceypooh/hugo-future-imperfect-slim):
   eg: `loading="lazy"` on *every* rendered `<img>` (raw `<img>` tags in markdown, too)
-- `draft: true` front matter.  (The build skips dirs named `test`, `theme`, `js`, `img`, `avatars`, `preview`,
+- `draft: true` front matter.  (The build skips dirs named `test`, `research`, `theme`, `js`, `img`, `avatars`, `preview`,
   `node_modules`, `.*`, `_*` -- so a real post can't use those names.)
 - `config.yml` `scheme: light | dark | auto` for the site's light/dark
 - staticmin: check `allowedOrigins` (not enforced yet -- PR review is the gate); move netlify to Node 22
@@ -203,6 +206,6 @@ V=2.1.0 &&\
   frame's name works across sites (your site's blogtini reads it); needs `postMessage()` to blogtini.com, &
   new frames (not reloads) to switch.  Plus a themes page w/ a big "Live preview themes" button
 - wishlist: browsers & crawlers that render front matter + markdown natively, w/ a `theme:` module to "paint" it
-- Fail-open tests & findings: [test/fail-open/](test/fail-open/README.md).
+- Fail-open tests & findings: [research/fail-open/](research/fail-open/README.md).
 
 To do / fixmes: `git grep xxxx` (highest priority), `xxx` (lower).

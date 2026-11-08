@@ -274,7 +274,8 @@ function footer() {
   ${social ? `<p class="social">${social}</p>` : ''}
   <p>${cfg.copyright ? esc(cfg.copyright) : `&copy; ${esc(year)} ${esc(cfg.author ?? cfg.title)}`}.
     This document is unclassified.  Probably.</p>
-  <p class="credits">Design: Dossier.  Powered by <a href="https://blogtini.com/" target="_blank" rel="noopener">blogtini.com</a>.</p>
+  <p class="credits">Design: <a href="https://blogtini.com/themes/" target="_blank" rel="noopener">Dossier by blogtini</a>.
+    Powered by <a href="https://blogtini.com/" target="_blank" rel="noopener">blogtini.com</a>.</p>
 </footer>`
 }
 

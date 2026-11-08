@@ -561,7 +561,9 @@ Mapping:
       (code highlight colors).  Move `css_hljs` somewhere shared
 - [ ] social icons are a subset of future-imperfect's `socnet_icon()` list -- share one list
 - [ ] self-hosted fonts are the latin subset only (other scripts fall back to system fonts)
-- [ ] ignores `config.yml` `attribution` (its default credits future-imperfect); always credits HTML5 UP (CC BY 3.0)
+- [x] ignores `config.yml` `attribution` (its default credits future-imperfect); always credits HTML5 UP (CC BY 3.0)
+      -- right, by design (2026-11-07): CC BY 3.0 asks for that credit.  `attribution` is future-imperfect's
+      footer.  Every theme's license & credit: [CREDITS.md](CREDITS.md)
 - [ ] `cfg.site_header` image (blogtini logo) isn't used
 - [ ] the themes' "page-wide listeners: once" guards (eg: `bt_hyperspace_listening`) were for in-place theme
       switches -- a pick reloads the page now, so they could go

@@ -4,12 +4,13 @@ Markdown blogs & websites, rendered in the browser.  Each post is a plain text f
 one shared theme JS "paints" it.  **No build step is required; an optional build step makes it better.**
 
 ## Read first
+- [CONTRIBUTING.md](CONTRIBUTING.md) -- ways to help (eg: port a theme), & what a theme pull request includes
 - [README.md](README.md) -- what it is, setup, how a site finds its posts, the build, comments, versions, releases
 - [THEMES.md](THEMES.md) -- how a theme plugs in (the `bt-*` elements, `reveal()`, ids blogtini looks for),
   adding a theme, & each theme's TODO / FIXMEs
 - skim [TODO.md](TODO.md) -- design notes for ideas not built yet
 - as needed: [DENODE.md](DENODE.md) (one build script for Deno *and* Node),
-  [test/fail-open/README.md](test/fail-open/README.md) (no-JS / slow-JS findings)
+  [research/fail-open/README.md](research/fail-open/README.md) (no-JS / slow-JS findings)
 - [design.md](design.md) is the early (2022) sketch of the web component idea -- the gist, not today's api.
   THEMES.md has the real contract.
 

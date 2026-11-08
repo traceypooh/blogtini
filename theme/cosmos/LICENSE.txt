@@ -1,0 +1,7 @@
+The Cosmos theme for blogtini -- Copyright (c) 2026 Tracey Jaquith (https://blogtini.com)
+
+Its design (css, markup & artwork -- the star fields, terrain & rover): Creative Commons Attribution 4.0
+International (CC BY 4.0)  https://creativecommons.org/licenses/by/4.0/
+Its code (js): the MIT License -- see blogtini's top LICENSE.
+
+Credit: keep the footer's "Design: Cosmos by blogtini" link -- or credit blogtini.com somewhere similar.

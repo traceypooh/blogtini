@@ -1,0 +1,32 @@
+name: Theme request (or a port you'd like to do)
+description: A theme you'd love to see in blogtini -- a port, or an original idea
+labels: ["theme", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        THEMES.md lists ports not done yet, under "Next ports" -- & how to make one.
+        Planning to do it yourself?  Say so below, so nobody doubles up.  (CONTRIBUTING.md has the how-to.)
+  - type: input
+    id: theme
+    attributes:
+      label: Which theme?
+      description: A link to it (eg, an HTML5 UP template, or a Hugo / Jekyll theme) -- or a name for your idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What's great about it?
+      description: The look, & how a blog's posts would fit in it
+  - type: input
+    id: license
+    attributes:
+      label: Its license, if a port
+      description: eg, CC BY 3.0, MIT -- it needs to allow reuse
+  - type: checkboxes
+    id: doing
+    attributes:
+      label: Doing it?
+      options:
+        - label: I'd like to make this one myself

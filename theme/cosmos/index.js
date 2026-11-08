@@ -524,7 +524,8 @@ function footer() {
   ${social ? `<p class="social">${social}</p>` : ''}
   <p class="star-stuff">&ldquo;We are made of star-stuff&rdquo; <small>&mdash; Carl Sagan, <i>Cosmos</i></small></p>
   <p>${cfg.copyright ? esc(cfg.copyright) : `&copy; ${esc(year)} ${esc(cfg.author ?? cfg.title)}`}.
-    Design: Cosmos.  Powered by <a href="https://blogtini.com/" target="_blank" rel="noopener">blogtini.com</a>.</p>
+    Design: <a href="https://blogtini.com/themes/" target="_blank" rel="noopener">Cosmos by blogtini</a>.
+    Powered by <a href="https://blogtini.com/" target="_blank" rel="noopener">blogtini.com</a>.</p>
 </footer>
 <svg id="moon" aria-hidden="true"></svg>`
 }

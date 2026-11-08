@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How to contribute (themes, agents, the house rules)
+    url: https://github.com/traceypooh/blogtini/blob/main/CONTRIBUTING.md
+    about: Start here -- try it in 5 minutes, & ways to help

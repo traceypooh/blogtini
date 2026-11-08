@@ -1,0 +1,10 @@
+name: Idea, question, or other bug
+description: Anything else -- a feature idea, a question, a bug that's not about one theme, docs that confused you
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What's on your mind?
+      description: For a bug -- what you did, what you saw, & what you expected (& your browser).
+    validations:
+      required: true
