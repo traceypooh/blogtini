@@ -1,0 +1,32 @@
+# Tests -- on each push to main, & each pull request: the unit & build tests, then every theme in headless
+# Chrome (its screenshots & problems: the run's "theme-tests" artifact -- open its index.html).
+# Locally: `deno task test` & `deno task test:themes` -- see CONTRIBUTING.md
+name: test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno task test
+      - run: deno task test:themes
+        env:
+          CHROME: google-chrome
+        # xxx until its 1st green run: report theme problems, w/o failing the check
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: theme-tests
+          path: test/out/

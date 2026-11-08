@@ -68,16 +68,34 @@ Screenshots of anything off help it a lot.
 - Changed behavior?  Update README.md / THEMES.md in the same change.
 
 
+## Tests
+```sh
+deno task test                    # unit & build tests -- seconds
+deno task test:themes             # every theme, in headless Chrome -- a few minutes
+deno task test:themes dossier     # just one (or a few) themes
+```
+The theme test loads every theme on every kind of page -- the homepage, a list of posts, a post, a tag page,
+contact, ... -- at desktop & phone widths, light & dark, on a tiny test site (`test/fixtures/site/`).  It
+fails a page that doesn't draw, throws a JS error, or calls any server but esm.archive.org (no CDNs!), & warns
+when a page scrolls sideways.  Then **open `test/out/index.html`**: a screenshot of every page, problems
+marked -- the quickest way to eyeball a theme everywhere at once.  (`--all`: every page at every size & scheme.)
+It needs Chrome (or Chromium); set `CHROME=/path/to/it` if it's somewhere unusual.
+
+Pull requests run both, automatically (`.github/workflows/test.yml`).
+
+
 ## A theme pull request includes
 - [ ] `theme/<name>/index.js` & `index.css` (+ the original's `LICENSE` file, & self-hosted fonts w/ theirs),
       its source credited in the theme's footer, & a row in [CREDITS.md](CREDITS.md)
 - [ ] its name in `THEMES` in `index.js`
 - [ ] a section in THEMES.md: what changed from the original, how blogtini maps into it, & its TODOs
 - [ ] a card on [themes/index.html](themes/index.html), & a screenshot -- see THEMES.md "Screenshots"
-- [ ] `deno lint` passes
-- [ ] checked in the browser: a list of posts, a post, a tag page, a phone-width window, & the dark scheme
+- [ ] `deno lint` & `deno task test` pass
+- [ ] `deno task test:themes <name>` passes -- & its screenshots (`test/out/index.html`) look right: a list of
+      posts, a post, a tag page, contact, phone width, & dark
 
-Not a theme?  Same idea: small focused changes, docs updated, `deno lint`, & a look in the browser.
+Not a theme?  Same idea: small focused changes, docs updated, `deno lint`, `deno task test` (+ a test for a
+fix or feature, if you can), & a look in the browser.
 
 
 ## Licensing

@@ -8,6 +8,8 @@ git_provider: github # github or gitlab
 site_url: https://blogtini.com/
 
 img_site: img/profile.jpg
+# an image atop future-imperfect's intro (optional)
+site_header: img/blogtini.png
 posts_per_page: 10
 remove_blur: true
 

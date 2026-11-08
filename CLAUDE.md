@@ -18,6 +18,8 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 - `index.js` -- the core: finds & parses posts, caches them (localStorage, daily), writes `<bt-body>`, loads the theme.
   Its exports are the theme api (`cfg`, `state`, `url2post`, `all_posts`, `reveal`, `THEMES`, ...)
 - `js/` -- search (lunr), text helpers, a tiny DOM for Deno
+- `test/` -- tests (`deno task test`, `deno task test:themes`), on a tiny site: `test/fixtures/site/`.
+  `research/` -- R&D experiments & findings (not tests)
 - `theme/<name>/index.js` (+ `index.css`) -- 15 themes.  `future-imperfect` (default) & `grid`: lit, shadow DOM.
   The rest: plain custom elements, light DOM, sharing `theme/html5up/shared.js`, fonts & Font Awesome
 - `bin/build.js` -- the optional build: writes `index.xml` (feed + sitemap + search index); `--seo` adds post head lines.
@@ -52,5 +54,13 @@ Locally, `deno lint` catches most of it.
 python3 -m http.server      # then http://localhost:8000 -- add ?recache=1 after adding/removing posts
 ```
 Try a theme w/o editing `config.yml`: http://localhost:8000/#theme=librarian
+
+## Test
+```sh
+deno task test              # unit & build tests (test/*.test.js) -- seconds
+deno task test:themes       # every theme, every kind of page, in headless Chrome -- & test/out/index.html screenshots
+```
+Theme work: run `deno task test:themes <name>` & look at its screenshots -- an agent can't see the page
+otherwise.  `research/` is R&D (eg: fail-open findings), not tests.
 
 Releases (annotated git tags, `bin/releases`) are made by the maintainer.

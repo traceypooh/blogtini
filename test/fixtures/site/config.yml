@@ -1,0 +1,14 @@
+# A tiny test site -- for test/build.test.js & test/themes.js
+title: Test Kitchen
+site_url: https://example.com/kitchen/
+posts_per_page: 10
+menu:
+  main:
+    - name: About
+      url: /about/
+    - name: Contact
+      url: /?contact
+sidebar:
+  about: A tiny site, for blogtini's tests.
+contact:
+  email_service: https://example.com/form

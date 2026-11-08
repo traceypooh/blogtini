@@ -123,7 +123,9 @@ customElements.define('bt-body', class extends LitElement {
 
   <section id="site-intro">
     <header>
-      <img id="blogtini" src="${cfg.site_header}">
+      ${cfg.site_header
+        ? html`<img id="blogtini" src="${/^https?:/.test(cfg.site_header) ? cfg.site_header : `${state.top_dir}${cfg.site_header}`}">`
+        : ''}
       <h1>
         <a href="${state.top_page}">
           ${cfg.img_site ? html`<img src="${img_intro}" class="${cfg.img_site_shape}">` : ''}<br>

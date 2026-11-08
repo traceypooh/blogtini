@@ -153,6 +153,8 @@ import 'https://esm.archive.org/gh/traceypooh/blogtini@2.1.0/index.js?bundle=fal
 The default theme comes from that same version, so `theme:` in `config.yml` is optional.
 Always use `?bundle=false`: otherwise the theme gets its own bundled copy of `index.js`, and the two don't share
 settings.  (A brand new tag can take a little while to show up on the mirror.)
+Privacy: a pinned site's readers make no requests to blogtini.com (GitHub Pages) -- just to the mirror.
+(A site hosted on GitHub Pages sends them to GitHub anyway, of course.)  (2026-11-07)
 
 
 ## Local development

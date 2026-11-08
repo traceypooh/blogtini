@@ -112,7 +112,9 @@ let cfg = {
   // Masks site image in a certain shape. Supported are: circle, triangle, diamond, and hexagon.
   img_site_shape: 'hexagon',
   posts_per_page: 10,
-  site_header: 'https://traceypooh.github.io/blogtini/img/blogtini.png', // xxx
+  // an image atop future-imperfect's intro, eg: img/logo.png (from the site's top) -- or none.  (It used to
+  // default to blogtini's own logo, on traceypooh.github.io: a 3rd-party request on every site -- 2026-11-07)
+  site_header: '',
   reading_time: true,
   summary_length: 500,
   // homepage: a heading between its own text & its posts (`<h2 class="bt-posts-heading">`).  '' for none

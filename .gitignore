@@ -3,3 +3,4 @@ names.txt
 node_modules
 /t
 .DS_Store
+/test/out/
