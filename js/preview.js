@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   Theme previewer: a bar to step thru blogtini's themes, over the site in an iframe -- click around in it freely.
   Any blogtini site can have one: a `preview/index.html` stub that loads this (see README), eg:

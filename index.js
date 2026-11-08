@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 
 
 import yml from 'https://esm.archive.org/js-yaml@4.1.0'

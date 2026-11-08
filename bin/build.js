@@ -1,4 +1,5 @@
 #!/usr/bin/env -S deno run --no-lock --allow-read=. --allow-write=. --allow-env=GITHUB_REPOSITORY --allow-import=esm.archive.org:443
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   The (optional) blogtini build step.  Makes your site better for everything that doesn't run JS:
   link previews, crawlers, RSS readers, and people w/o JS.

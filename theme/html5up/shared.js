@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   Shared helpers for the light DOM ports of HTML5 UP themes (eg: editorial, massively).
   This dir is not a theme itself -- it also has their shared Font Awesome & self-hosted fonts.

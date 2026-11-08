@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   Runs the blogtini build (`build.js`) on Node w/o a blogtini checkout.  From the top of your site repo:
     curl -s https://blogtini.com/bin/node.js | node --input-type=module - [--seo]

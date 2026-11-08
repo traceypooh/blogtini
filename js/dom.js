@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 import { JSDOM } from 'https://esm.archive.org/jsdom@25.0.1?target=esnext'
 
 const doc = new JSDOM('')

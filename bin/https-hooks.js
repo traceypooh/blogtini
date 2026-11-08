@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   Node module hooks: lets Node `import` ES modules from https urls (like browsers & Deno do),
   w/ a local cache -- so the same script runs on Deno *and* Node.  See DENODE.md.

@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 import lunr from 'https://esm.archive.org/lunr@2.3.9'
 import dayjs from 'https://esm.archive.org/dayjs@1.11.13'
 

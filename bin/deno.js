@@ -1,3 +1,4 @@
+// blogtini -- (c) 2022-2026 Tracey Jaquith -- MIT license: https://blogtini.com/LICENSE
 /*
   `Deno` for scripts that run on Deno *and* Node:  import { Deno } from './deno.js'
   On Deno it's the real `Deno`.  On Node it's a small stand-in, built on `node:*`, w/ just the calls our
