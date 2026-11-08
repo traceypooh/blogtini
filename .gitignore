@@ -4,3 +4,5 @@ node_modules
 /t
 .DS_Store
 /test/out/
+# private notes: never committed
+/_____*

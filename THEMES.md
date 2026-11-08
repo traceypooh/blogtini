@@ -207,6 +207,8 @@ Mapping:
 - [ ] dark scheme is partial -- like editorial
 - [ ] check phone widths: the nav panel, & our dropdowns inside it
 - [ ] no `#intro` on pages other than the first homepage page (the original has it only on its index, too)
+- [x] the theme picker & search dropdowns opened *under* `#main` (main.css: both `#nav` & `#main` z-index 2) --
+      `index.css` lifts `#nav` to 3 (2026-11-08; caught by test:themes)
 
 
 ## Phantom

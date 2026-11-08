@@ -76,8 +76,8 @@ deno task test:themes dossier     # just one (or a few) themes
 ```
 The theme test loads every theme on every kind of page -- the homepage, a list of posts, a post, a tag page,
 contact, ... -- at desktop & phone widths, light & dark, on a tiny test site (`test/fixtures/site/`).  It
-fails a page that doesn't draw, throws a JS error, or calls any server but esm.archive.org (no CDNs!), & warns
-when a page scrolls sideways.  Then **open `test/out/index.html`**: a screenshot of every page, problems
+fails a page that doesn't draw, throws a JS error, calls any server but esm.archive.org (no CDNs!), or whose
+theme picker won't open (or opens hidden under something) -- & warns when a page scrolls sideways.  Then **open `test/out/index.html`**: a screenshot of every page, problems
 marked -- the quickest way to eyeball a theme everywhere at once.  (`--all`: every page at every size & scheme.)
 It needs Chrome (or Chromium); set `CHROME=/path/to/it` if it's somewhere unusual.
 

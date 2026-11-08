@@ -183,6 +183,49 @@ const DEEP_TEXT = `(() => {
 })()`
 
 
+// Can a visitor get to the theme picker?  Its links already showing => 'shown'.  Else clicks what should open it
+// -- a palette icon, or a "Theme" / "Menu" / "Change cover" button -- one at a time, until they show: 'opens'.
+// Nothing opens it: 'stuck'.  No picker at all: 'none'.  (In the page & inside shadow DOM -- eg: future-imperfect)
+const PICKER = `(async () => {
+  const all = (sel, root = document) => {
+    const ret = [...root.querySelectorAll(sel)]
+    for (const e of root.querySelectorAll('*'))
+      if (e.shadowRoot) ret.push(...all(sel, e.shadowRoot))
+    return ret
+  }
+  const links = () => all('#theme-menu a, .theme-menu a')
+  // visible: has a size, isn't hidden, isn't off the side of the screen (eg: a closed slide-out panel) --
+  // & is on top: scrolled to, the point at its middle is the link (not something covering it -- eg: a
+  // dropdown opening *under* the next section)
+  const shown = () => links().some((a) => {
+    let r = a.getBoundingClientRect()
+    const s = getComputedStyle(a)
+    if (!(r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && s.visibility !== 'hidden' &&
+      Number(s.opacity) > 0))
+      return false
+    a.scrollIntoView({ block: 'center', inline: 'nearest' })
+    r = a.getBoundingClientRect()
+    const root = a.getRootNode() // (in a shadow root, eg: future-imperfect: ask it, not the document)
+    const hit = (root.elementFromPoint ? root : document).elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+    return Boolean(hit) && (hit === a || a.contains(hit))
+  })
+  if (!links().length) return 'none'
+  if (shown()) return 'shown'
+  const words = /^(theme|menu|change cover)\\b/i
+  const triggers = [
+    ...all('.fa-palette').map((e) => e.closest('a, button, li, [role=button]') ?? e),
+    ...all('a, button, [role=button], li, h3, span').filter((e) => words.test(e.textContent.trim()) &&
+      e.textContent.trim().length < 20),
+  ].filter((e) => !(e.matches('a[href]') && !/^#/.test(e.getAttribute('href')))) // (not a link off the page)
+  for (const t of new Set(triggers)) {
+    t.click()
+    await new Promise((r) => { setTimeout(r, 700) })
+    if (shown()) return 'opens'
+  }
+  return 'stuck'
+})()`
+
+
 /** Loads one page, in one theme & view.  Returns its result */
 async function check(theme, [page, path, expect], [view, width, height, phone, scheme]) {
   heard = { errors: [], hosts: new Set(), urls: {} }
@@ -218,6 +261,15 @@ async function check(theme, [page, path, expect], [view, width, height, phone, s
   const outside = [...heard.hosts].filter((e) => !ALLOWED_HOSTS.includes(e))
   if (outside.length) fails.push(`third-party requests: ${outside.join(', ')}`)
   if (overflow > 1) warns.push(`scrolls sideways: ${overflow}px too wide`)
+
+  // the theme picker: on the homepage, on desktop (after the screenshot -- this clicks around)
+  if (page === 'home' && view === 'desktop') {
+    const picker = (await send('Runtime.evaluate', { expression: PICKER, awaitPromise: true, returnByValue: true }))
+      .result?.result?.value
+    // can't reach it: a fail.  (No picker at all, just a warning: a site can turn it off -- `header: theme: false`)
+    if (picker === 'stuck') fails.push("theme picker: clicking its button doesn't show the themes (or they're covered)")
+    if (picker === 'none') warns.push('theme picker: none on the page')
+  }
   return { theme, page, view, file, fails, warns }
 }
 
@@ -264,7 +316,10 @@ ${themes.map((theme) => `<h2>${esc(theme)}</h2><div class="row">${results.filter
 `)
 
 const failed = results.filter((r) => r.fails.length)
-console.log(`\n${results.length - failed.length} of ${results.length} ok${failed.length ? ` -- ${failed.length} FAILED` : ''}.  Screenshots: test/out/index.html`)
+const warned = results.filter((r) => !r.fails.length && r.warns.length)
+const ok = results.length - failed.length - warned.length
+console.log(`\n${ok} of ${results.length} ok${warned.length ? ` -- ${warned.length} WARNING${warned.length > 1 ? 'S' : ''} (!)` : ''}${
+  failed.length ? ` -- ${failed.length} FAILED (✗)` : ''}.  Screenshots: test/out/index.html`)
 ws.close()
 chrome.kill()
 await server.shutdown()

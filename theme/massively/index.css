@@ -47,9 +47,11 @@ bt-body {
   float: right;
 }
 
-/* nav: dropdowns for the theme picker & search (Massively's nav has none) */
+/* nav: dropdowns for the theme picker & search (Massively's nav has none).  Above #main, which they open over:
+   main.css gives both z-index 2 -- & #main, later in the page, wins the tie (caught by test:themes, 2026-11-08) */
 #nav {
   overflow: visible;
+  z-index: 3;
 }
 #nav ul.links li.bt-dropdown {
   position: relative;
