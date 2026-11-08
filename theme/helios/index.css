@@ -156,3 +156,9 @@ bt-body {
 .bt-posts-heading {
   display: none;
 }
+
+/* the phone nav panel's texture: main.css asks for images/overlay.png -- which HTML5 UP's download never had.
+   So it always drew w/o it: skip the request (a 404, caught by test/themes.js) -- 2026-11-08 */
+#navPanel:before {
+  background: none;
+}

@@ -321,7 +321,8 @@ What changed from the HTML5 UP download:
 - `assets/css/main.css`: just its two `@import` lines -- Font Awesome => the shared `theme/html5up/` copy,
   Google Fonts => a comment.  Otherwise as is.
   (`images/header.jpg` is its header background; `assets/css/images/arrow.svg` the carousel arrows.
-  Its css also refers to an `assets/css/images/overlay.png` that isn't in HTML5 UP's download, either)
+  Its css also refers to an `assets/css/images/overlay.png` that isn't in HTML5 UP's download, either -- for the
+  phone nav panel's texture.  `index.css` turns that background off, so no 404 (2026-11-08))
 - jQuery `main.js` => vanilla js in `index.js` & `../html5up/shared.js`: carousel (hover its edge arrows to scroll;
   touch screens swipe), nav dropdowns (`dropotron`), phone width nav button & panel, smooth "Start" scroll, `is-preload`.
   Left out: the carousel's one-by-one fade in.
