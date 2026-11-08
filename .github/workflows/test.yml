@@ -23,8 +23,8 @@ jobs:
       - run: deno task test:themes
         env:
           CHROME: google-chrome
-        # xxx until its 1st green run: report theme problems, w/o failing the check
-        continue-on-error: true
+        # uncomment to only report theme problems, w/o failing the entire test action
+        # continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
