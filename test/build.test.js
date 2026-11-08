@@ -1,6 +1,6 @@
 // Tests for bin/build.js: run it on a copy of the tiny fixture site, & check the index.xml it writes.
 // Run: deno task test
-import assert from 'node:assert/strict'
+import { assertEquals, assertMatch } from 'https://esm.archive.org/jsr/@std/assert@1'
 
 const BUILD = new URL('../bin/build.js', import.meta.url).pathname
 const FIXTURE = new URL('./fixtures/site/', import.meta.url).pathname
@@ -23,7 +23,7 @@ async function build(dir, ...args) {
     args: ['run', '--no-lock', '--allow-read=.', '--allow-write=.', '--allow-env=GITHUB_REPOSITORY',
            '--allow-import=esm.archive.org:443', BUILD, ...args],
   }).output()
-  assert.equal(out.code, 0, new TextDecoder().decode(out.stderr))
+  assertEquals(out.code, 0, new TextDecoder().decode(out.stderr))
   return Deno.readTextFileSync(`${dir}/index.xml`)
 }
 
@@ -44,32 +44,32 @@ Deno.test('build: index.xml has every post & page -- & the homepage, as a page',
   const got = items(await build(dir))
 
   const by_title = Object.fromEntries(got.map((e) => [e.title, e]))
-  assert.deepEqual(Object.keys(by_title).sort(),
-                   ['About the kitchen', 'I baked a pie', 'Test Kitchen: recipes &amp; more', 'Then, a cake'])
+  assertEquals(Object.keys(by_title).sort(),
+               ['About the kitchen', 'I baked a pie', 'Test Kitchen: recipes &amp; more', 'Then, a cake'])
 
   // newest first: the 2 posts -- then the pages (the homepage gets the oldest date)
-  assert.equal(got[0].title, 'Then, a cake')
-  assert.equal(got[1].title, 'I baked a pie')
+  assertEquals(got[0].title, 'Then, a cake')
+  assertEquals(got[1].title, 'I baked a pie')
 
   // links: from config.yml site_url
-  assert.equal(by_title['I baked a pie'].link, 'https://example.com/kitchen/2026-01-pie/')
-  assert.equal(by_title['Test Kitchen: recipes &amp; more'].link, 'https://example.com/kitchen/')
+  assertEquals(by_title['I baked a pie'].link, 'https://example.com/kitchen/2026-01-pie/')
+  assertEquals(by_title['Test Kitchen: recipes &amp; more'].link, 'https://example.com/kitchen/')
 
   // types, tags, categories, the featured image & its caption, the markdown body
-  assert.equal(by_title['About the kitchen'].type, 'page')
-  assert.equal(by_title['Test Kitchen: recipes &amp; more'].type, 'page')
+  assertEquals(by_title['About the kitchen'].type, 'page')
+  assertEquals(by_title['Test Kitchen: recipes &amp; more'].type, 'page')
   const pie = by_title['I baked a pie'].xml
-  assert.match(pie, /<category domain="tag">pie<\/category>/)
-  assert.match(pie, /<category domain="category">baking<\/category>/)
-  assert.match(pie, /<media:content url="https:\/\/example\.com\/kitchen\/img\/pie\.svg"/)
-  assert.match(pie, /<media:description>A pie, cooling<\/media:description>/)
-  assert.match(pie, /It was \*delicious\*/)
+  assertMatch(pie, /<category domain="tag">pie<\/category>/)
+  assertMatch(pie, /<category domain="category">baking<\/category>/)
+  assertMatch(pie, /<media:content url="https:\/\/example\.com\/kitchen\/img\/pie\.svg"/)
+  assertMatch(pie, /<media:description>A pie, cooling<\/media:description>/)
+  assertMatch(pie, /It was \*delicious\*/)
 })
 
 Deno.test('build: rerunning it changes nothing', async () => {
   const dir = Deno.makeTempDirSync({ prefix: 'bt-build-' })
   copy_dir(FIXTURE, dir)
-  assert.equal(await build(dir), await build(dir))
+  assertEquals(await build(dir), await build(dir))
 })
 
 Deno.test('build --seo: a head line atop each post -- & still parses', async () => {
@@ -77,8 +77,8 @@ Deno.test('build --seo: a head line atop each post -- & still parses', async () 
   copy_dir(FIXTURE, dir)
   await build(dir, '--seo')
   const pie = Deno.readTextFileSync(`${dir}/2026-01-pie/index.html`)
-  assert.match(pie.split('\n')[0], /^<!DOCTYPE html><title>I baked a pie<\/title>/)
+  assertMatch(pie.split('\n')[0], /^<!DOCTYPE html><title>I baked a pie<\/title>/)
   // & a 2nd run doesn't stack a 2nd head line
   await build(dir, '--seo')
-  assert.equal(Deno.readTextFileSync(`${dir}/2026-01-pie/index.html`), pie)
+  assertEquals(Deno.readTextFileSync(`${dir}/2026-01-pie/index.html`), pie)
 })

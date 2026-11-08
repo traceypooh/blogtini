@@ -6,38 +6,35 @@
 //   CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' research/fail-open/cls.js
 
 /* eslint-disable no-console */ // a CLI script: printing results is the point
-import process from 'node:process'
-import { createServer } from 'node:http'
-import { readFile, mkdtemp } from 'node:fs/promises'
-import { spawn } from 'node:child_process'
-import { tmpdir } from 'node:os'
-import { join, dirname, extname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const DIR = dirname(fileURLToPath(import.meta.url))
+const DIR = new URL('.', import.meta.url).pathname // (ends w/ /)
 const PAGES = ['shift-control', 'nojs', 'nojs-prewrap', 'js-fast', 'js-slow']
 const WAIT_MS = 7000 // js-slow renders at 5s
-const CHROME = process.env.CHROME ?? 'chromium'
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript' }
+const CHROME = Deno.env.get('CHROME') ?? 'chromium'
+const TYPES = { html: 'text/html', js: 'text/javascript' }
 
-const server = createServer(async (req, res) => {
-  const path = join(DIR, decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/\/$/, '/index.html'))
+const server = Deno.serve({ port: 0, hostname: '127.0.0.1', onListen() {} }, async (req) => {
+  const path = `${DIR}${decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, '').replace(/\/$/, '/index.html')}`
   try {
-    const body = await readFile(path)
-    res.writeHead(200, { 'content-type': TYPES[extname(path)] ?? 'application/octet-stream' }).end(body)
+    const type = TYPES[path.match(/\.(\w+)$/)?.[1]] ?? 'application/octet-stream'
+    return new Response(await Deno.readFile(path), { headers: { 'content-type': type } })
   } catch {
-    res.writeHead(404).end()
+    return new Response('', { status: 404 })
   }
-}).listen(0)
-const base = `http://127.0.0.1:${server.address().port}/`
+})
+const base = `http://127.0.0.1:${server.addr.port}/`
 const check = await fetch(`${base}nojs/`)
 if (!check.ok) throw Error(`test server broken: ${check.status} for ${base}nojs/`)
+await check.body?.cancel()
 
 const port = 9300 + Math.floor(Math.random() * 500)
-const chrome = spawn(CHROME, [
-  '--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', `--remote-debugging-port=${port}`,
-  `--user-data-dir=${await mkdtemp(join(tmpdir(), 'cls-'))}`, '--window-size=1280,800', 'about:blank',
-], { stdio: 'ignore' })
+const chrome = new Deno.Command(CHROME, {
+  args: [
+    '--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', `--remote-debugging-port=${port}`,
+    `--user-data-dir=${await Deno.makeTempDir({ prefix: 'cls-' })}`, '--window-size=1280,800', 'about:blank',
+  ],
+  stdin: 'null', stdout: 'null', stderr: 'null',
+}).spawn()
 
 async function devtools_ws() {
   for (let i = 0; i < 50; i++) {
@@ -96,4 +93,4 @@ for (const js of [true, false]) {
 console.table(results)
 ws.close()
 chrome.kill()
-server.close()
+await server.shutdown()

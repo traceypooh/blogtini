@@ -15,18 +15,10 @@
 // No npm deps: serves the repo, drives Chrome over the DevTools protocol (like research/fail-open/cls.js).
 
 /* eslint-disable no-console */ // a CLI script: printing results is the point
-import process from 'node:process'
-import { createServer } from 'node:http'
-import { readFile, mkdtemp } from 'node:fs/promises'
-import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
-import { spawn } from 'node:child_process'
-import { tmpdir } from 'node:os'
-import { join, dirname, extname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const REPO = join(dirname(fileURLToPath(import.meta.url)), '..')
+const REPO = new URL('..', import.meta.url).pathname // (ends w/ /)
 const SITE = 'test/fixtures/site/'
-const OUT = join(REPO, 'test/out')
+const OUT = `${REPO}test/out`
 const RENDER_MS = 15000 // max wait for a page to draw
 const SETTLE_MS = 400 // then, for fade-ins & such
 const ALLOWED_HOSTS = ['esm.archive.org'] // (& this server)
@@ -53,9 +45,9 @@ const VIEWS = [
 // w/o --all: every page on desktop -- & a few on phone & dark
 const QUICK = { 'desktop-dark': ['home', 'post'], phone: ['home', 'posts', 'post'] }
 
-const args = process.argv.slice(2)
+const args = Deno.args
 const ALL = args.includes('--all')
-const THEMES = readFileSync(join(REPO, 'index.js'), 'utf8').match(/const THEMES = \[([\s\S]*?)\]/)[1]
+const THEMES = Deno.readTextFileSync(`${REPO}index.js`).match(/const THEMES = \[([\s\S]*?)\]/)[1]
   .match(/'[\w-]+'/g).map((e) => e.slice(1, -1))
 const picked = args.filter((e) => !e.startsWith('--'))
 for (const t of picked) {
@@ -63,43 +55,60 @@ for (const t of picked) {
 }
 const themes = picked.length ? picked : THEMES
 
-const CHROME = process.env.CHROME ?? [
+/** Does a file exist? */
+function exists(path) {
+  try {
+    return Boolean(Deno.statSync(path))
+  } catch {
+    return false
+  }
+}
+
+const CHROME = Deno.env.get('CHROME') ?? [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/Applications/Chromium.app/Contents/MacOS/Chromium',
   '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser',
-].find((e) => existsSync(e)) ?? 'chromium'
+].find(exists) ?? 'chromium'
 
 
 // serve the repo
 const TYPES = {
-  '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml',
-  '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf', '.json': 'application/json',
-  '.yml': 'text/yaml', '.txt': 'text/plain', '.xml': 'application/xml', '.png': 'image/png',
-  '.jpg': 'image/jpeg', '.gif': 'image/gif', '.ico': 'image/x-icon', '.md': 'text/plain',
+  html: 'text/html', js: 'text/javascript', css: 'text/css', svg: 'image/svg+xml', woff2: 'font/woff2',
+  woff: 'font/woff', ttf: 'font/ttf', json: 'application/json', yml: 'text/yaml', txt: 'text/plain',
+  xml: 'application/xml', png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', ico: 'image/x-icon',
+  md: 'text/plain',
 }
-const server = createServer(async (req, res) => {
-  const path = join(REPO, decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/\/$/, '/index.html'))
+const server = Deno.serve({ port: 0, hostname: '127.0.0.1', onListen() {} }, async (req) => {
+  const path = `${REPO}${decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, '').replace(/\/$/, '/index.html')}`
   try {
-    res.writeHead(200, { 'content-type': TYPES[extname(path)] ?? 'application/octet-stream' })
-      .end(await readFile(path))
+    const type = TYPES[path.match(/\.(\w+)$/)?.[1]] ?? 'application/octet-stream'
+    return new Response(await Deno.readFile(path), { headers: { 'content-type': type } })
   } catch {
-    res.writeHead(404).end()
+    return new Response('', { status: 404 })
   }
-}).listen(0)
-const base = `http://127.0.0.1:${server.address().port}/${SITE}`
+})
+const base = `http://127.0.0.1:${server.addr.port}/${SITE}`
+const served = await fetch(`${base}index.txt`)
+if (!served.ok) throw Error(`test server broken: ${served.status} for ${base}index.txt`)
+await served.body?.cancel()
 
 
 // start Chrome, & talk to it
 const port = 9300 + Math.floor(Math.random() * 500)
-const chrome = spawn(CHROME, [
-  '--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', '--hide-scrollbars',
-  `--remote-debugging-port=${port}`, `--user-data-dir=${await mkdtemp(join(tmpdir(), 'bt-themes-'))}`,
-  'about:blank',
-], { stdio: 'ignore' })
-chrome.on('error', () => {
+let chrome
+try {
+  chrome = new Deno.Command(CHROME, {
+    args: [
+      '--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', '--hide-scrollbars',
+      `--remote-debugging-port=${port}`, `--user-data-dir=${await Deno.makeTempDir({ prefix: 'bt-themes-' })}`,
+      'about:blank',
+    ],
+    stdin: 'null', stdout: 'null', stderr: 'null',
+  }).spawn()
+} catch {
   console.error(`couldn't start Chrome: ${CHROME} -- set CHROME=/path/to/chrome`)
-  process.exit(2)
-})
+  Deno.exit(2)
+}
 
 async function devtools_ws() {
   for (let i = 0; i < 75; i++) {
@@ -198,8 +207,8 @@ async function check(theme, [page, path, expect], [view, width, height, phone, s
   const overflow = await evaluate('document.documentElement.scrollWidth - innerWidth')
   const shot = (await send('Page.captureScreenshot', { format: 'jpeg', quality: 70 })).result?.data
   const file = `${theme}/${page}-${view}.jpg`
-  mkdirSync(join(OUT, theme), { recursive: true })
-  if (shot) writeFileSync(join(OUT, file), Uint8Array.from(atob(shot), (c) => c.charCodeAt(0)))
+  Deno.mkdirSync(`${OUT}/${theme}`, { recursive: true })
+  if (shot) Deno.writeFileSync(`${OUT}/${file}`, Uint8Array.from(atob(shot), (c) => c.charCodeAt(0)))
 
   const fails = []
   const warns = []
@@ -213,7 +222,9 @@ async function check(theme, [page, path, expect], [view, width, height, phone, s
 }
 
 
-rmSync(OUT, { recursive: true, force: true })
+try {
+  Deno.removeSync(OUT, { recursive: true })
+} catch { /* not there yet */ }
 const results = []
 for (const theme of themes) {
   for (const v of VIEWS) {
@@ -231,7 +242,7 @@ for (const theme of themes) {
 
 // a contact sheet of every screenshot, w/ its problems
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`)
-writeFileSync(join(OUT, 'index.html'), `<!doctype html><meta charset="utf-8"><title>blogtini theme tests</title>
+Deno.writeTextFileSync(`${OUT}/index.html`, `<!doctype html><meta charset="utf-8"><title>blogtini theme tests</title>
 <style>
 body { font: 14px/1.4 system-ui, sans-serif; margin: 1.5rem; background: #f4f4f2; }
 h2 { margin: 2rem 0 0.5rem 0; }
@@ -256,5 +267,5 @@ const failed = results.filter((r) => r.fails.length)
 console.log(`\n${results.length - failed.length} of ${results.length} ok${failed.length ? ` -- ${failed.length} FAILED` : ''}.  Screenshots: test/out/index.html`)
 ws.close()
 chrome.kill()
-server.close()
-process.exit(failed.length ? 1 : 0)
+await server.shutdown()
+Deno.exit(failed.length ? 1 : 0)
