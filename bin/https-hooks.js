@@ -21,7 +21,14 @@ import process from 'node:process'
 
 const CACHE_DIR = join(process.env.XDG_CACHE_HOME ?? join(homedir(), '.cache'), 'denode')
 // re-fetch after this long -- except an exact version (eg: `js-yaml@4.1.0`) never changes, so keep it
-const MAX_AGE_DAYS = 30
+let MAX_AGE_DAYS = 30
+
+
+/** `register(url, { data: { max_age_days } })` sets the cache age, eg: 0 => always re-fetch (unpinned) urls */
+export function initialize(data) {
+  if (data?.max_age_days !== undefined)
+    MAX_AGE_DAYS = data.max_age_days
+}
 
 
 export function resolve(specifier, context, next) {

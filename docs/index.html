@@ -110,10 +110,14 @@ The page you're on always shows its own file -- so your edits show right away.
 ## The build (optional)
 It makes your site better for everything that doesn't run JS: link previews, search engines, RSS readers.
 It writes `index.xml` (your RSS feed & sitemap, w/ every post) -- and w/ `--seo`, a tiny head line atop each post.
-It runs on [deno](https://deno.com) or `node`, from your site's top folder:
+It runs on [deno](https://deno.com) from your site's top folder:
 ```sh
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
   --allow-import=blogtini.com:443,esm.archive.org:443  https://blogtini.com/bin/build.js
+```
+or w/ `node`:
+```sh
+curl -s https://blogtini.com/bin/node.js | node --input-type=module -
 ```
 Easiest: a GitHub Action runs it each time you push -- copy blogtini's
 [.github/workflows/](https://github.com/traceypooh/blogtini/tree/main/.github/workflows).

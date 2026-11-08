@@ -84,6 +84,10 @@ From the top of your site repo:
 deno run --reload=https://blogtini.com --allow-read=. --allow-write=index.xml --allow-env=GITHUB_REPOSITORY \
   --allow-import=blogtini.com:443,esm.archive.org:443  https://blogtini.com/bin/build.js
 ```
+or w/ node (18.19+ / 20.6+) -- [bin/node.js](bin/node.js) loads the same `build.js` over https (2026-11-07):
+```sh
+curl -s https://blogtini.com/bin/node.js | node --input-type=module -    # add --seo at the end for head lines
+```
 or, w/ a blogtini checkout next to your site repo:
 ```sh
 ../blogtini/bin/build            # deno

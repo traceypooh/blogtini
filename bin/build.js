@@ -22,7 +22,8 @@
 */
 import { Deno } from './deno.js'
 
-if (!globalThis.Deno) { // Node (`deno.js` never sets the global)
+// Node (`deno.js` never sets the global).  Loaded over https (via `bin/node.js`)?  then the hooks are already in
+if (!globalThis.Deno && import.meta.url.startsWith('file:')) {
   const { register } = await import('node:module')
   register('./https-hooks.js', import.meta.url)
 }

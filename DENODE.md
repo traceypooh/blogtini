@@ -6,6 +6,11 @@
 - **Done:** Code App's real Node 18.19: ▶ on the build ran the full build (2026-10-12).
 - **Chosen:** keeping `Deno.*` code via an *exported* (not global) `Deno`: `import { Deno } from './deno.js'`. On Deno it's the real `Deno`; on Node it's a small `node:*` shim. Porting to plain `node:*` (option A, section 1) was also built and verified, and is the fallback if the shim gets annoying.
 - **2026-10-13:** no more separate Node entry file. `build.js` registers the hooks itself (section 3).
+- **2026-11-07:** Node w/o a checkout: `curl -s https://blogtini.com/bin/node.js | node --input-type=module -`.
+  [bin/node.js](bin/node.js) fetches `https-hooks.js`, `register()`s it as a `data:` url (w/ `max_age_days: 0`, via
+  the hooks' `initialize()`, so blogtini.com files are always fresh), then imports `build.js` over https.
+  `build.js` skips its own `register()` when loaded over https.  Nothing prebuilt => nothing to drift.
+  (`deno bundle` into one Node file also works, but needs rebuilding on each change.)
 
 **Why:**
 - Deno's future is uncertain.
