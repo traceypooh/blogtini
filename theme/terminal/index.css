@@ -138,6 +138,10 @@ bt-body {
 .post-content img {
   height: auto;
 }
+/* a width before it loads -- so blogtini's placeholder shape holds its space: no layout shift (test:cls) */
+.post-cover {
+  width: 100%;
+}
 .post-tags a {
   text-decoration: none;
 }

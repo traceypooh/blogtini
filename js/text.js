@@ -6,13 +6,37 @@ const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true }
 
 
 function markdown_to_html(str) {
-  return MD2HTM.makeHtml(
+  return photos(MD2HTM.makeHtml(
     str.replace(
       // replace any youtube shortcodes
       /{{<\s*youtube\s+([^\s>}]+)\s*>}}/g,
       '<iframe width="848" height="477" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
     ),
-  )
+  ))
+}
+
+// url fragments that pick a smaller photo size, eg: ![a pie](pie.jpg#half)
+const PHOTO_SIZES = ['half', 'two-thirds', 'third', 'quarter']
+
+/**
+ * Marks each picture alone in its paragraph (maybe in a link) as a photo: `class="bt-photo"`.  A photo shows full
+ * width -- so it has a width *before* it loads, & its placeholder shape (`index.js` `img_ratio_css()`) holds its space:
+ * no layout shift.  A `#half`, `#two-thirds`, `#third` or `#quarter` url fragment: that much of the width instead
+ * (`size-half` etc).  Left as is: pictures in a line of text, & any w/ its own `width` or `class`.
+ */
+function photos(htm) {
+  return htm.replace(/<p>(\s*(?:<a [^>]*>)?\s*)<img ([^>]*?)\s*\/?>(\s*(?:<\/a>)?\s*)<\/p>/g, (all, pre, attrs, post) => {
+    if (/\s(width|class)=/i.test(` ${attrs}`))
+      return all
+    let size = ''
+    const attrs2 = attrs.replace(/src="([^"#]*)#([\w-]+)"/, (src_attr, src, frag) => {
+      if (!PHOTO_SIZES.includes(frag))
+        return src_attr // (eg: #top -- not ours)
+      size = ` size-${frag}`
+      return `src="${src}"`
+    })
+    return `<p>${pre}<img class="bt-photo${size}" ${attrs2}>${post}</p>`
+  })
 }
 
 function summarize(str, maxlen = 500) {

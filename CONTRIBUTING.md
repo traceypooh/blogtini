@@ -81,7 +81,17 @@ theme picker won't open (or opens hidden under something) -- & warns when a page
 marked -- the quickest way to eyeball a theme everywhere at once.  (`--all`: every page at every size & scheme.)
 It needs Chrome (or Chromium); set `CHROME=/path/to/it` if it's somewhere unusual.
 
-Pull requests run both, automatically (`.github/workflows/test.yml`).
+```sh
+deno task test:cls                # layout shift (Google's CLS), every theme -- a few minutes
+deno task test:cls dossier        # just one (or a few) themes
+```
+The layout shift test loads the homepage, a list of posts, a post w/ pictures, & one w/o -- desktop & phone --
+w/ the worst case: Chrome holds every image until the page has drawn, then lets them all arrive at once (like a
+slow phone).  Then it scrolls down, like a reader.  For each page: its CLS score, & which elements moved most.
+✓ good (<= 0.1), ! needs improvement (<= 0.25), ✗ poor -- Google's thresholds.  See
+[future-imperfect.md](future-imperfect.md#placeholder-shapes-done) for how blogtini keeps images from shifting.
+
+Pull requests run `test` & `test:themes`, automatically (`.github/workflows/test.yml`).
 
 
 ## A theme pull request includes
@@ -93,6 +103,7 @@ Pull requests run both, automatically (`.github/workflows/test.yml`).
 - [ ] `deno lint` & `deno task test` pass
 - [ ] `deno task test:themes <name>` passes -- & its screenshots (`test/out/index.html`) look right: a list of
       posts, a post, a tag page, contact, phone width, & dark
+- [ ] `deno task test:cls <name>`: no ✗ (poor) -- see THEMES.md "Adding an HTML5 UP theme" on images
 
 Not a theme?  Same idea: small focused changes, docs updated, `deno lint`, `deno task test` (+ a test for a
 fix or feature, if you can), & a look in the browser.

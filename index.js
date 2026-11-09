@@ -1239,7 +1239,15 @@ function add_css(file) {
  */
 function img_ratio_css() {
   const e = document.createElement('style')
-  e.textContent = ':where(img) { aspect-ratio: auto var(--bt-img-ratio, 3 / 2) }'
+  // photos (a picture alone in its paragraph -- see js/text.js `photos()`): full width, or a `#half` etc fraction
+  e.textContent = `
+:where(img) { aspect-ratio: auto var(--bt-img-ratio, 3 / 2) }
+:where(img.bt-photo) { width: 100%; height: auto }
+:where(img.size-half, img.size-two-thirds, img.size-third, img.size-quarter) { display: block; margin: 0 auto }
+:where(img.size-half) { width: 50% }
+:where(img.size-two-thirds) { width: 66.667% }
+:where(img.size-third) { width: 33.333% }
+:where(img.size-quarter) { width: 25% }`
   document.head.appendChild(e)
   if (cfg.img_ratio)
     document.documentElement.style.setProperty('--bt-img-ratio', cfg.img_ratio) // inline: beats a theme's `:root`

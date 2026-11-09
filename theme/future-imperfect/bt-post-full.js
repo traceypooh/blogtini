@@ -97,6 +97,13 @@ img {
   filter: grayscale(var(--img-grayscale-filter));
   aspect-ratio: auto var(--bt-img-ratio, 3 / 2); /* space before it loads, if it has a width.  See index.js img_ratio_css() */
 }
+/* photos: full width (so they have one before they load) -- or a #half etc fraction.  See js/text.js photos() */
+img.bt-photo { width: 100%; height: auto; }
+img.size-half, img.size-two-thirds, img.size-third, img.size-quarter { display: block; margin: 0 auto; }
+img.size-half { width: 50%; }
+img.size-two-thirds { width: 66.667%; }
+img.size-third { width: 33.333%; }
+img.size-quarter { width: 25%; }
       `,
     css_post,
     css_headers,

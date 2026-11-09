@@ -14,7 +14,7 @@ Since Tracey took the theme over (2025-02).  Older upstream changes (2020-21): m
 | Hugo commit | what | blogtini |
 |---|---|---|
 | `4ce0eee` `8f00ef6` (2026-09-16) | lazy loaded images, w/ width & height | **to do** -- see [Lazy loading images](#lazy-loading-images) |
-| `87f9120` (2026-09-20) | `![alt](x.jpg#half)` -- a display size: `half`, `two-thirds`, `third`, `quarter` | **to do** -- see [Image sizes](#image-sizes-half--friends) |
+| `87f9120` (2026-09-20) | `![alt](x.jpg#half)` -- a display size: `half`, `two-thirds`, `third`, `quarter` | done (2026-11-08) -- see [Image sizes](#image-sizes-half--friends) |
 | `5fe726f` (2026-09-17) | captions sit closer to their image: `p:has(+ figcaption) { margin-bottom: 0 }` | **to do** -- easy, css only |
 | `ac2f2b0` (2026-09-26) | image urls: absolute `/img/x` & relative `../img/x` both work | check -- (the Hugo fix was about finding the file for its dimensions) |
 | `91dedcc` (2025-04-27) | optional full-width homepage "banner" under the nav (`params.banner`) | maybe -- a `config.yml` `banner:` |
@@ -52,8 +52,11 @@ pasted into markdown, too (Hugo's markdown hook misses those):
 - the first few images (4-5?) load normally -- they're usually near the top -- & the rest get `loading="lazy"`.
   All get `decoding="async"`
 - **done (2026-11-08)**: a default placeholder shape -- see [Placeholder shapes](#placeholder-shapes-done) below
-- to do: images alone in their paragraph (photos) get `width: 100%` (or a class), so the placeholder has a width to
-  work with -- small inline images & icons stay as they are
+- **done (2026-11-08)**: images alone in their paragraph (photos) get `class="bt-photo"` & `width: 100%` -- so the
+  placeholder has a width to work with.  Pictures in a line of text, & ones w/ their own `width` or `class`, stay as
+  they are (`js/text.js` `photos()`).  A small picture shows full width (soft) unless it's `#half` etc (below), or a
+  raw `<img>` w/ a `width` & `height`.  `deno task test:cls` (2026-11-08, before this): every ! & ✗ was a post
+  page's body picture pushing the text below it down -- mostly on phones
 - an author can still give `width` & `height` on a raw `<img>`: those win
 
 ### Placeholder shapes (done)
@@ -97,5 +100,7 @@ Markdown has no way to say "show this image smaller".  The Hugo theme reads a tr
 `![alt](../img/x.avif#half)` -- `half`, `two-thirds`, `third`, `quarter` -- as a class, eg: `size-half`.
 (Same idea as front matter's `featured: x.jpg#top30`.)  Anything else is ignored.
 
-For blogtini: in the same `markdown_to_html()` pass -- strip a known fragment off the `src`, add the class.  Themes
-style the classes (or a shared default does: `width: 50%` etc.).
+**Done (2026-11-08)**, in `js/text.js` `photos()`: for a photo (a picture alone in its paragraph), a known fragment
+comes off the `src` & adds its class: `bt-photo size-half`.  `index.js` `img_ratio_css()` styles them (centered, 50% /
+66.667% / 33.333% / 25% wide) -- & future-imperfect's shadow DOM styles, the same.  A theme can restyle the classes.
+(The Hugo theme sets the class but styles it in the site's css, not the theme's)

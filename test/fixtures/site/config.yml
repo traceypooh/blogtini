@@ -1,4 +1,4 @@
-# A tiny test site -- for test/build.test.js & test/themes.js
+# A tiny test site -- for test/build.test.js, test/themes.js & test/cls.js
 title: Test Kitchen
 site_url: https://example.com/kitchen/
 posts_per_page: 10

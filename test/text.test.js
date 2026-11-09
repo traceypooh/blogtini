@@ -39,6 +39,20 @@ Deno.test('markdown_to_html: markdown, tables & youtube shortcodes', () => {
   assertMatch(markdown_to_html('{{< youtube abc123 >}}'), /youtube\.com\/embed\/abc123/)
 })
 
+Deno.test('markdown_to_html: a picture alone in its paragraph is a photo (full width, or #half etc)', () => {
+  assertMatch(markdown_to_html('![a pie](pie.jpg)'), /<img class="bt-photo" src="pie\.jpg" alt="a pie">/)
+  assertMatch(markdown_to_html('[![a pie](pie.jpg)](pie/)'), /<a href="pie\/"><img class="bt-photo" src="pie\.jpg"/)
+  // a size: the fragment comes off the url
+  assertMatch(markdown_to_html('![a pie](pie.jpg#half)'), /<img class="bt-photo size-half" src="pie\.jpg"/)
+  assertMatch(markdown_to_html('![a pie](pie.jpg#two-thirds)'), /class="bt-photo size-two-thirds" src="pie\.jpg"/)
+  // not ours: other fragments stay
+  assertMatch(markdown_to_html('![a pie](pie.jpg#top)'), /<img class="bt-photo" src="pie\.jpg#top"/)
+  // left alone: in a line of text, or w/ its own width or class
+  assertNotMatch(markdown_to_html('a pie ![a pie](pie.jpg) for you'), /bt-photo/)
+  assertNotMatch(markdown_to_html('<img src="pie.jpg" width="300" height="200">'), /bt-photo/)
+  assertNotMatch(markdown_to_html('<img src="pie.jpg" class="mine">'), /bt-photo/)
+})
+
 Deno.test('summarize_markdown: the 1st paragraph, & no longer than maxlen (+ "...")', () => {
   const s = summarize_markdown('First para here.\n\nSecond para.')
   assertMatch(s, /First para here/)
