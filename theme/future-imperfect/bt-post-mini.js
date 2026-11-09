@@ -27,14 +27,14 @@ customElements.define('bt-post-mini', class extends LitElement {
     css_headers,
     css`
 :host {
-  background: var(--background1);
+  background: var(--background2);
   border: 1px solid rgba(161, 161, 161, 0.3);
   display: -webkit-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1em;
+  margin-bottom: 3em;
   width: 100%;
 }
 @media (min-width: 768px) {
@@ -64,6 +64,7 @@ header {
 }
 header h2 {
   font-size: 0.7em;
+  margin-bottom: 0;
 }
 header time {
   font-family: "Raleway", Helvetica, sans-serif;

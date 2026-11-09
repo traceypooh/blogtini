@@ -44,6 +44,9 @@ customElements.define('bt-post', class extends LitElement {
     css_theme,
     css_post,
     css`
+.post {
+  border: 1px solid rgba(161, 161, 161, 0.3);
+}
 /* ensure lists-of-posts pages dont blow out main column width with "long words" in preview */
 .post .content {
   /* this seems to work v. nicely in modern firefox, chrome, safari, iOS */

@@ -147,7 +147,7 @@ h1 {
 export const css_post = css`
 .post {
   background: var(--background2);
-  margin: 1.5em auto;
+  margin: 4em auto;
   padding: 1em;
   max-width: 55em;
 }
