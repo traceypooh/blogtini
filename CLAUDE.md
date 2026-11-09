@@ -25,6 +25,8 @@ one shared theme JS "paints" it.  **No build step is required; an optional build
 - `bin/build.js` -- the optional build: writes `index.xml` (feed + sitemap + search index); `--seo` adds post head lines.
   `bin/build` is the GitHub Action's entry point (other sites' workflows call it -- keep it working)
 - `YYYY-MM-slug/index.html` -- posts (this repo is also blogtini.com).  `about/` etc: pages (`type: page`)
+- `homepage.css` -- just blogtini.com's homepage pills.  Linked from `index.html`'s body, so it goes in every theme:
+  select by the homepage's own `./` links only (see its comments).  Not a place for theme css
 - `comments.json` -- comments; arrive as PRs from staticmin.  Keep its format exactly (see README "Comments")
 - `index.xml` -- build output; regenerate it (`./bin/build`), don't hand-edit
 

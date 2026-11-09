@@ -1,0 +1,59 @@
+/*
+  blogtini.com's homepage -- linked from its body (not head), so goes wherever homepage text goes:
+  into a shadow DOM theme's shadow root, or a light DOM theme's page.
+  So: target the homepage's own links (not "the 2nd paragraph").
+  They're written `./docs/` etc on purpose: themes write the nav menu's
+  `/docs/` as `docs/` (relative to the page) -- & `./docs/` is a link only the homepage text has.
+*/
+
+p:has(+ p > a[href="./preview/"]) {
+  /* the lead paragraph: the one just before the yellow pill's. */
+  font-size: 1.15em;
+}
+
+/* the big yellow pill */
+a[href="./preview/"] {
+  display: inline-block;
+  margin: 0.4em 0 0.6em 0;
+  padding: 0.55em 1.5em;
+  border-radius: 999px;
+  background: #f2c14e;
+  color: #1d1f24 !important;
+  font-weight: 800;
+  font-size: clamp(1.15em, 3.4vw, 1.55em);
+  line-height: 1.2;
+  text-decoration: none !important;
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+a[href="./preview/"]:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* the row of outlined pills: Get started, All the themes, GitHub.  (not the nav menu: its link is `docs/`) */
+ul:has(> li > a[href="./docs/"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em;
+  margin: 1.5em 0 2.25em 0;
+  list-style-type: none;
+  padding-left: 0;
+}
+ul:has(> li > a[href="./docs/"]) > li {
+  /* 'gap' spaces them. (eg: strongly-typed: `li` margins, but not the 1st's) */
+  margin: 0;
+  padding: 0;
+}
+ul:has(> li > a[href="./docs/"]) > li > a {
+  padding: 0.7em 1.2em;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border: 2px solid currentColor !important;
+  transition: background-color 0.15s;
+}
+ul:has(> li > a[href="./docs/"]) > li > a:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}

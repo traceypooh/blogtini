@@ -1,57 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- NOTE: since this is your topmost page, we add full SEO nice tags on (just) this page -->
   <meta charset='utf-8'>
   <title>Blogtini: Markdown + JS 100% client-side blogs & websites</title>
-
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-
   <meta name="author" content="Tracey Jaquith">
-  <meta name="description" content="Markdown + JS 100% client-side blogs & websites">
-  <meta name="keywords" content="">
-
-  <meta name="twitter:card" content="summary"/>
-  <meta name="twitter:description" content="Markdown + JS 100% client-side blogs & websites"/>
-  <meta name="twitter:site" content="@tracey_pooh"/>
-
-  <meta property="og:image" content="img/profile.jpg">
-  <meta property="og:description" content="Markdown + JS 100% client-side blogs & websites">
+  <meta name="description" content="Write your blog in markdown, keep it in a free git repo, & pick from 15 themes -- no build step, no server.">
+  <meta property="og:title" content="Blogtini: Markdown + JS 100% client-side blogs & websites">
+  <meta property="og:description" content="Write your blog in markdown, keep it in a free git repo, & pick from 15 themes -- no build step, no server.">
+  <meta property="og:image" content="https://blogtini.com/img/profile.jpg">
   <meta property="og:type" content="website"/>
-  <meta property="og:url" content="https://blogtini.com" />
-
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:site" content="@tracey_pooh"/>
   <script type="module" src="theme.js"></script>
   <style>body{white-space:pre-wrap;animation:h 3s}@keyframes h{0%,to{visibility:hidden}}</style>
 </head>
 <body class="homepage">
-
-
-<style>
-.bt-hero { font-size: 1.15em; }
-.bt-cta { display: inline-block; margin: 0.4em 0 0.6em 0; padding: 0.55em 1.5em; border-radius: 999px;
-  background: #f2c14e; color: #1d1f24 !important; font-weight: 800; font-size: clamp(1.15em, 3.4vw, 1.55em);
-  line-height: 1.2; text-decoration: none !important; border: 0 !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s, box-shadow 0.15s; }
-.bt-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3); }
-.bt-buttons { display: flex; flex-wrap: wrap; gap: 0.6em; margin: 0.5em 0 1.5em 0; }
-.bt-buttons a { padding: 0.45em 1.2em; border-radius: 999px; font-weight: 700; text-decoration: none !important;
-  border: 2px solid currentColor !important; transition: background-color 0.15s; }
-.bt-buttons a:hover { background-color: color-mix(in srgb, currentColor 12%, transparent); }
-</style>
+<link rel="stylesheet" href="homepage.css">
 
 # Your blog, as plain text files.  Forever.
 
-<p class="bt-hero">
-Write in <a href="https://en.wikipedia.org/wiki/Markdown#Examples">markdown</a>.
+Write in [markdown](https://en.wikipedia.org/wiki/Markdown#Examples).
 Keep it in a free git repo.
 blogtini paints it with javascript, right in the browser -- in any of 15 themes.
 Like a static site generator, except the generating happens in your visitor's browser.
 No JS?  No network?  1000 years from now?  Still a readable text file.
-</p>
 
-<a class="bt-cta" href="preview/">Live preview themes →</a>
+[Live preview themes →](./preview/)
 
-<div class="bt-buttons"><a href="docs/">Get started</a> <a href="themes/">All the themes</a> <a href="https://github.com/traceypooh/blogtini">GitHub</a></div>
+- [Get started](./docs/)
+- [All the themes](./themes/)
+- [GitHub](https://github.com/traceypooh/blogtini)
+
 
 **No build step required.**  (An optional one makes it better.)
 - Each post is one file: a title, date & tags up top, then markdown.
@@ -62,7 +44,10 @@ No JS?  No network?  1000 years from now?  Still a readable text file.
 
 **Start your own in 2 minutes: the [blogtini-go](https://github.com/traceypooh/blogtini-go) template.**
 
-100% open source -- search by [lunr](https://lunrjs.com/), markdown by [showdown](https://github.com/showdownjs/showdown).<br>
-Want to help build it -- a theme, a fix, an idea?  [Here's how](https://github.com/traceypooh/blogtini/blob/main/CONTRIBUTING.md).
+100% open source --
+search by [lunr](https://lunrjs.com/),
+markdown by [showdown](https://github.com/showdownjs/showdown).<br>
+Want to help build it -- a theme, a fix, an idea?
+[Here's how](https://github.com/traceypooh/blogtini/blob/main/CONTRIBUTING.md).
 
 </body>

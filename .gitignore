@@ -1,7 +1,7 @@
 deno.lock
-names.txt
 node_modules
 /t
+/.claude/settings.json
 .DS_Store
 /test/out/
 # private notes: never committed
