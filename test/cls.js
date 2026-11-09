@@ -2,7 +2,8 @@
 // Layout shift test: Google's CLS score for every theme, on the tiny test site (test/fixtures/site/), in headless
 // Chrome -- the worst case: images arrive *after* the page has drawn (like a slow phone).  Chrome holds every image
 // request until blogtini's `data-blogtini-rendered` appears, then lets them all go.  Then it scrolls to the bottom,
-// like a reader.  For each page: its CLS & the elements that moved the most.
+// like a reader.  For each page: its CLS & the elements that moved the most.  And in the default theme, a post w/
+// 7 pictures (test/fixtures/site/_gallery/): the first 4 load right away, the last 3 lazily -- & all of them arrive.
 //   ✓ good (<= 0.1)   ! needs improvement (<= 0.25, a warning)   ✗ poor (> 0.25, a fail)  -- Google's thresholds
 //
 //   deno task test:cls                  # every theme
@@ -27,7 +28,10 @@ const PAGES = [
   ['posts', '?page/1'],
   ['post', '2026-01-pie/'], // a featured image (8:5) & a body image (3:4, like a phone portrait)
   ['plain-post', '2026-02-cake/'], // no images: should always be ~0
+  // 7 pictures: the first 4 load right away, the rest lazily (js/text.js `lazy()`) -- the default theme only
+  ['gallery', '_gallery/', 'future-imperfect'],
 ]
+const GALLERY = { pictures: 7, eager: 4, src: 'gallery.svg' }
 // [name, width, height, phone?]
 const VIEWS = [
   ['desktop', 1440, 1000, false],
@@ -116,6 +120,7 @@ let id = 0
 const pending = {}
 let holding = true // hold image requests (until the page draws)
 let held = [] // their request ids
+let requested = [] // every image url requested, for the page being tested
 let shifts = [] // [{ value, time, nodes }] for the page being tested
 ws.onmessage = (e) => {
   const msg = JSON.parse(e.data)
@@ -125,6 +130,7 @@ ws.onmessage = (e) => {
   }
   const p = msg.params
   if (msg.method === 'Fetch.requestPaused') {
+    requested.push(p.request.url)
     if (holding)
       held.push(p.requestId)
     else // eslint-disable-next-line no-use-before-define
@@ -193,6 +199,7 @@ async function node_name(backendNodeId) {
 async function check(theme, [page, path], [view, width, height, phone]) {
   shifts = []
   held = []
+  requested = []
   holding = true
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: phone })
   // the theme, by the previewer's frame name -- so no viewer pick gets saved.  Light scheme
@@ -217,6 +224,7 @@ async function check(theme, [page, path], [view, width, height, phone]) {
   await Promise.all(held.map((requestId) => send('Fetch.continueRequest', { requestId })))
   await sleep(LOADED_MS)
   const at_load = session_cls(shifts)
+  const gallery_early = requested.filter((e) => e.includes(GALLERY.src)).length
 
   // then scroll down, like a reader
   await send('Runtime.evaluate', {
@@ -242,7 +250,31 @@ async function check(theme, [page, path], [view, width, height, phone]) {
   const culprits = Object.entries(blame).sort((a, b) => b[1] - a[1]).slice(0, 3)
     .map(([name, val]) => `${name} ${val.toFixed(3)}`)
 
-  return { theme, page, view, rendered, cls, at_load, n_shifts: shifts.length, n_images, culprits }
+  // the gallery: which pictures lazy load, & did they all arrive (after the scroll)?  (In shadow DOM, too)
+  const fails = []
+  let lazy_note = ''
+  if (page === 'gallery') {
+    const pics = await evaluate(`(() => {
+      const all = (root) => [...root.querySelectorAll('img[src*="${GALLERY.src}"]'),
+        ...[...root.querySelectorAll('*')].filter((e) => e.shadowRoot).flatMap((e) => all(e.shadowRoot))]
+      return all(document).map((e) => ({ lazy: e.loading === 'lazy', loaded: e.complete && e.naturalWidth > 0 }))
+    })()`) ?? []
+    const lazies = pics.filter((e) => e.lazy).length
+    if (pics.length !== GALLERY.pictures)
+      fails.push(`gallery: ${pics.length} pictures on the page, not ${GALLERY.pictures}`)
+    else if (lazies !== GALLERY.pictures - GALLERY.eager)
+      fails.push(`gallery: ${lazies} lazy pictures, not ${GALLERY.pictures - GALLERY.eager}`)
+    const unloaded = pics.filter((e) => !e.loaded).length
+    if (unloaded)
+      fails.push(`gallery: ${unloaded} picture${unloaded > 1 ? 's' : ''} never loaded, even after scrolling down`)
+    // (how many came before any scrolling: Chrome's call -- it fetches lazy ones near the screen early)
+    lazy_note = `${gallery_early} of ${pics.length} pictures fetched before scrolling, ${lazies} lazy`
+  }
+
+  return {
+    theme, page, view, rendered, cls, at_load, n_shifts: shifts.length, n_images, culprits, fails,
+    lazy_note,
+  }
 }
 
 
@@ -250,19 +282,23 @@ const results = []
 for (const theme of themes) {
   for (const v of VIEWS) {
     for (const p of PAGES) {
+      if (p[2] && p[2] !== theme)
+        continue // (a page for one theme only)
       const r = await check(theme, p, v)
       results.push(r)
-      const mark = !r.rendered || r.cls > POOR ? '✗' : (r.cls > GOOD ? '!' : '✓')
+      const mark = !r.rendered || r.cls > POOR || r.fails.length ? '✗' : (r.cls > GOOD ? '!' : '✓')
       console.log(`${mark} ${r.cls.toFixed(3)}  ${theme} ${r.page} ${r.view}${
         r.rendered ? '' : '  -- never drew'}${
         r.n_shifts ? `  (${r.n_shifts} shift${r.n_shifts > 1 ? 's' : ''}, ${r.at_load.toFixed(3)} as ${r.n_images} image${r.n_images === 1 ? '' : 's'} loaded)` : ''}${
+        r.lazy_note ? `\n      ${r.lazy_note}` : ''}${
+        r.fails.map((e) => `\n      ${e}`).join('')}${
         r.culprits.length && r.cls > GOOD ? `\n      moved most: ${r.culprits.join(', ')}` : ''}`)
     }
   }
 }
 
-const failed = results.filter((r) => !r.rendered || r.cls > POOR)
-const warned = results.filter((r) => r.rendered && r.cls > GOOD && r.cls <= POOR)
+const failed = results.filter((r) => !r.rendered || r.cls > POOR || r.fails.length)
+const warned = results.filter((r) => r.rendered && !r.fails.length && r.cls > GOOD && r.cls <= POOR)
 console.log(`\n${results.length - failed.length - warned.length} of ${results.length} good (CLS <= ${GOOD})${
   warned.length ? ` -- ${warned.length} need improvement (!)` : ''}${failed.length ? ` -- ${failed.length} POOR (✗)` : ''}`)
 ws.close()

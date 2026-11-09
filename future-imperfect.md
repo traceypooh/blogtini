@@ -13,7 +13,7 @@ Since Tracey took the theme over (2025-02).  Older upstream changes (2020-21): m
 
 | Hugo commit | what | blogtini |
 |---|---|---|
-| `4ce0eee` `8f00ef6` (2026-09-16) | lazy loaded images, w/ width & height | **to do** -- see [Lazy loading images](#lazy-loading-images) |
+| `4ce0eee` `8f00ef6` (2026-09-16) | lazy loaded images, w/ width & height | done (2026-11-08), w/o sizes: a placeholder shape instead -- see [Lazy loading images](#lazy-loading-images) |
 | `87f9120` (2026-09-20) | `![alt](x.jpg#half)` -- a display size: `half`, `two-thirds`, `third`, `quarter` | done (2026-11-08) -- see [Image sizes](#image-sizes-half--friends) |
 | `5fe726f` (2026-09-17) | captions sit closer to their image: `p:has(+ figcaption) { margin-bottom: 0 }` | **to do** -- easy, css only |
 | `ac2f2b0` (2026-09-26) | image urls: absolute `/img/x` & relative `../img/x` both work | check -- (the Hugo fix was about finding the file for its dimensions) |
@@ -49,8 +49,9 @@ today.)  And it only counts when *visible* content moves:
 
 **The plan** -- in the core (`markdown_to_html()` output, in `index.js`), so every theme gets it, & raw `<img>` tags
 pasted into markdown, too (Hugo's markdown hook misses those):
-- the first few images (4-5?) load normally -- they're usually near the top -- & the rest get `loading="lazy"`.
-  All get `decoding="async"`
+- **done (2026-11-08)**: a post's first 4 pictures load normally -- they're usually near the top -- & the rest get
+  `loading="lazy"`.  All get `decoding="async"`.  An `<img>` w/ its own `loading` is left as is
+  (`js/text.js` `lazy()`, `EAGER_IMAGES`)
 - **done (2026-11-08)**: a default placeholder shape -- see [Placeholder shapes](#placeholder-shapes-done) below
 - **done (2026-11-08)**: images alone in their paragraph (photos) get `class="bt-photo"` & `width: 100%` -- so the
   placeholder has a width to work with.  Pictures in a line of text, & ones w/ their own `width` or `class`, stay as
@@ -91,8 +92,8 @@ Measure it before & after: `research/fail-open/cls.js` already records Chrome's 
 ~60 mixed-ratio images: eager vs. lazy w/o sizes vs. lazy + `aspect-ratio` -- w/ & w/o a fast scroll & an
 `#anchor` jump.
 
-If a site *wants* exact sizes someday: an optional build step could read image headers (JPEG/PNG/GIF/WebP: a few
-lines each; AVIF: its `ispe` box) & put them in `index.xml` as Media RSS `<media:content width height>`.  Not planned.
+Exact sizes someday (zero shift, even on a first visit): `#4x3` / `#1600x1200` hints in image urls -- by hand, or
+an optional `--sizes` build step.  Not planned -- see TODO.md "Image shape hints".
 
 
 ## Image sizes: `#half` & friends

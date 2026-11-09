@@ -37,6 +37,36 @@ CORS, checked 2026-10-02: GitHub Pages `*`, Mastodon `*`, Bluesky *none* -- feed
 WordPress sites) need the build to fetch & merge them.  Other feeds need defaults: Mastodon items have no
 `<title>`; neither has our `<category domain=…>` tags (title = first line, tags from `#hashtags`?).
 
+## Image shape hints: zero layout shift, even on a first visit
+Today (2026-11-08) a photo w/o a width & height gets a placeholder shape (3:2, or `img_ratio`) until it loads -- exact
+for 3:2 photos, a small shift for others (eg: 3:4 phone portraits).  See future-imperfect.md "Placeholder shapes".
+Only worth doing if layout shift ever really costs us w/ Google (CLS) -- `deno task test:cls` is the check.
+
+A hint in the image's url fragment, read by `js/text.js` `photos()` (which already reads `#half` etc):
+
+| hint | meaning | result |
+|---|---|---|
+| `![x](a.jpg#4x3)` | a shape: small numbers | still full width; its placeholder is `4 / 3` (inline `aspect-ratio: auto 4 / 3`) |
+| `![x](a.jpg#1600x1200)` | exact pixels: numbers >= 100 | `width` & `height` attributes: zero shift, & shown at its natural size -- never stretched past it |
+| `![x](a.jpg#half,4x3)` | combined, comma separated | half width, 4:3 |
+
+- only images *not* 3:2 need one (3:2 is already exact)
+- `4x3` over `4/3`: reads like a size, matches the pixel form (both are legal in a url fragment -- could take both)
+- an author can write them by hand -- or an optional build step can: `--sizes`, alongside `--seo`.  `--seo` already
+  edits posts *only in the CI checkout* (its head lines are never committed), so `--sizes` could too: read each local
+  image's header (PNG: 24 bytes, GIF: 10, WebP: ~30, AVIF: its `ispe` box, JPEG: after its EXIF -- no decoding) &
+  append `#1600x1200`.  Authors' files stay clean; the live site gets exact sizes; the build stays optional.
+  Images on other hosts: no hint (as today)
+- unlike remembering sizes after a first view (below), this helps first visits -- & so Lighthouse's lab scores
+
+Smaller, no build: remember each image's natural size (on its `load`) in the post cache (localStorage).  A
+visitor's later views -- returning, or the next page (eg: a featured image on the homepage, then on its post) --
+get exact `width` & `height`.  First views still get the placeholder (& Lighthouse always tests a first view).
+
+Ruled out: holding the page until images load (blank page: worse for readers & Google's LCP); fetching each
+image's first bytes from js first (the browser already lays an image out as soon as its header arrives -- a
+separate fetch can't beat that w/o holding the page; & other hosts' images can't be read from js w/o CORS).
+
 ## Wishlist: browsers & crawlers that understand this natively
 If a `text/html` response starts w/ `---\n`, treat it as YAML front matter + markdown, & honor one key:
 `theme: ../theme.js` (one ES module that "paints" the page).  No theme?  Render the markdown plainly.

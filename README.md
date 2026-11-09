@@ -200,7 +200,7 @@ V=2.1.0 &&\
 - import your socials: turn a Mastodon / Bluesky / Instagram / X export into posts
 - combo sites: interleave your & your friends' blogtini (or Mastodon) feeds on one page
 - port forward from [hugo-future-imperfect-slim](https://github.com/traceypooh/hugo-future-imperfect-slim):
-  lazy loaded images, & more -- see [future-imperfect.md](future-imperfect.md)
+  a homepage banner, & more -- see [future-imperfect.md](future-imperfect.md)
 - `draft: true` front matter.  (The build skips dirs named `test`, `research`, `theme`, `js`, `img`, `avatars`, `preview`,
   `node_modules`, `.*`, `_*` -- so a real post can't use those names.)
 - `config.yml` `scheme: light | dark | auto` for the site's light/dark

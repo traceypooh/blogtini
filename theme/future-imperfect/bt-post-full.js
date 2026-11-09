@@ -95,7 +95,10 @@ customElements.define('bt-post-full', class extends LitElement {
     css`
 img {
   filter: grayscale(var(--img-grayscale-filter));
-  aspect-ratio: auto var(--bt-img-ratio, 3 / 2); /* space before it loads, if it has a width.  See index.js img_ratio_css() */
+}
+/* space before it loads, if it has a width -- unless it says its own size.  See index.js img_ratio_css() */
+img:not([width][height]) {
+  aspect-ratio: auto var(--bt-img-ratio, 3 / 2);
 }
 /* photos: full width (so they have one before they load) -- or a #half etc fraction.  See js/text.js photos() */
 img.bt-photo { width: 100%; height: auto; }

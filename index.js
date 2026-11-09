@@ -1231,6 +1231,8 @@ function add_css(file) {
 
 /**
  * Reserves space for images w/o a width & height, before they load -- so they don't shift the page (Google's CLS).
+ * (An `<img>` w/ both `width` & `height` attributes is skipped: those give its real shape -- & any css, even this
+ * no-specificity rule, would beat them)
  * `auto`: a placeholder shape until the image loads, then its real one.  Shape: `config.yml` `img_ratio` (eg: '1 / 1'),
  * else the theme's `--bt-img-ratio`, else 3 / 2.  `:where()` has no specificity, so a theme's own rule wins (eg: a list's
  * fixed crop box).  Only an image w/ a definite width (eg: `width: 100%`) gets space -- one w/ `width: auto` is 0 wide
@@ -1241,7 +1243,7 @@ function img_ratio_css() {
   const e = document.createElement('style')
   // photos (a picture alone in its paragraph -- see js/text.js `photos()`): full width, or a `#half` etc fraction
   e.textContent = `
-:where(img) { aspect-ratio: auto var(--bt-img-ratio, 3 / 2) }
+:where(img:not([width][height])) { aspect-ratio: auto var(--bt-img-ratio, 3 / 2) }
 :where(img.bt-photo) { width: 100%; height: auto }
 :where(img.size-half, img.size-two-thirds, img.size-third, img.size-quarter) { display: block; margin: 0 auto }
 :where(img.size-half) { width: 50% }

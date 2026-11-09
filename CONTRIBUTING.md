@@ -88,6 +88,8 @@ deno task test:cls dossier        # just one (or a few) themes
 The layout shift test loads the homepage, a list of posts, a post w/ pictures, & one w/o -- desktop & phone --
 w/ the worst case: Chrome holds every image until the page has drawn, then lets them all arrive at once (like a
 slow phone).  Then it scrolls down, like a reader.  For each page: its CLS score, & which elements moved most.
+In the default theme, it also opens a post w/ 7 pictures: the first 4 must load right away, the last 3 lazily, &
+all 7 must arrive once scrolled to.
 ✓ good (<= 0.1), ! needs improvement (<= 0.25), ✗ poor -- Google's thresholds.  See
 [future-imperfect.md](future-imperfect.md#placeholder-shapes-done) for how blogtini keeps images from shifting.
 

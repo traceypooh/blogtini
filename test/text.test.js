@@ -40,7 +40,7 @@ Deno.test('markdown_to_html: markdown, tables & youtube shortcodes', () => {
 })
 
 Deno.test('markdown_to_html: a picture alone in its paragraph is a photo (full width, or #half etc)', () => {
-  assertMatch(markdown_to_html('![a pie](pie.jpg)'), /<img class="bt-photo" src="pie\.jpg" alt="a pie">/)
+  assertMatch(markdown_to_html('![a pie](pie.jpg)'), /<img class="bt-photo" src="pie\.jpg" alt="a pie"/)
   assertMatch(markdown_to_html('[![a pie](pie.jpg)](pie/)'), /<a href="pie\/"><img class="bt-photo" src="pie\.jpg"/)
   // a size: the fragment comes off the url
   assertMatch(markdown_to_html('![a pie](pie.jpg#half)'), /<img class="bt-photo size-half" src="pie\.jpg"/)
@@ -51,6 +51,20 @@ Deno.test('markdown_to_html: a picture alone in its paragraph is a photo (full w
   assertNotMatch(markdown_to_html('a pie ![a pie](pie.jpg) for you'), /bt-photo/)
   assertNotMatch(markdown_to_html('<img src="pie.jpg" width="300" height="200">'), /bt-photo/)
   assertNotMatch(markdown_to_html('<img src="pie.jpg" class="mine">'), /bt-photo/)
+})
+
+Deno.test('markdown_to_html: pictures after the first 4 lazy load; all decode async', () => {
+  const htm = markdown_to_html([1, 2, 3, 4, 5, 6].map((n) => `![${n}](p${n}.jpg)`).join('\n\n'))
+  const imgs = htm.match(/<img [^>]*>/g)
+  assertEquals(imgs.length, 6)
+  imgs.forEach((img, i) => {
+    assertMatch(img, /decoding="async"/)
+    if (i < 4) assertNotMatch(img, /loading=/)
+    else assertMatch(img, /loading="lazy"/)
+  })
+  // its own `loading`: left as is
+  const own = markdown_to_html(`${'![x](x.jpg)\n\n'.repeat(4)}<img src="y.jpg" loading="eager">`)
+  assertMatch(own, /src="y\.jpg" loading="eager">/)
 })
 
 Deno.test('summarize_markdown: the 1st paragraph, & no longer than maxlen (+ "...")', () => {

@@ -6,13 +6,32 @@ const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true }
 
 
 function markdown_to_html(str) {
-  return photos(MD2HTM.makeHtml(
+  return lazy(photos(MD2HTM.makeHtml(
     str.replace(
       // replace any youtube shortcodes
       /{{<\s*youtube\s+([^\s>}]+)\s*>}}/g,
       '<iframe width="848" height="477" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
     ),
-  ))
+  )))
+}
+
+// a post's first few pictures load right away (they're usually near the top) -- the rest, as the reader nears them
+const EAGER_IMAGES = 4
+
+/**
+ * Lazy loads a post's pictures after its first `EAGER_IMAGES`: `loading="lazy"` -- so a 60-picture post doesn't
+ * download them all up front.  Every picture gets `decoding="async"`.  Safe for layout shift: photos already
+ * have their space held (`photos()` & `index.js` `img_ratio_css()`).  An `<img>` w/ its own `loading` is left as is.
+ */
+function lazy(htm) {
+  let n = 0
+  return htm.replace(/<img\s([^>]*?)\s*(\/?)>/gi, (all, attrs, slash) => {
+    n += 1
+    if (/(^|\s)loading=/i.test(attrs))
+      return all
+    const extra = `${n > EAGER_IMAGES ? ' loading="lazy"' : ''}${/(^|\s)decoding=/i.test(attrs) ? '' : ' decoding="async"'}`
+    return `<img ${attrs}${extra}${slash ? ' /' : ''}>`
+  })
 }
 
 // url fragments that pick a smaller photo size, eg: ![a pie](pie.jpg#half)
