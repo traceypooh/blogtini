@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet href="shell.xsl" type="text/xsl"?>
-<post><![CDATA[
+<post>
+<!-- no native XSLT (Chrome 155+, etc.) => this polyfill (libxslt in WASM) runs shell.xsl instead.
+     w/ native XSLT, the browser transforms first & this is just ignored input -->
+<script xmlns="http://www.w3.org/1999/xhtml" src="https://esm.archive.org/xslt-polyfill@1.0.34/xslt-polyfill.min.js?raw"></script>
+<![CDATA[
 ---
 title: Throwback Thursday XSLT
 date: 2026-11-09

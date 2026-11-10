@@ -1,3 +1,6 @@
+// deno-lint-ignore-file
+/* eslint-disable */
+// 2006-era code, kept as is for the throwback post
 
 function quoth()
 {
