@@ -2,7 +2,8 @@
 <?xml-stylesheet href="shell.xsl" type="text/xsl"?>
 <post>
 <!-- no native XSLT (Chrome 155+, etc.) => this polyfill (libxslt in WASM) runs shell.xsl instead.
-     w/ native XSLT, the browser transforms first & this is just ignored input -->
+     w/ native XSLT, the browser transforms first & this is just ignored input
+     https://github.com/mfreed7/xslt_polyfill -->
 <script xmlns="http://www.w3.org/1999/xhtml" src="https://esm.archive.org/xslt-polyfill@1.0.34/xslt-polyfill.min.js?raw"></script>
 <![CDATA[
 ---
@@ -13,18 +14,21 @@ Hello from **2008**!  (ish)
 
 A 2026 lark: blogtini, but 2008 style -- before browsers drop XSLT (Chrome ~155; Firefox & Safari too).
 
-This page is XML.  The browser runs [shell.xsl](shell.xsl) on it, which paints an HTML shell
+This page is [XML](https://github.com/traceypooh/blogtini/blob/main/2026-11-throwback-thursday/xslt/index.xml).
+The browser runs [shell.xsl](shell.xsl) on it, which paints an HTML shell
 w/ the markdown in a `<pre>` & a `<script>` tag.  The script runs it all through showdown.
 
 Content is in a CDATA block (so `<` & `&` needn't be escaped)
 -  -- the browser runs it on this file => an HTML shell: the text in a `<pre>` + `<script src=loader.js>`
-- `loader.js` -- front matter via js-yaml, markdown via showdown (same pins as `index.js`), swaps out the `<pre>`
+- [loader.js](loader.js) -- front matter via js-yaml, markdown via showdown (same pins as `index.js`), swaps out the `<pre>`
 
 
 Notes:
 - no build
 - one stylesheet
-- fail open-ish: no JS => the raw markdown in a `<pre>`.  no XSLT => the browser's XML tree view / text.
+- fail open
+  - no JS => the raw markdown in a `<pre>`
+  - no XSLT => polyfill fallback or else the browser's XML tree view / text
 - crawlers mostly don't run XSLT -- not for real sites.  blogtini's `index.html` posts do the same job w/ the HTML parser
 
 > Party like it's [XSLT 1.0](https://www.w3.org/TR/xslt-10/).

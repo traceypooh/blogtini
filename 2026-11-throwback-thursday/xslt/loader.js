@@ -1,4 +1,4 @@
-// throwback: post.xml --(shell.xsl)--> HTML shell --(this)--> showdown --> page
+// throwback: index.xml --(shell.xsl)--> HTML shell --(this)--> showdown --> page
 import showdown from 'https://esm.archive.org/showdown@2.1.0'
 import yml from 'https://esm.archive.org/js-yaml@4.1.0'
 
