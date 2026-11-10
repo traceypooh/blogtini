@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?><?xml-stylesheet href="styles.xsl" type="text/xsl"?><tracey><lastmod>$Date: 2006/03/20 08:00:39 $</lastmod><file>$RCSfile: guestbook.xml,v $</file><content><![CDATA[
+
+<iframe id="tframe" width="800" height="100%"></iframe>
+<script>
+tframe.location="http://us.geocities.yahoo.com/gb/view?member=tracey_pooh";
+</script>
+
+]]></content></tracey>

@@ -150,6 +150,10 @@ function posts(cfg, site, seo) {
       log('skipping, unparseable front matter:', path)
       continue
     }
+    if (fm.draft === true) {
+      log('skipping draft:', path)
+      continue
+    }
 
     const img = featured_url(fm, site)
     if (seo) {

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<title>Burning DVDs!</title>
+<script>
+function lastup()
+{
+  lastupFrame.innerHTML =
+     "<I><NOBR>Last updated: " +
+     "$Date: 2006/03/20 08:00:30 $".substr(7,10) +
+     "</NOBR></I>";
+}
+</script>
+</head>
+
+<body onLoad='lastup()'>
+
+
+<TABLE width="100%" bgColor=#000000>
+  <TR>
+    <TD align=middle><IMG 
+      src="../2006/images/dumb_bunny_sunset2_web_small.jpg"> 
+  </TD></TR></TABLE>
+<TABLE width="100%"><TR>
+  <TD> <A HREF=index.html>(chez Tracey)</A> </TD>
+  <TD align=right><DIV id="lastupFrame"></DIV></TD>
+</TR></TABLE>
+
+
+
+<P>
+
+[NOTE: I now vastly prefer the more reliable and more configurable
+ "TMPGEnc 2.5 Plus" and "TMPGEnc DVD Author" tools from <A HREF=http://www.pegasys-inc.com>Pegasys</A> instead of DVDIt]
+
+<center><h1>Burning DVDs with DVDIt!</h1></center>
+<P>
+<P>
+<P>
+<HR>
+<PRE>
+<h2>Setup:</h2>
+<A HREF=http://www.sonystyle.com/vaio/popup/specs_rx690g.pdf>Sony VAIO RX690g (PC)</A>
+DVDIt! 2.5 PE (upgraded from version bundled with VAIO)
+Pioneer DVR-AO4 DVD-RW writer (bundled with VAIO)
+Adobe Premiere 6.0 LE (bundled with VAIO)
+Use DVDIt! for transcoding WAV, AVI ==> MPEG2
+</PRE>
+
+<HR>
+
+<h2>Problems creating DVDs from Mac-created MOV files </h2>
+<UL>
+<li><b>Renamed "chapter1.MOV" ==> "chapterone.mov"</b><BR>
+My brother and I had a TON of trouble importing his MOV files (which were
+taken directly from a IDE MAC drive using a 
+<A HREF=http://www.media4.com/products/macdrive/>free trial of a 
+"drive translator" software package</A>)
+Importing was very unreliable -- sometimes
+the MOV file would go, sometimes DVDIt! would crash.  Some files would never
+input.  It took us 3 days of fighting to try renaming the files.  IT WORKED!
+However, we then found that the built in conversion from MOV ==> AVI in
+DVDIt! produced very bad looking video.  So next we realized we should
+convert MOV to AVI using Premiere first (see next item.)
+
+
+<li><b>First convert MOV to AVI using Premiere</B>
+When we had Apple-created MOV files and finally could import them to DVDIt!, it
+turns out whatever it does to convert to AVI looked bad.  So use Premiere
+(if you have it) instead.
+
+<li><b>For whacked out estimations, select "USER" for media</b>
+When we were importing Apple-created MOV files, the "calculate project size" was so inflated that we determined it was wrong (and proved that later.)
+Thus, we needed to tell it that 60 minutes of 8.0Mbps AVIs should fit just
+fine on a DVD-R.  (It was saying it needed 8GB!)  It took a lot of thrashing,
+but we finally figured out how to use the silly "USER" media size.  Select it from the pulldown and then **TYPE IN A NUMBER** in the select box.  The number
+we used was either 8.2 (for GB) or 8000 (for MB.)  That worked!  Once
+transcoded, the build was 4.3GB (and not 8GB)  
+(We expect about a 3-to-1 compression
+from the sum of the AVI/MOV file sizes to the DVD output size as a ballpark guide.)
+
+
+</UL>
+
+
+<h2>General </h2>
+<UL>
+
+<li><B>Success burning</B><BR>
+I've been able to burn TDK DVD-R, Memorex DVD-R and DVD-RW blanks.  I haven't burnt a coaster yet!  (Crossing fingers)  I've burned 4 DVD-Rs overall, and 20-30 DVD-RWs.  I use the DVD-RW to test the burn first (DVDIt! can abort a build if it can't find files, etc.  However, usually if it makes it to the "Writing Files" stage, you are good to go!)
+
+<li><b>Do NOT leave extra movies in "movies list"</b><BR>
+(not the "media" tab in "themes")  I found that when there are extra movies in the movies list which aren't linked, my build often fails (with the mysterious "build failed, ERR -255" and such) at the end of everything being transcoded OR right before it would burn to CDR/DVD.  I am guessing that it thinks it should link the movie into the project but doesn't know how to do so.  This is just a superstion/guess.  The last cDVD that I burned failed and when I removed an extra movie, it succeeded!
+
+</UL>
+
+</body>
+</html>

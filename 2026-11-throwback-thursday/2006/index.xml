@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?><?xml-stylesheet href="styles.xsl" type="text/xsl"?><tracey><lastmod>$Date: 2006/03/20 08:00:39 $</lastmod><file>$RCSfile: index.xml,v $</file><content><![CDATA[
+
+
+<table>
+  <tr>
+    <TD ALIGN=RIGHT>
+      <A HREF=images/fontana-di-trevi.jpg>
+      <IMG SRC=images/fontana-di-trevi.jpg WIDTH=213 BORDER=0>
+      </A>
+    </TD>
+    <TD>
+      <NOBR><B><A HREF=europe.htm>Europe Photo Album</A></B>.</NOBR><BR>
+      The "best of" from a summer month in 2002.<BR>
+      Paris, Roma, Barcelona, Nice, <NOBR>San Sebastian</NOBR>,
+      Firenza, Grasse, more!
+    </TD>
+    <TD ALIGN=RIGHT>
+      <A HREF=images/superman.jpg><IMG BORDER=0 WIDTH=213 SRC="images/superman.jpg"></A>
+    </TD>
+    <TD>
+      <B><FONT size=+1><A href="http://www.hunterleebrown.com/">Hunter</A>,</FONT> my Super boyfriend</B>.<BR>
+      <A HREF="images/trace_and_hunter3C.jpg"> Tracey Pooh and Hunter Too</A>.
+      <IMG WIDTH=75 SRC=images/heart.gif>
+    </TD>
+  </tr>
+</table>
+
+
+
+]]></content></tracey>

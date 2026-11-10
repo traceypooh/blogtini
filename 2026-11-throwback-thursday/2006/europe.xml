@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?><?xml-stylesheet href="styles.xsl" type="text/xsl"?><tracey><lastmod>$Date: 2006/03/20 08:00:38 $</lastmod><file>$RCSfile: europe.xml,v $</file><content><![CDATA[
+
+<br/>
+<center>
+<h2>One Month in Europe - Summer 2002</h2>
+
+<br/>
+<img src="images/bazas.gif"><br/>
+<br/>
+The nights are numbered on this map of our trip, starting with our first five nights in Paris:<br/>
+<img src="images/europe.jpg"/>
+<br/>
+<br/>
+<br/>
+
+To move out of the lower frame, you may also <a href="http://photos.yahoo.com/ph/tracey_pooh/album?.dir=/4fd6">click here</a> for normal page view of below:<br/>
+
+<center>
+<iframe id="tframe" width="780" height="3000"></iframe>
+<script>
+tframe.location="http://photos.yahoo.com/ph/tracey_pooh/album?.dir=/4fd6";
+</script>
+</center>
+
+]]></content></tracey>

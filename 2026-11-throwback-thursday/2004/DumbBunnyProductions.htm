@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Dumb Bunny Productions</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 6.00.2800.1226" name=GENERATOR>
+<script>
+function lastup()
+{
+  lastupFrame.innerHTML =
+     "<I><NOBR>Last updated: " +
+     "$Date: 2006/03/20 08:00:30 $".substr(7,10) +
+     "</NOBR></I>";
+}
+</script>
+</HEAD>
+<BODY onLoad='lastup()'>
+
+
+
+<TABLE width="100%" bgColor=#000000>
+  <TBODY>
+  <TR>
+    <TD align=middle><IMG src="../2006/images/dumb_bunny_sunset2_web_small.jpg">
+  </TD></TR></TBODY></TABLE>
+<TABLE width="100%">
+  <TR>
+    <TD> <A HREF=index.html>(chez Tracey)</A> </TD>
+    <TD align=right><DIV id="lastupFrame"></DIV>
+</TD></TR></TABLE>
+
+
+
+
+<TABLE cellSpacing=40>
+  <TBODY>
+  <TR>
+    <TD ALIGN=CENTER><IMG src="../2006/images/moo-dusk.gif"><BR>
+<A HREF=samples.htm>More Time Lapses Examples</A> </TD>
+    <TD BORDER="1"><PRE><B>(Nonprofessional) Studio Setup</B>
+Sony VX2000 MiniDV Camera
+Sony VAIO Picturebook laptop, VAIO RX690g Desktop
+Adobe Premiere v6 LE; Photoshop v6
+<A href="http://www.pegasys-inc.com/e_main.html">TMPGEnc v2.5 Plus</A>;
+<A href="http://www.pegasys-inc.com/e_main.html">TMPGEnc DVD Author v1.0</A>
+<A href="http://www.vcdeasy.org/">VCDEasy v1.1.5.2</A> (free version)
+</PRE></TD></TR></TBODY></TABLE>
+
+
+<TABLE WIDTH="100%">
+<TR>
+<TD WIDTH="20%"></TD>
+<TD ALIGN=CENTER>
+<FONT SIZE=-1>
+<I>Dowling's Law of Photograpy:<BR>
+One missed photographic opportunity creates a desire to purchase two additional pieces of equipment.<BR>
+-Murphy's Law
+</I>
+</FONT>
+</TD>
+<TD WIDTH="20%"></TD>
+</TR>
+</TABLE>
+
+<P>
+I was the Executive Producer for the feature-length film "Stolen Good".<br>
+I filmed, directed, and produced a 2 minute political commercial for a Democratic candidate for the US House of Representatives which aired on KQED, Oct 2004.<br>
+
+<H3>DVD and VCD Production</H3>
+As my
+<A HREF="http://www.hunterleebrown.com/photos/traceyGallery/images/RussTraceyHelmut.jpg">twin
+brother</A> is an independent filmmaker, I've produced, from DV source, two
+versions of a DVD for his feature-length 16mm film, as well as a VCD demo
+version. I've worked on and collaborated on other VCD and DVD projects.
+<P>I've just started getting active in this <A
+href="http://www.dvinfo.net/conf">DV Forum</A>.
+</P>
+
+
+<H3>Time Lapse Photography</H3>
+
+
+I shoot with either (and sometimes both
+simultaneously) of the Sony VX2000 or Canon ELPH s200 digital cameras. I shoot
+<I>"tapeless" and "memory cardless"</I>, opting instead to connect via FireWire
+and USB, respectively, to my Picturebook! For the Canon, use of the laptop
+allows me to use Canon's RemoteCapture software's built-in "interval shooting"
+feature for shooting a still frame every 5 seconds (or higher delay). For the
+Sony DV camera, it allows me to use Sony's PictureGear with DVGate, along with a
+simple "macro recorder" software (eg: $20 trialware <A
+href="http://www.vista-software.com/tasker.htm">Tasker</A>), to take still
+frames once every second (or higher delay).
+
+
+
+<H3>Cygwin on WinXP Time Lapse Tricks</H3>
+
+
+I now use the
+<a href="http://www.mplayerhq.hu/homepage/design7/news.html">MPlayer</a>
+linux package compiled locally in my <a href="http://www.cygwin.com/">cygwin</a> ("Linux-like environment for Windows") setup on my Sony VAIO XP tower PC.<br>
+I create "motion-JPEG" AVIs that are *ideal* for time-lapse video for the
+following reasons:
+<lu>
+  <li>They allow for arbitrary width and height video (unlike MPG1).
+  <li>They look better since you can truly "hold" an individual JPEG frame
+      for multiple seconds or sub-seconds, instead of "replicating" a frame.
+  <li>They only have the JPEG compression artifacts of the sources, no additional
+      MPG motion artifacts, etc.
+  <li>They are smaller in overall size than alternatives like animated GIFs,
+      MPG2, and *even* MPG1!
+  <li>... and yet the quality is BETTER than animated GIFs, MPG1, or MPG2
+      alternatives.
+  <li>Nearly everything in the world plays "Motion JPEG" files as nearly every
+      consumer digital camera saves AVI/MOV "video" files using motion-JPEG.
+  <li>An audio track can be added.
+  <li>The video filesize is independent of the framerate -- it's merely
+      dependent on the number of total frames. (So no matter how "slow" or
+      "fast" you encode the frames to whiz by, the filesize doesn't change.)
+</ul>
+Thus, I can take 100-1000 JPEG images from a "shoot" and create a video time-lapse of all the JPEG images in a given subdir in my bash shell (cywgin):
+<pre>
+mencoder  "mf://*.JPG"  -mf fps=6 -ovc lavc -lavcopts vcodec=mjpeg -o out.avi
+</pre>
+Mencoder is included in the MPlayer package.<br>
+"fps=6" is the framerate, ie: "make the video play 6 JPEG images per second".<br>
+It doesn't get much nicer than that!  Not to mention, the encoding is FAST FAST FAST!
+
+
+
+<H3>VX-2000 Camera Widescreen Time Lapse Tricks</H3>
+
+There's a cute and rather hard to find out way
+to save a still image in native DV format directly from the Sony camera over
+FireWire. Normally, if you use Premiere, DVGate, SmartCapture, etc. to grab
+still frames from the FireWire connected camera, it will automatically convert
+the still for you into a "square pixel" format. As DV is recorded in 720 x 480
+pixels (and is neither 4:3 nor 16:9 aspect but actually 3:2), software to get
+stills automatically assume you want an image in square pixels. Thus, if the
+VX2000 is set in 16:9 mode, it will translate the 720x480 rectangular pixels
+into 852x480; if in 4:3 mode, it will translate the 720x480 rectangular pixels
+into 640x480.<BR>Since we want to ultimately make a DV film from the stills, we
+don't like that!
+<P>Sony offers a quasi-proprietary <B>"DVF" format</B> for storing stills that I
+haven't been able to find *any* documentation for, and suspect is not widely
+used (although JVC can understand DVF, read on).
+<P>While <B>VX2000 is connected via firewire to laptop, run PictureGear</B>.
+Then, in the "Folder"(s) window, click on "Outer Devices". Click "Capture".
+"DVGate Still" shows up. If you right-click, you can <B>select "Launch DVGate
+Still"</B>. This, apparently, opens a backdoor from camera into PictureGear, and
+<B>will save DVF files every time you hit "capture"</B> in DVGate Still to
+PictureGear's "DVGate Still" folder. (I use Tasker software mentioned above to
+record me clicking capture and pausing X seconds. Then I just playback the
+recorded "macro" at "full speed" in "infinite loop" and I get a DVF every X
+seconds).
+<P>You will then note <B>the DVF file is presto! in 720 x 480</B> (regardless of
+whether you shot in 4:3 or 16:9 mode). PictureGear allows you to "save as" BMP,
+TIF, JPEG, GIF (among others), but all seem to wind up as "square pixels" (ie:
+640x480 if was shot in 4:3; 852x480 if was shot in 16:9). You've just been
+resampled -- not good.
+<P>After *LOTS* of days online looking and searching, I finally came across this
+<A
+href="http://www.pechorin.com/m/2001/11/07/convert_dvf_file_format_to_jpeg-41894.html">gem</A>
+of a page. There, the replier indicates that <A
+href="http://www.jvc.de/html/faq/Download/software/22/#Capture30">JVC's</A> <A
+href="http://www.jvc.de/html/faq/Download/software/22/camcorder.html#Capture30">JLIP
+VideoCapture 3.1</A> (free from Germany) can read DVFs and save them as
+something else. I installed the tool and can now save my DVFs as 720x480 BMPs
+(which Premiere can happily import). Note the BMPs are still in the right
+rectangular pixels!
+<P>I've only gotten the 4:3 images to fully go through my version of Premiere LE
+where the project, images, and export all stay the rectangular 720x480 pixels.
+Premiere properly interprets the BMPs to be 720x480 "D1/DV NTSC (0.9)". I'm
+pretty sure that the 0.9 refers to the factor of horizontal scaling of
+720==&gt;640 that is to be done post-export (in my case, when I make the MPG-1
+(VCD) or MPG-2 (DVD) compressed versions of my AVIs using TMPGEnc). 640 / 720 =
+0.8888.. or about "0.9".
+<P><B>For my 16:9 BMPs</B>, my Premiere version defaults to think the BMPs are
+in 0.9 mode and not the correct "D1/DV NTSC Widescreen 16:9 (1.2)" pixel aspect
+ratio (where 1.2 I'm pretty sure refers to horizontal scaling 720==&gt;852,
+where 852 / 720 = 1.1833333 (or about "1.2")). Thus, they would get resampled
+and distorted. However, thanks to DV Forum hunting, I found the way to make
+Premiere interpret them correctly.<BR><B>When stills are on the timeline, select
+all of them. Go to "clip" menu, "Advanced Options", "Pixel Aspect Ratio...".
+Select "D1/DV NTSC Widescreen 16:9 (1.2)" </B><BR>There you go! Your entire
+"capture to export" workflow is now using 16:9 widescreen "rectangular pixels"
+and you are free to have as smart or not-so-smart AVI converter figure out where
+to go from there. <BR><IMG
+src="../2006/images/emote_happy_dance_infinite.gif">
+
+
+<P>
+<H3>DVDIt!</H3>
+FYI: I have some notes and tips on authoring DVDs with DVDIt! <A
+HREF=dvdit.htm>here</A> (but I prefer TMPGEnc tools now).
+
+
+<P><BR><BR>
+<CENTER><IMG SRC="../2006/images/DontSpamMe2.gif"></CENTER><BR><BR>
+<TABLE width="100%" bgColor=#000000>
+  <TBODY>
+  <TR>
+    <TD align=middle><IMG src="../2006/images/dumb_bunny_sunset2_web_small.jpg">
+  </TD></TR></TBODY></TABLE>
+
+</BODY></HTML>

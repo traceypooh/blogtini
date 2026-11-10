@@ -1,0 +1,96 @@
+<html>
+<HEAD>
+<script language="JavaScript">
+function playah(s)
+{
+  playerFrame.innerHTML = "<embed src='"+s+"'></embed>";
+}
+function giffer(s)
+{
+  var o = event.srcElement;
+  //o.style.textDecoration = "underline";
+  // o.style.backgroundColor = "yellow";
+  o.style.color = "yellow";
+  playerFrame.innerHTML = "<IMG WIDTH=220 SRC='"+s+"'>";
+}
+function outtie()
+{
+  var o = event.srcElement;
+  o.style.color = "white";
+}
+function lastup()
+{
+  lastupFrame.innerHTML =
+     "<I><NOBR>Last updated: " +
+     "$Date: 2006/03/20 08:00:31 $".substr(7,10) +
+     "</NOBR></I>";
+}
+</script>
+</HEAD>
+<body onLoad='lastup()' bgcolor=#000000 text=#ffffff vLink=#ffffff aLink=#ffffff link=#ffffff>
+
+<TABLE width="100%" bgColor=#000000>
+  <TR>
+    <TD align=middle><IMG src="../2006/images/dumb_bunny_sunset2_web_small.jpg">
+  </TD></TR></TABLE>
+<HR>
+<TABLE width="100%"><TR>
+  <TD> <A HREF=index.html>(chez Tracey)</A> </TD>
+  <TD align=right><DIV id="lastupFrame"></DIV></TD>
+ </TR></TABLE>
+
+
+
+<BR>
+<BR>
+
+<CENTER>
+<H2> Time-lapse Digital Photography</H2>
+</CENTER>
+
+<BR>
+Move the mouse over the text below to see small-size samples (animated GIFs).<BR>
+Some items link to higher-quality versions (either MPEG-1 or AVI using Motion-JPEG) that you may click to view and/or save.
+<table cellpadding=30>
+<tr>
+<td valign=top>
+
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("../2006/images/logo.gif")'><A HREF=logo_VCD.mpg>My Logo</A> (2.6MB MPG file)</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("jessies_sunrise.gif")'><A HREF=2003-11-07_Jessies_Sunrise.avi>Jessie's Sunrise</A> (AVI version has audio) (4.8MB AVI file)</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("../2006/images/moo-dusk.gif")'><A HREF=2003-09-18_sony1_MOO_dusk_16x9_VCD.mpg>Bay Dusk</A> (2.7MB MPG file)</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("briones_dusk.gif")'><A HREF=2003-11-09_Briones_dusk.avi>Briones Dusk</A> (3.2MB AVI file)</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("reservoir_cropped.gif")'><A HREF=2003-11-23_Resevoir_cropped_VCD.mpg>Lafayette Reservoir</A> (2.0MB MPG file)</div>
+
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("tday_plane.gif")'>Thanksgiving flight to LA</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("to_sf.gif")'>Drive into SF (day)</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("from_sf.gif")'>Drive from SF (night)</div>
+
+
+</td>
+<td>
+<div id="playerFrame" style='width:320px; height:220px; margin:0; padding:0; border:0;'>
+<img width=220 src='../2006/images/logo.gif'>
+</div>
+</td>
+</tr>
+</table>
+
+<BR>
+<HR>
+<BR>
+... and just for fun:
+<table cellpadding=30>
+<tr>
+<td valign=top>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("skydive.gif")'>I skydive with my twin!</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("../2006/images/bazas.gif")'>2002 Europe bed & breakfast chateau</div>
+<div style="cursor: hand" onmouseout=outtie(); onmouseover='giffer("stolenGood.gif")'>Trailer for film "Stolen Good"</div>
+</td>
+</tr>
+</table>
+
+
+
+
+</body>
+</html>

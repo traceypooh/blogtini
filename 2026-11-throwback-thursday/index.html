@@ -1,0 +1,142 @@
+---
+title: "Throwback Thursday: 20 years of content-only pages"
+date: 2026-11-12
+categories:
+  - website
+tags:
+  - blogtini
+  - xslt
+  - markdown
+  - javascript
+  - history
+draft: true
+comment: <script src="../theme.js" type="module" charset="utf-8"></script>
+---
+I've been chasing the same itch for 20+ years:
+
+**a page should be _just its content_.  Something else should do all the other junk** -- the header, the
+nav, the footer, the look.
+
+Every version of my website has been another swing at that.  Here's the lineage -- & one of them you can
+still run, live, for a little while longer.
+
+
+## Early websites (1994)
+At Xerox PARC, I was making little websites for coworkers.
+I had a camera at my desk hooked into some perl scripts an a Sun Sparc computer.
+They could take a picture and save it with some information on them and their team.
+My http://.../cgi-bin/pagetool/PageMake.pl would write out a
+http://../www/~webuser/NAME.html and http://../www/~webuser/NAME.jpg pair.
+My setup was my first website, straight up HTML leveraging tables for layout.
+This page would split directly into a website: a top page + a work page and some more, next.
+
+
+## Tables & tiles (~1996–2006)
+I moved my pages to tracey_pooh.home.comcast.net (comcast free offer for storage/hosting).
+"chez Tracey Jaquith": HTML 4, all caps tags, a tiled cloud background, purple text, a sheep skipping rope, & a random quote.
+Layout by nested tables.
+Every page carried its own copy of the header & nav -- change the nav -> edit every page.
+The "last updated" date came from RCS's `$Date$`, pasted in by a sliver of JS.
+
+
+## XSLT (Mar 2006–Sep 2008)
+The home page grew a link: **"BETA version of my website!"**  It pointed at `index.xml`.
+
+Each page was now an XML file: a last-modified date, & the page's HTML stuffed inside a CDATA block -- plus one
+line telling the browser to load my stylesheet, `styles.xsl`.  The _browser_ ran the XSL: it wrote the header
+& left-hand nav, poured the page's HTML into the middle (w/ `disable-output-escaping`), & wrote the footer.
+No server-side anything.
+
+It was _so_ clean.  And honest: an `.xml` file, served as XML, w/ an XSL stylesheet -- every content type
+exactly what it said it was.  Here's the [write-up from back then](https://traceypooh.com/xslt/), & the
+[actual `styles.xsl`](http://web.archive.org/web/20071026101754/http://www.archive.org/~tracey/styles.xsl),
+via the Wayback Machine.  Even the blog was XSLT: an RSS feed, `blog.xml`, w/ its own `blog.xsl` to make it
+pretty in a browser.
+
+The cracks: Firefox never did `disable-output-escaping`, so pages needed a
+JS workaround (Sean M. Burke's, public domain) to un-escape the HTML.  And the 2006 snapshot has a twin of every page: a plain `.htm` w/ a
+`layout.js` that inserted the header & nav table rows around the content -- the JS version, already waiting.
+
+What I didn't have: [markdown](https://daringfireball.net/projects/markdown/).  (Well, it _existed_ -- Dec 2004 --
+I just didn't know about it.)  So the "content" was still hand-typed HTML.
+
+
+## JavaScript (Sep 2008)
+As I fretted over the upcoming election, I rewrote the site so _one JS file_ did the work.
+Each page was a plain `.htm` w/ its content in the body, plua a script tag.
+On load, the JS wrapped the header, footer & nav around whatever was there.
+[Write-up](https://traceypooh.com/oldjs/).  That one JS file grew to 1,000+
+lines (w/ Prototype.js alongside): random quotes, a random-photo filmstrip, the blog's latest posts.
+
+Closer!  Still HTML for content, though.
+
+
+## WordPress (Mar 2009)
+New domain, a real blog, **comments!**...  & a database, PHP, a paid host, & writing in a web form.
+Very much _not_ content-only -- but it's where most of the posts got written.
+I liked the WordPress themes & config flexibility - as a CS dual-degree coder my entire life,
+it's security was cringe.  I accepted it for a time, liking the comments abilities,
+_trying to_ like creating & editing posts in a form...
+
+
+## Jekyll (2019) - Era of The Static Site Generator
+Static Site Generation seemed pretty neat.  Markdown was getting hot, and so naturally easy
+to write and edit with.
+I tried everyone's first goto (at least at this time), Jekyll, for a bit, but it felt a little
+lackluster and slow, esp. to generate out 100s-1000s of pages w/ "page 3 of N" type pages, etc.
+
+After chatting w/ my older brother, he was raving about the speed of HuGo, based on go,
+for his site.  So any live jekyll site was very short-lived...
+
+
+## Hugo (Aug 2019)
+[Off WordPress, onto Hugo](https://traceypooh.com/2019/09/techo-tuesday-make-a-free-website-static-site-generators-and-hugo/)
+(& free hosting).  **Markdown!**
+The whole site is a directory of text files in git -- no database.
+Writing felt like _writing_ again.
+
+But: there's a build.  To see a change, even locally, you run `hugo server`.
+The output (`public/`) isn't your files any more -- it's Hugo's.
+And a Hugo upgrade can (and did) break your theme & pages sometimes.
+
+
+## blogtini (Jan 2022–)
+So I split off blogtini.  Each post: front matter & markdown, in a file -- & one JS script line.
+Your browser does the rest.  No required build, no server needed to write.
+(The [optional build](https://github.com/traceypooh/blogtini#readme) makes a
+feed, search, & SEO lines -- it's _optional_.)
+
+Content only.  Something else does all the other crap.  Finally.
+
+
+## And now ... XSLT + markdown!
+Here's the "what if" I couldn't have built in 2007: a post that's **XML w/ markdown in it**.
+[**Try it live**](../research/xslt/post.xml) -- while you still can.
+
+The browser runs a tiny `shell.xsl` on it, which writes an HTML page: the markdown in a pre block, & a
+script tag.  The script (about 15 lines) runs the markdown thru [showdown](https://showdownjs.com) -- the
+same one blogtini uses -- & swaps it in.
+The [source](https://github.com/traceypooh/blogtini/tree/main/research/xslt):
+one XML file, one XSL file, one tiny JS file.
+
+So: content only, _and_ honest content types.  If XSLT lived forever, I'd be tempted.  (No!  But yes!!)
+
+But XSLT won't live forever -- Chrome is removing it (~v155, about now); Firefox/Safari soon too.
+And even if it lived:
+- social sharers (Slack, Mastodon, iMessage...) never run XSLT -- no preview cards
+- crawlers mostly don't either -- your post is a blob of XML to Google
+
+blogtini fudges it, slightly: a post is markdown wearing `text/html`'s clothes, so the browser, robots, &
+everyone will take it.  Small lie, **very big WIN**.
+
+Happy Throwback Thursday!  💃
+
+
+xxx
+
+2026-11-throwback-thursday/
+  index.html       the post
+  2004/            tables era (old/index.html + its images)
+  2006/            XSLT beta (old/2/)
+  xslt/            2026 demo XSLT with markdown
+The post can link each era to its live page right there, e.g. "here's 2004, the random quote still works."

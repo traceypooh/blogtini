@@ -30,6 +30,8 @@ It was *delicious*.
 - The browser runs the `<script>` inside the front matter (YAML just sees a string) -- so you get the nice url
   `https://example.com/2022-01-i-baked-a-pie/`, rendered.
 - `type: page` makes it a page (about, contact, ...): in the nav menu, not the timeline.  Otherwise it's a post.
+- `draft: true` (2026-11-09): the post shows at its own url, but nowhere else -- not the homepage, prior/next, tags,
+  search, nor the build's `index.xml` (feed & sitemap).  Remove it to publish.
 - Optional: `description:` (a one-liner for feeds), `featuredcaption:`.  Images go in `img/`.  A picture on its own line shows full width -- or
   `![pie](../img/pie.jpg#half)` (also `#two-thirds`, `#third`, `#quarter`) for smaller.
 - Your top-level `theme.js` loads blogtini: `import 'https://blogtini.com/index.js'` (latest),
@@ -201,7 +203,7 @@ V=2.1.0 &&\
 - combo sites: interleave your & your friends' blogtini (or Mastodon) feeds on one page
 - port forward from [hugo-future-imperfect-slim](https://github.com/traceypooh/hugo-future-imperfect-slim):
   a homepage banner, & more -- see [future-imperfect.md](future-imperfect.md)
-- `draft: true` front matter.  (The build skips dirs named `test`, `research`, `theme`, `js`, `img`, `avatars`, `preview`,
+- (The build skips dirs named `test`, `research`, `theme`, `js`, `img`, `avatars`, `preview`,
   `node_modules`, `.*`, `_*` -- so a real post can't use those names.)
 - `config.yml` `scheme: light | dark | auto` for the site's light/dark
 - staticmin: check `allowedOrigins` (not enforced yet -- PR review is the gate); move netlify to Node 22

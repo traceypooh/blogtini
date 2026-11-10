@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="shell.xsl" type="text/xsl"?>
+<post><![CDATA[
+---
+title: Throwback Thursday XSLT
+date: 2026-11-09
+---
+Hello from **2008**!  (ish)
+
+A 2026 lark: blogtini, but 2008 style -- before browsers drop XSLT (Chrome ~155; Firefox & Safari too).
+
+This page is XML.  The browser runs [shell.xsl](shell.xsl) on it, which paints an HTML shell
+w/ the markdown in a `<pre>` & a `<script>` tag.  The script runs it all through showdown.
+
+Content is in a CDATA block (so `<` & `&` needn't be escaped)
+-  -- the browser runs it on this file => an HTML shell: the text in a `<pre>` + `<script src=loader.js>`
+- `loader.js` -- front matter via js-yaml, markdown via showdown (same pins as `index.js`), swaps out the `<pre>`
+
+
+Notes:
+- no build
+- one stylesheet
+- fail open-ish: no JS => the raw markdown in a `<pre>`.  no XSLT => the browser's XML tree view / text.
+- crawlers mostly don't run XSLT -- not for real sites.  blogtini's `index.html` posts do the same job w/ the HTML parser
+
+> Party like it's [XSLT 1.0](https://www.w3.org/TR/xslt-10/).
+]]></post>
+

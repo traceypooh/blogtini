@@ -729,7 +729,10 @@ function storage_overlay(post) {
   storage_add(post)
   STORAGE.docs = Object.values(krsort(STORAGE.docs))
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(STORAGE))
+  // a draft (front matter `draft: true`) shows on its own page -- but never joins the cache, so no other
+  // page lists it (homepage, prior/next, tags, search)
+  const docs_saved = post.draft ? STORAGE.docs.filter((e) => e !== post) : STORAGE.docs
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...STORAGE, docs: docs_saved }))
 }
 
 
@@ -963,6 +966,7 @@ function markdown_to_post(markdown, url = location.pathname) {
     if (post[key] === '' || post[key] === undefined || post[key] === null) delete post[key]
 
   if ('type' in json && json.type !== 'post') post.type = json.type
+  if (json.draft === true) post.draft = true
 
   return post
 }
@@ -978,8 +982,7 @@ async function parse_posts(markdowns) {
       typeof markdown === 'string' ? markdown : await markdown.text(),
       url,
     )
-    if (post)
-
+    if (post && !post.draft) // a draft shows only on its own page (see `storage_overlay()`)
       storage_add(post)
   }
 }

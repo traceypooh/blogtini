@@ -66,6 +66,19 @@ Deno.test('build: index.xml has every post & page -- & the homepage, as a page',
   assertMatch(pie, /It was \*delicious\*/)
 })
 
+Deno.test('build: a `draft: true` post is left out of index.xml', async () => {
+  const dir = Deno.makeTempDirSync({ prefix: 'bt-build-' })
+  copy_dir(FIXTURE, dir)
+  Deno.mkdirSync(`${dir}/2026-03-tart`)
+  Deno.writeTextFileSync(`${dir}/2026-03-tart/index.html`,
+                         '---\ntitle: A tart, someday\ndate: 2026-03-01\ndraft: true\n---\nNot yet.\n')
+  const xml = await build(dir)
+
+  assertEquals(items(xml).some((e) => e.title === 'A tart, someday'), false)
+  assertEquals(xml.includes('2026-03-tart'), false) // sitemap & search, too
+})
+
+
 Deno.test('build: rerunning it changes nothing', async () => {
   const dir = Deno.makeTempDirSync({ prefix: 'bt-build-' })
   copy_dir(FIXTURE, dir)

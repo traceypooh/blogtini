@@ -1,0 +1,61 @@
+<html><head><title>Quoth the Raven</title><!--xxx-->
+<link rel="stylesheet" href="styles.css" type="text/css">
+<script language="JavaScript" src="layout.js"></script>
+</head><body onLoad="setup('$Date: 2006/03/20 08:00:39 $', '$RCSfile: quotes.htm,v $');"><table id="tab1"><tr><td><!--POOHSTART-->
+
+<SCRIPT LANGUAGE="JavaScript" SRC="quotes-short.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" SRC="quotes-long.js"></SCRIPT>
+
+<br>
+<center><h1>The Personal is Political</h1></center>
+
+<TABLE CELLSPACING=20 width="100%">
+<TR>
+<SCRIPT>
+
+// combine 2 arrays (short quotes first, long quotes second)
+var qs = new Array();
+var j=0;
+for(i=0; i < quotes.length; i++)
+{
+  qs[j++] = quotes[i];
+}
+for(i=0; i < quotel.length; i++)
+{
+  qs[j++] = quotel[i];
+}
+
+
+// write out the quotes
+var incr=3;
+for(i=0; i < qs.length; i++)
+{
+  if (incr==3  ||  (i+1 == qs.length))
+	{
+	   // end previous row, start new row
+     document.write("</TR><TR valign=top>");
+		 incr=0;
+
+		 // make last quote special and be all alone on full-width row
+		 if (i+1 == qs.length)
+		 {
+		 	  document.write(
+				  "<TD colspan=3><HR><DL><DT><BIG>\"" +
+				  qs[i].quotation + "\"</BIG></DT><DD>-" +
+				  qs[i].author + "</DD></DL></TD>");
+				break;
+		 }
+	}
+
+	document.write(
+    "<TD width=33%><DL><DT><BIG>\"" +
+    qs[i].quotation + "\"</BIG></DT><DD>-" +
+    qs[i].author + "</DD></DL></TD>");
+	incr++;
+}
+</SCRIPT>
+</TR>
+</TABLE>
+
+
+<!--POOHEND--></td></tr></table></body></html>

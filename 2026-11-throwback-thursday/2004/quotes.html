@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>Quoth the Raven</TITLE>
+<SCRIPT LANGUAGE="JavaScript" SRC="quotes-short.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" SRC="quotes-long.js"></SCRIPT>
+</HEAD>
+
+
+<BODY TEXT="#800080" LINK="#0000FF" VLINK="#000000" ALINK="#0000FF" BACKGROUND="../2006/images/back.gif">
+
+<TABLE width="100%">
+  <TR><TD COLSPAN=2 ALIGN=CENTER><H1>The Personal is Political</H1></TD></TR>
+  <TR><TD>&nbsp;</TD><TD><A HREF=index.html>(chez Tracey)</A></TD></TR>
+</TABLE>
+
+
+<TABLE CELLSPACING=20>
+<TR>
+<SCRIPT>
+
+// combine 2 arrays (short quotes first, long quotes second)
+var qs = new Array();
+var j=0;
+for(i=0; i < quotes.length; i++)
+{
+  qs[j++] = quotes[i];
+}
+for(i=0; i < quotel.length; i++)
+{
+  qs[j++] = quotel[i];
+}
+
+
+// write out the quotes
+var incr=3;
+for(i=0; i < qs.length; i++)
+{
+  if (incr==3  ||  (i+1 == qs.length))
+	{
+	   // end previous row, start new row
+     document.write(
+       "</TR><TR valign=top><TD colspan=3>" +
+       "<IMG src=../2006/images/trans.gif height=2 align=left width=50>" +
+       "<BR clear=left></TD>");
+		 incr=0;
+
+		 // make last quote special and be all alone on full-width row
+		 if (i+1 == qs.length)
+		 {
+		 	  document.write(
+				  "<TD colspan=3><HR><DL><DT><BIG>\"" +
+				  qs[i].quotation + "\"</BIG></DT><DD>-" +
+				  qs[i].author + "</DD></DL></TD>");
+				break;
+		 }
+	}
+
+	document.write(
+    "<TD width=33%><DL><DT><BIG>\"" +
+    qs[i].quotation + "\"</BIG></DT><DD>-" +
+    qs[i].author + "</DD></DL></TD>");
+	incr++;
+}
+</SCRIPT>
+</TR>
+</TABLE>
+
+
+</BODY>
+</HTML>

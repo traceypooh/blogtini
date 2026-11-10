@@ -1,0 +1,56 @@
+
+
+/* default styles for all pages unless override */
+A:link, A:visited { color: cyan; text-decoration: none; }
+A:active, A:hover { color: cyan; text-decoration: underline; }
+/* default table style (so defaults for all pages, too, essentially 8-) */
+table
+{
+  background: #000055;
+  color: yellow;
+  font: normal 12px Verdana, Arial, Helvetica;
+}
+
+
+.blacktable
+{
+  background: black;
+  color: yellow;
+  font: normal 12px Verdana, Arial, Helvetica;
+}
+
+
+/* tile a smurfy background */
+body
+{
+  background: url('cloudtile.jpg') repeat; text-align:center;
+}
+
+
+/* main table */
+#tab1
+{
+  height:100%;
+  width:975;
+  border-collapse: collapse;
+  border:0;
+}
+
+
+
+/* navigation styles */
+.nav { background: #000055; color: yellow; font: bold 15px Verdana, Arial, Helvetica; }
+.nav A:link, .nav A:visited { line-height:200%; color: yellow; text-decoration: none; }
+.nav A:active, .nav A:hover { line-height:200%; color: #D6270A; font: bold; text-transform: uppercase; }
+
+
+/* text emphasis styles */
+.f1 { background: #D6270A; border: solid 1px #853126; color: #ffffff; font: bold 14px Verdana, Arial, Helvetica }
+.f2 { color: #D6270A; font: bold 15px Verdana, Arial, Helvetica }
+.f3 { color: #D6270A; font: bold 13px Verdana, Arial, Helvetica }
+.f4 { color: #D6270A; font: bold italic 13px Verdana, Arial, Helvetica }
+.f5 { color: #D6270A; font: bold 11px Verdana, Arial, Helvetica }
+.f6 { color: #D6270A; font: bold italic 11px Verdana, Arial, Helvetica }
+
+
+.big { font: 20px; }
