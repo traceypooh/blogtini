@@ -38,27 +38,38 @@ Layout by nested tables.
 Every page carried its own copy of the header & nav -- change the nav -> edit every page.
 The "last updated" date came from RCS's `$Date$`, pasted in by a sliver of JS.
 
+[**See it live**](2004/) -- reload for a new random quote.
+
 
 ## XSLT (Mar 2006–Sep 2008)
 The home page grew a link: **"BETA version of my website!"**  It pointed at `index.xml`.
+(It still does -- try it, near the top of the [2004 page](2004/).)
 
 Each page was now an XML file: a last-modified date, & the page's HTML stuffed inside a CDATA block -- plus one
-line telling the browser to load my stylesheet, `styles.xsl`.  The _browser_ ran the XSL: it wrote the header
+line telling the browser to load my stylesheet, [styles.xsl](2006/styles.xsl).  The _browser_ ran the XSL: it wrote the header
 & left-hand nav, poured the page's HTML into the middle (w/ `disable-output-escaping`), & wrote the footer.
 No server-side anything.
 
-It was _so_ clean.  And honest: an `.xml` file, served as XML, w/ an XSL stylesheet -- every content type
-exactly what it said it was.  Here's the [write-up from back then](https://traceypooh.com/xslt/), & the
-[actual `styles.xsl`](http://web.archive.org/web/20071026101754/http://www.archive.org/~tracey/styles.xsl),
-via the Wayback Machine.  Even the blog was XSLT: an RSS feed, `blog.xml`, w/ its own `blog.xsl` to make it
+It was _so_ clean.  And honest: an `.xml` file, served as XML, w/ an XSL stylesheet -- every
+content type exactly what it said it was.
+Here's the [write-up from back then](https://traceypooh.com/xslt/), & the
+[actual `styles.xsl`](2006/styles.xsl),
+Even the blog was XSLT: an RSS feed, `blog.xml`, w/ its own `blog.xsl` to make it
 pretty in a browser.
 
 The cracks: Firefox never did `disable-output-escaping`, so pages needed a
 JS workaround (Sean M. Burke's, public domain) to un-escape the HTML.  And the 2006 snapshot has a twin of every page: a plain `.htm` w/ a
 `layout.js` that inserted the header & nav table rows around the content -- the JS version, already waiting.
 
-What I didn't have: [markdown](https://daringfireball.net/projects/markdown/).  (Well, it _existed_ -- Dec 2004 --
-I just didn't know about it.)  So the "content" was still hand-typed HTML.
+See them live, side by side:
+- [**the XSLT site**](2006/index.xml) -- the beta itself, w/ the browser running
+  [`styles.xsl`](2006/styles.xsl) (its
+  [source](https://raw.githubusercontent.com/traceypooh/blogtini/main/2026-11-throwback-thursday/2006/index.xml))
+- [**its JS twin**](2006/index.htm) -- same pages, painted by [`layout.js`](2006/layout.js)
+
+What I didn't have: [markdown](https://daringfireball.net/projects/markdown/).
+(Well, it _existed_ -- Dec 2004 -- I just didn't know about it.)
+So the "content" was still hand-typed HTML.
 
 
 ## JavaScript (Sep 2008)
@@ -74,7 +85,7 @@ Closer!  Still HTML for content, though.
 ## WordPress (Mar 2009)
 New domain, a real blog, **comments!**...  & a database, PHP, a paid host, & writing in a web form.
 Very much _not_ content-only -- but it's where most of the posts got written.
-I liked the WordPress themes & config flexibility - as a CS dual-degree coder my entire life,
+I liked the WordPress themes & config flexibility - but as a CS dual-degree coder my entire life,
 it's security was cringe.  I accepted it for a time, liking the comments abilities,
 _trying to_ like creating & editing posts in a form...
 
@@ -111,12 +122,15 @@ Content only.  Something else does all the other crap.  Finally.
 
 ## And now ... XSLT + markdown!
 Here's the "what if" I couldn't have built in 2007: a post that's **XML w/ markdown in it**.
-[**Try it live**](../research/xslt/post.xml) -- while you still can.
 
-The browser runs a tiny `shell.xsl` on it, which writes an HTML page: the markdown in a pre block, & a
+[**Try it live**](xslt/index.xml) -- while you still can.
+
+The browser loads that
+[XML](https://raw.githubusercontent.com/traceypooh/blogtini/main/2026-11-throwback-thursday/xslt/index.xml),
+then runs a tiny `shell.xsl` on it, which writes an HTML page: the markdown in a pre block, & a
 script tag.  The script (about 15 lines) runs the markdown thru [showdown](https://showdownjs.com) -- the
 same one blogtini uses -- & swaps it in.
-The [source](https://github.com/traceypooh/blogtini/tree/main/research/xslt):
+The [source](https://github.com/traceypooh/blogtini/tree/main/2026-11-throwback-thursday/xslt/):
 one XML file, one XSL file, one tiny JS file.
 
 So: content only, _and_ honest content types.  If XSLT lived forever, I'd be tempted.  (No!  But yes!!)
@@ -126,18 +140,8 @@ And even if it lived:
 - social sharers (Slack, Mastodon, iMessage...) never run XSLT -- no preview cards
 - crawlers mostly don't either -- your post is a blob of XML to Google
 
-blogtini fudges it, slightly: a post is markdown wearing `text/html`'s clothes, so the browser, robots, &
-everyone will take it.  Small lie, **very big WIN**.
+blogtini fudges it, slightly: a post is markdown wearing `text/html`'s clothes,
+so the browser, robots, & everyone will take it.
+Small lie, **very big WIN**.
 
 Happy Throwback Thursday!  💃
-
-
-xxx:
-2026-11-throwback-thursday/
-  index.html       the post
-  2004/            tables era (old/index.html + its images)
-  2006/            XSLT beta (old/2/)
-  xslt/            2026 demo XSLT with markdown
-The post can link each era to its live page right there, e.g. "here's 2004, the random quote still works."
-
-xxx better GH url for .xml for non-GH users?

@@ -7,7 +7,7 @@
       <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>throwback</title>
+        <title>blogtini</title>
         <style>
           body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: Verdana, sans-serif; background: #ffc }
           #md  { white-space: pre-wrap }
