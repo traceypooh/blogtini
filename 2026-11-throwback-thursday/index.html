@@ -41,7 +41,7 @@ The "last updated" date came from RCS's `$Date$`, pasted in by a sliver of JS.
 [**See it live**](2004/) -- reload for a new random quote.
 
 
-## XSLT (Mar 2006–Sep 2008)
+## XSLT (Oct 2005–Sep 2008)
 The home page grew a link: **"BETA version of my website!"**  It pointed at `index.xml`.
 (It still does -- try it, near the top of the [2004 page](2004/).)
 
@@ -133,6 +133,52 @@ same one blogtini uses -- & swaps it in.
 The [source](https://github.com/traceypooh/blogtini/tree/main/2026-11-throwback-thursday/xslt/):
 one XML file, one XSL file, one tiny JS file.
 
+Here it is, boiled down.  (A _slight_ retcon: 2005-me would've had HTML in that CDATA, not front matter & markdown.)
+
+`index.xml` -- the post:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="shell.xsl" type="text/xsl"?>
+<post><![CDATA[
+---
+title: hi world
+date: 2026-11-12
+---
+# XSLT
+- no build step
+- one common `.xsl` file
+]]></post>
+```
+
+`shell.xsl` -- the browser runs this on every post:
+```xml
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="html"/>
+  <xsl:template match="/">
+    <html>
+      <script type="module" src="loader.js"></script>
+      <pre id="md"><xsl:value-of select="/post"/></pre>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>
+```
+
+`loader.js` -- front matter & markdown => the page:
+```js
+import showdown from 'https://esm.archive.org/showdown@2.1.0'
+import yml from 'https://esm.archive.org/js-yaml@4.1.0'
+
+const txt = document.getElementById('md').textContent.trim()
+const [, fm, md] = txt.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+const meta = yml.load(fm, { schema: yml.CORE_SCHEMA }) // CORE: dates stay as text
+
+document.title = meta.title
+document.body.innerHTML = `
+  <h1>${meta.title}</h1>
+  <p>posted: ${meta.date}</p>
+  ${new showdown.Converter().makeHtml(md)}`
+```
+
 So: content only, _and_ honest content types.  If XSLT lived forever, I'd be tempted.  (No!  But yes!!)
 
 But XSLT won't live forever -- Chrome is removing it (~v155, about now); Firefox/Safari soon too.
@@ -143,5 +189,25 @@ And even if it lived:
 blogtini fudges it, slightly: a post is markdown wearing `text/html`'s clothes,
 so the browser, robots, & everyone will take it.
 Small lie, **very big WIN**.
+
+The same post, the blogtini way (boiled down, too).  `index.html`:
+```html
+---
+title: hi world
+date: 2026-11-12
+comment: <script type="module" src="post.js"></script>
+---
+# JS
+- no build step
+- one common `.js` file
+```
+The script tag hides in the front matter -- so it's still just front matter & markdown.
+
+`post.js`?  It's `loader.js` w/ one line changed -- read the post's own file, raw:
+```diff
+-const txt = document.getElementById('md').textContent.trim()
++const txt = await (await fetch(location.href)).text()
+```
+No XSL.  Same 20 years of itch, scratched.
 
 Happy Throwback Thursday!  💃

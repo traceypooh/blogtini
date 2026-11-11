@@ -298,6 +298,15 @@ hue-6-2: #e6c07b
 .hljs-link {
   text-decoration: underline;
 }
+
+/* github's light #fdd / #dfd diff backgrounds (above) leak thru -- unreadable on this dark bg */
+.hljs-deletion {
+  background: rgb(224 108 117 / 15%);
+}
+
+.hljs-addition {
+  background: rgb(152 195 121 / 15%);
+}
 `
 
 
