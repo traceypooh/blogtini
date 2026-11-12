@@ -1,6 +1,8 @@
 # This is an example site configuration setup file.
 # (It's YAML and this is a comment.)
 title: Blogtini
+# who writes here: the footer's copyright & each post's byline (a post's own `author:` wins, eg: a guest)
+author: Tracey Jaquith
 user: traceypooh
 repo: blogtini
 git_provider: github # github or gitlab

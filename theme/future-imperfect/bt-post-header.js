@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
 import {
-  cfg, urlify, datetime, PR, reading_time,
+  cfg, urlify, datetime, PR, reading_time, byline,
 } from '../../index.js'
 import {
   css_headers, css_links, css_normalize, css_title,
@@ -26,7 +26,7 @@ customElements.define('bt-post-header', class extends LitElement {
       ? html`
       <div class="meta">
         <time datetime="${this.post.date /* xxx 2022-01-23T04:44:06.937Z */}">${datetime(this.post.date)}</time>
-        ${PR`<p>${this.post.author}</p>` /* chexxx */}
+        ${byline(this.post) ? html`<p>${byline(this.post)}</p>` : ''}
         ${cfg.reading_time ? html`<p>${reading_time(this.post)}-Minute Read</p>` : ''}
       </div>`
       : ''}

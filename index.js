@@ -150,6 +150,17 @@ function PR(str, val) {
   return val === '' || val === undefined || val === null ? '' : `${str[0]}${val}${str[1]}`
 }
 
+/** Returns a post's authors, in order: its own `author:` (a name or a list) -- else `config.yml` `author:` */
+function authors(post) {
+  return [post?.author ?? cfg.author ?? []].flat().map(String).filter(Boolean)
+}
+
+/** Returns a post's byline, eg: 'Ann', 'Ann & Bo', 'Ann, Bo & Cy' -- or '' */
+function byline(post) {
+  const names = authors(post)
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0] ?? ''
+}
+
 function urlize(url) { // xxx only handles post or cgi; xxx assumes posts are 1-dir down from top
   if ((state.filedev || state.localdev) && STORAGE.base && url.startsWith('https://'))
     // eslint-disable-next-line no-param-reassign
@@ -954,10 +965,15 @@ function markdown_to_post(markdown, url = location.pathname) {
     ? (typeof json.images === 'object' ? json.images.shift() : json.images.trim())
     : '')
   log({ date, featured })
-  // author xxx
+
+  // `author:` or `authors:` -- a name, or a list (kept in order).  stored only when set (small cache)
+  const names = [json.author ?? json.authors ?? []].flat()
+    .map((e) => String(e).trim()).filter(Boolean)
+
+  const author = names.length > 1 ? names : names[0]
 
   const post = {
-    url, title, date, body_raw, tags, categories, featured,
+    url, title, date, body_raw, tags, categories, featured, author,
   }
   for (const key of ['featuredcaption'])
     if (key in json) post[key] = json[key]
@@ -1417,4 +1433,6 @@ export {
   word_count,
   reading_time,
   query_all,
+  authors,
+  byline,
 }

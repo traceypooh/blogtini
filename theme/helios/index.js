@@ -13,7 +13,7 @@
 
 import {
   cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, datetime, imgurl, reveal,
-  all_posts,
+  all_posts, byline,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
@@ -443,7 +443,7 @@ customElements.define('bt-post-full', class extends HTMLElement {
 <article id="main">
   <header>
     <h2>${esc(post.title)}</h2>
-    <p class="date">${esc(datetime(post.date))}${post.author ? ` &middot; ${esc(post.author)}` : ''}</p>
+    <p class="date">${esc(datetime(post.date))}${byline(post) ? ` &middot; ${esc(byline(post))}` : ''}</p>
   </header>
   ${post.featured ? `<span class="image featured"><img src="${esc(imgurl(post, true, true))}" alt="${esc(post.featuredalt)}"></span>` : ''}
   <div class="post-body">${body}</div>

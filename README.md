@@ -32,6 +32,9 @@ It was *delicious*.
 - `type: page` makes it a page (about, contact, ...): in the nav menu, not the timeline.  Otherwise it's a post.
 - `draft: true` (2026-11-09): the post shows at its own url, but nowhere else -- not the homepage, prior/next, tags,
   search, nor the build's `index.xml` (feed & sitemap).  Remove it to publish.
+- `author:` (2026-11-11): a name, or a list (`author: [Ann, Bo]` -- shown in that order: "Ann & Bo").
+  `authors:` works too.  W/o one, the post is by `config.yml`'s `author:`.  Shown by the post's date,
+  & in the feed (`<dc:creator>`).
 - Optional: `description:` (a one-liner for feeds), `featuredcaption:`.  Images go in `img/`.  A picture on its own line shows full width -- or
   `![pie](../img/pie.jpg#half)` (also `#two-thirds`, `#third`, `#quarter`) for smaller.
 - Your top-level `theme.js` loads blogtini: `import 'https://blogtini.com/index.js'` (latest),

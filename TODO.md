@@ -37,6 +37,12 @@ CORS, checked 2026-10-02: GitHub Pages `*`, Mastodon `*`, Bluesky *none* -- feed
 WordPress sites) need the build to fetch & merge them.  Other feeds need defaults: Mastodon items have no
 `<title>`; neither has our `<category domain=…>` tags (title = first line, tags from `#hashtags`?).
 
+## Author pages (2026-11-11)
+Like WordPress' `/author/ann/` & HTML5 UP's bylines: link each name in a byline to `?author=Ann` (or
+`?author/ann`, like `?tags/x` & `?categories/x`) -- a list of their posts, newest first, maybe w/ a short bio
+from `config.yml` (`authors: { Ann: { bio, img, url } }`).  Posts already carry `author` (a name or a list);
+`authors(post)` in `index.js` gives the names.  Needs `state.authors` (like `state.tags`) & a theme hook.
+
 ## Image shape hints: zero layout shift, even on a first visit
 Today (2026-11-08) a photo w/o a width & height gets a placeholder shape (3:2, or `img_ratio`) until it loads -- exact
 for 3:2 photos, a small shift for others (eg: 3:4 phone portraits).  See future-imperfect.md "Placeholder shapes".

@@ -14,7 +14,7 @@
 
 import {
   cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, datetime, imgurl, reveal,
-  word_count, reading_time,
+  word_count, reading_time, byline,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
@@ -70,7 +70,7 @@ function file_number(post) {
 
 /** Returns a post's agent (author) -- or, w/o one, a blacked out name */
 function agent(post) {
-  const name = post.author ?? cfg.author
+  const name = byline(post)
   return name ? esc(name) : '<span class="redact" title="redacted">J. Doe</span>'
 }
 

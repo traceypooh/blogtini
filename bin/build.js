@@ -227,12 +227,16 @@ function rss(cfg, site, items) {
       ...(fm.type && fm.type !== 'post' ? [`<category domain="type">${esc(fm.type)}</category>`] : []),
     ]
     const desc = description(fm, body)
+    // one <dc:creator> per author, in order -- the post's own, else config.yml's (pages: none)
+    const names = [fm.author ?? fm.authors ?? (fm.type === 'page' ? [] : cfg.author ?? [])]
+      .flat().map((e) => String(e).trim()).filter(Boolean)
+    const creators = names.map((e) => `<dc:creator>${esc(e)}</dc:creator>`)
     return `
     <item>
       <title>${esc(fm.title ?? '')}</title>
       <link>${esc(link)}</link>
       <guid>${esc(link)}</guid>
-      <pubDate>${date.toUTCString()}</pubDate>${cats.map((e) => `\n      ${e}`).join('')}${
+      <pubDate>${date.toUTCString()}</pubDate>${[...creators, ...cats].map((e) => `\n      ${e}`).join('')}${
         desc ? `\n      <description>${esc(desc)}</description>` : ''}${
 
         !img
@@ -251,6 +255,7 @@ function rss(cfg, site, items) {
 <rss version="2.0"
      xmlns:atom="http://www.w3.org/2005/Atom"
      xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>${esc(title)}</title>

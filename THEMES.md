@@ -50,6 +50,9 @@ The theme defines those custom elements, and so decides what the page looks like
 
 - blogtini's `THEMES` export (in `index.js`) lists the shipped themes -- for each theme's theme picker.
 - blogtini's `all_posts()` export returns every post & page it knows of, newest first (eg: striped's calendar).
+- Authors (2026-11-11): `byline(post)` gives the display string, eg: 'Ann', 'Ann & Bo', 'Ann, Bo & Cy' (or '');
+  `authors(post)` the names, in order.  Both fall back to `config.yml` `author:`.  Use them, not `post.author`
+  (a string, a list, or unset).  `cfg.author` alone is for the site (eg: the footer's copyright).
 - Sidebar side: each theme defaults to its own original layout (a `SIDEBAR_POSITION` const), unless
   `config.yml` `sidebar: { position: left | right | none }` pins it.  Defaults: future-imperfect, editorial,
   striped: left (fixed, so far); strongly-typed, helios: right (& they honor `position`).

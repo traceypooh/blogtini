@@ -64,6 +64,12 @@ Deno.test('build: index.xml has every post & page -- & the homepage, as a page',
   assertMatch(pie, /<media:content url="https:\/\/example\.com\/kitchen\/img\/pie\.svg"/)
   assertMatch(pie, /<media:description>A pie, cooling<\/media:description>/)
   assertMatch(pie, /It was \*delicious\*/)
+
+  // authors: a post's own, in order -- else config.yml's.  pages: none
+  const creators = (title) => [...by_title[title].xml.matchAll(/<dc:creator>(.*?)<\/dc:creator>/g)].map((e) => e[1])
+  assertEquals(creators('Then, a cake'), ['Ann Oven', 'Bo Whisk'])
+  assertEquals(creators('I baked a pie'), ['Pat Baker'])
+  assertEquals(creators('About the kitchen'), [])
 })
 
 Deno.test('build: a `draft: true` post is left out of index.xml', async () => {

@@ -13,7 +13,7 @@
 
 import {
   cfg, state, url2post, urlify, summarize_markdown, markdown_to_html, datetime, imgurl, reveal,
-  word_count, reading_time, all_posts,
+  word_count, reading_time, all_posts, authors, byline,
 } from '../../index.js'
 import { vrsort } from '../../js/text.js'
 import {
@@ -94,14 +94,14 @@ function card(url, id) {
   const figs = (post.body_raw?.match(/!\[|<img\b/gi) ?? []).length
   const ill = [post.featured ? 'front.' : '', figs ? `${figs} ill.` : ''].filter(Boolean).join(', ')
   const summary = nodes(summarize_markdown(post.body_raw ?? '', 240)).textContent.trim()
-  const author = post.author ?? cfg.author
+  const author = byline(post)
   const tracings = subjects(post).map(([name, link], n) => `${n + 1}. <a href="${esc(link)}">${esc(name)}</a>.`)
 
   return `
 <div class="card" ${id ? `id="${esc(id)}"` : ''}>
   <div class="call-number">${call_number(post).map(esc).join('<br>')}</div>
   <div class="entry">
-    ${author ? `<p class="main-entry">${esc(main_entry(author))}</p>` : ''}
+    ${author ? `<p class="main-entry">${esc(main_entry(authors(post)[0]))}</p>` : ''}
     <p class="title"><a href="${href}">${esc(post.title)}</a>${author ? ` / ${esc(author)}` : ''}. -- ${esc(day(post.date))}.</p>
     <p class="collation">${words.toLocaleString('en')} words${ill ? ` : ${ill}` : ''}</p>
     ${summary ? `<p class="summary">${esc(summary)}</p>` : ''}

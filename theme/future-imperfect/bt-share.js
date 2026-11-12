@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://esm.archive.org/lit@3.2.1'
-import { cfg } from '../../index.js'
+import { cfg, byline } from '../../index.js'
 import { css_links, css_normalize } from './css.js'
 
 customElements.define('bt-share', class extends LitElement {
@@ -13,7 +13,7 @@ customElements.define('bt-share', class extends LitElement {
     if (!this.post)
       return html``
 
-    const by = this.post?.author ?? cfg.title
+    const by = byline(this.post) || cfg.title
     const permalink = this.post.permalink || this.post.url // fqdn
     const { title } = this.post
 
