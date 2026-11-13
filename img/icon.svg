@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- blogtini's icon: a quill & a martini glass.  Deep sepia on a warm skin tone, from img/profile.jpg's colors.
+       Drawn to fill the tile, w/ bold shapes for 16-32px favicons: the quill's one wide hash & the drink's surface
+       line still show tiny; its spine just drops out.
+       The source for favicon.ico (16, 32, 48px) & apple-touch-icon.png (180px, square corners) -->
+  <rect width="512" height="512" rx="104" fill="#eecca8"/>
+  <g fill="#3b2721" transform="translate(242 266) scale(1.16) translate(-257 -272.5)">
+    <!-- the quill: a leaf-shaped feather, leaning (shortened 15% from the top) -->
+    <g transform="translate(0 462) scale(1 0.85) translate(0 -462)">
+      <path d="M96 52 C206 86 262 196 246 330 L240 384 L222 384 C150 300 58 172 96 52 Z"/>
+      <!-- its spine, & one hash: an arched wedge, thick at the edge, to a point at the spine (skin-tone cuts) -->
+      <path d="M102 64 Q206 180 230 378" fill="none" stroke="#eecca8" stroke-width="9" stroke-linecap="round"/>
+      <path d="M80 184 Q146 194 198 230 Q142 236 92 236 Z" fill="#eecca8"/>
+    </g>
+    <!-- its shaft & nib, by the glass' foot -->
+    <path d="M222 380 L240 380 L244 438 L234 462 L224 438 Z"/>
+    <!-- the martini glass, w/ a skin-tone outline: so it stays apart from the quill, small -->
+    <g stroke="#eecca8" stroke-width="16" stroke-linejoin="round" paint-order="stroke">
+      <path d="M182 128 L456 128 L319 300 Z"/>
+      <rect x="306" y="292" width="26" height="128"/>
+      <path d="M246 446 Q319 404 392 446 Z"/>
+    </g>
+    <!-- the drink's surface, & a short cocktail pick -->
+    <path d="M214 156 L424 156" stroke="#eecca8" stroke-width="8" stroke-linecap="round"/>
+    <path d="M374 138 L414 92" stroke="#3b2721" stroke-width="18" stroke-linecap="round"/>
+  </g>
+</svg>
