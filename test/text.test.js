@@ -53,6 +53,20 @@ Deno.test('markdown_to_html: a picture alone in its paragraph is a photo (full w
   assertNotMatch(markdown_to_html('<img src="pie.jpg" class="mine">'), /bt-photo/)
 })
 
+Deno.test('markdown_to_html: #icon & #2em -- a picture sized like text, inline', () => {
+  const htm = markdown_to_html('Made w/ ![blogtini](icon.svg#icon) blogtini')
+  assertMatch(htm, /<img class="bt-icon" style="height: 1\.2em; width: auto; vertical-align: -0\.25em; aspect-ratio: auto 1 \/ 1" src="icon\.svg"/)
+  assertMatch(markdown_to_html('big ![b](icon.svg#2em) icon'), /class="bt-icon" style="height: 2em;[^"]*" src="icon\.svg"/)
+  assertMatch(markdown_to_html('half ![b](icon.svg#1.5em) icon'), /style="height: 1\.5em;/)
+  // alone on its line: still an icon -- not a full width photo
+  const alone = markdown_to_html('![blogtini](icon.svg#icon)')
+  assertMatch(alone, /class="bt-icon"/)
+  assertNotMatch(alone, /bt-photo/)
+  // not ours: other fragments, & pictures w/ their own class or style
+  assertNotMatch(markdown_to_html('a ![x](x.jpg#top) b'), /bt-icon/)
+  assertNotMatch(markdown_to_html('<img src="x.svg#icon" class="mine">'), /bt-icon/)
+})
+
 Deno.test('markdown_to_html: pictures after the first 4 lazy load; all decode async', () => {
   const htm = markdown_to_html([1, 2, 3, 4, 5, 6].map((n) => `![${n}](p${n}.jpg)`).join('\n\n'))
   const imgs = htm.match(/<img [^>]*>/g)

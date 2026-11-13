@@ -36,7 +36,8 @@ It was *delicious*.
   `authors:` works too.  W/o one, the post is by `config.yml`'s `author:`.  Shown by the post's date,
   & in the feed (`<dc:creator>`).
 - Optional: `description:` (a one-liner for feeds), `featuredcaption:`.  Images go in `img/`.  A picture on its own line shows full width -- or
-  `![pie](../img/pie.jpg#half)` (also `#two-thirds`, `#third`, `#quarter`) for smaller.
+  `![pie](../img/pie.jpg#half)` (also `#two-thirds`, `#third`, `#quarter`) for smaller.  `#icon`: sized like text, inline
+  (eg: `made w/ ![blogtini](../img/icon.svg#icon)`) -- or `#2em` (etc.) for a height.
 - Your top-level `theme.js` loads blogtini: `import 'https://blogtini.com/index.js'` (latest),
   or pin a version (see [Versions](#versions)).
 - Your top-level `config.yml`: `title`, `user` & `repo` (eg: for comments), `theme`, `menu`, `sidebar`, ...

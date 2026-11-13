@@ -317,7 +317,7 @@ customElements.define('bt-post-full', class extends HTMLElement {
  * (So a screenshot of a page, in a page, says what it is)
  */
 function captions(section) {
-  for (const img of section.querySelectorAll(':scope > p img[alt]:not([alt=""])')) {
+  for (const img of section.querySelectorAll(':scope > p img[alt]:not([alt=""]):not(.bt-icon)')) {
     const p = img.closest('p')
     const only = p.textContent.trim() === '' && p.querySelectorAll('img').length === 1
     if (!only || p.parentElement !== section)

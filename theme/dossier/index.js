@@ -455,7 +455,7 @@ function routing(post) {
  */
 function exhibits(body, start) {
   let n = start
-  for (const img of body.querySelectorAll(':scope > p img')) {
+  for (const img of body.querySelectorAll(':scope > p img:not(.bt-icon)')) {
     const p = img.closest('p')
     if (p.parentElement !== body || p.textContent.trim() !== '' || p.querySelectorAll('img').length !== 1)
       continue

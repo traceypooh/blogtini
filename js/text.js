@@ -6,13 +6,31 @@ const MD2HTM = new showdown.Converter({ tables: true, simplifiedAutoLink: true }
 
 
 function markdown_to_html(str) {
-  return lazy(photos(MD2HTM.makeHtml(
+  return lazy(photos(icons(MD2HTM.makeHtml(
     str.replace(
       // replace any youtube shortcodes
       /{{<\s*youtube\s+([^\s>}]+)\s*>}}/g,
       '<iframe width="848" height="477" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
     ),
-  )))
+  ))))
+}
+
+/**
+ * A picture w/ an `#icon` url fragment shows text sized, inline -- like a letter: `![blogtini](../img/icon.svg#icon)`.
+ * `#2em` (any number of `em`): that height instead of 1.2em.  Marks it `class="bt-icon"` -- so it's never a full width
+ * photo (`photos()`), nor a theme's captioned figure.  Its sizing is inline styles, so themes' `img` rules can't undo
+ * it.  Placeholder shape: square (most icons are) -- so text beside it doesn't nudge as it loads.
+ */
+function icons(htm) {
+  return htm.replace(/<img\s([^>]*?)\s*(\/?)>/gi, (all, attrs, slash) => {
+    const mat = attrs.match(/src="([^"#]*)#(icon|\d+(?:\.\d+)?em)"/)
+    if (!mat || /(^|\s)(class|style)=/i.test(attrs))
+      return all
+    const height = mat[2] === 'icon' ? '1.2em' : mat[2]
+    const attrs2 = attrs.replace(mat[0], `src="${mat[1]}"`)
+    const style = `height: ${height}; width: auto; vertical-align: -0.25em; aspect-ratio: auto 1 / 1`
+    return `<img class="bt-icon" style="${style}" ${attrs2}${slash ? ' /' : ''}>`
+  })
 }
 
 // a post's first few pictures load right away (they're usually near the top) -- the rest, as the reader nears them
