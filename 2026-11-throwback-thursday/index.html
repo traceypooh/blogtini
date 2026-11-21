@@ -25,7 +25,7 @@ Here's the lineage -- and one of them you can still run, live, for a little whil
 
 ## Early websites (1994)
 At Xerox PARC, I was making little websites for coworkers.
-I had a camera at my desk hooked into some perl scripts an a Sun Sparc computer.
+I had a camera at my desk hooked into some perl scripts and a Sun Sparc computer.
 They could take a picture and save it with some information on them and their team.
 My http://.../cgi-bin/pagetool/PageMake.pl would write out a
 http://../www/~webuser/NAME.html and http://../www/~webuser/NAME.jpg pair.
@@ -159,7 +159,7 @@ date: 2026-11-12
   <xsl:output method="html"/>
   <xsl:template match="/">
     <html>
-      <script type="module" src="loader.js"></script>
+      <script src="loader.js" type="module"></script>
       <pre id="md"><xsl:value-of select="/post"/></pre>
     </html>
   </xsl:template>
@@ -193,24 +193,36 @@ blogtini fudges it, slightly: a post is markdown wearing `text/html`'s clothes,
 so the browser, robots, & everyone will take it.
 Small lie, **very big WIN**.
 
-The same post, the blogtini way (boiled down, too).  `index.html`:
+The same post, the blogtini way with a script tag in the front matter (boiled down, too).  `index.html`:
 ```html
 ---
 title: hi world
 date: 2026-11-12
-comment: <script type="module" src="post.js"></script>
+comment: <script src="post.js" type="module"></script>
 ---
 # JS
 - no build step
 - one common `.js` file
 ```
-The script tag hides in the front matter -- so it's still just front matter & markdown.
 
-`post.js`?  It's `loader.js` w/ one line changed -- read the post's own file, raw:
-```diff
--const txt = document.getElementById('md').textContent.trim()
-+const txt = await (await fetch(location.href)).text()
+`post.js`?  It's `loader.js` w/ one line changed -- to read / `fetch()` the post's content.
+Split the front matter & markdown to make the page.
+```js
+import showdown from 'https://esm.archive.org/showdown@2.1.0'
+import yml from 'https://esm.archive.org/js-yaml@4.1.0'
+
+const txt = await (await fetch(location.href)).text()
+const [, fm, md] = txt.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+const meta = yml.load(fm, { schema: yml.CORE_SCHEMA }) // CORE: dates stay as text
+
+document.title = meta.title
+document.body.innerHTML = `
+  <h1>${meta.title}</h1>
+  <p>posted: ${meta.date}</p>
+  ${new showdown.Converter().makeHtml(md)}`
 ```
+
+
 No XSL.  Same 20 years of itch, scratched.
 
 Happy Throwback Thursday!  💃
