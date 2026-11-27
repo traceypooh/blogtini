@@ -1,5 +1,3 @@
-import '../js/dom.js'
-
 import { render } from 'npm:@lit-labs/ssr/lib/render-lit-html.js'
 import { collectResultSync } from 'npm:@lit-labs/ssr/lib/render-result.js'
 import { html } from 'npm:lit'

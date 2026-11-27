@@ -200,7 +200,7 @@ V=2.1.0 &&\
 
 ## Ideas / later
 (Design notes for several of these: [TODO.md](TODO.md)).
-- self-host the JS deps (eg: `js/vendor/`), so a copy of a site dir is complete & works offline
+- `deno task vendor`: self-host JS deps in `vendor/` so a copy of a site dir is complete & works offline
 - find posts w/o any list: the GitHub (or GitLab) tree API, or crawl the homepage's local links
 - the build bakes a plain list of every post into the homepage, for no-JS readers
 - import your socials: turn a Mastodon / Bluesky / Instagram / X export into posts

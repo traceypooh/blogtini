@@ -1,8 +1,9 @@
-deno.lock
-node_modules
-/t
-/.claude/settings.json
 .DS_Store
+/.claude/settings.json
+/deno.lock
+/node_modules
+/t
 /test/out/
+/vendor
 # private notes: never committed
 /_____*

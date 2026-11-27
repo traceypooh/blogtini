@@ -3,7 +3,8 @@
   "tasks": {
     "test": "deno test --no-lock --allow-import=esm.archive.org:443 --allow-read --allow-write --allow-run test/",
     "test:themes": "deno run --no-lock -A test/themes.js",
-    "test:cls": "deno run --no-lock -A test/cls.js"
+    "test:cls": "deno run --no-lock -A test/cls.js",
+    "vendor": "deno check --allow-import --vendor"
   },
   "lint": {
     "rules": {
